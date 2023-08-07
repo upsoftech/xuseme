@@ -59,7 +59,7 @@ class _MyAddsState extends State<MyAdds> {
 
                     const Icon(
                       Icons.delete,
-                      color: location,
+                      color: red,
                     ),
                   ],
                 ),

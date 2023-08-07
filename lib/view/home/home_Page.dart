@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:xuseme/constant/image.dart';
+import 'package:xuseme/provider/location_provider.dart';
 import '../../constant/app_constants.dart';
 import '../../constant/color.dart';
 import '../category/food_list.dart';
@@ -17,8 +21,28 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  late LocationProvider locationProvider;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadData();
+  }
+
+  loadData(){
+
+    final locationProvider=Provider.of<LocationProvider>(context, listen: false);
+
+  }
+
   @override
   Widget build(BuildContext context) {
+
+    final locationProvider=Provider.of<LocationProvider>(context);
+
+    log("message${locationProvider.placeMark}");
     return Scaffold(
       drawer: const DrawerPage(),
       appBar: AppBar(
@@ -33,7 +57,7 @@ class _HomePageState extends State<HomePage> {
               child: Image.asset(user),
             ),
             title: Text(
-              'Moti Nagar, New Delhi',
+              '${locationProvider.placeMark!.first.subLocality}, ${locationProvider.placeMark!.first.locality}',
               style: GoogleFonts.salsa(fontSize: 16, color: textWhite),
             ),
           )),

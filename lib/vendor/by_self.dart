@@ -156,7 +156,7 @@ class _BySelfState extends State<BySelf> {
 
           ),
           Text("( 1280 pixels by 720 pixels )",
-            style: GoogleFonts.alice(color: location,fontWeight:FontWeight.w400,
+            style: GoogleFonts.alice(color: red,fontWeight:FontWeight.w400,
                 fontSize: 16),),
 
           Container(

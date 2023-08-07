@@ -1,10 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:location/location.dart' as loc;
+import 'package:location/location.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:xuseme/constant/image.dart';
-import 'package:xuseme/view/screen/manual_lacation.dart';
-
+import 'package:xuseme/view/screen/manual_location.dart';
 import '../../constant/color.dart';
+import 'navigation_page.dart';
 class LocationPage extends StatefulWidget {
   const LocationPage({Key? key}) : super(key: key);
 
@@ -13,6 +19,34 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
+  LocationData? locationData;
+
+  List<Placemark>? placeMark;
+  void getPermission() async {
+    if (await Permission.location.isGranted) {
+      /// location get ///
+
+      getLocation().then((value) =>  Get.to(const NavigationPage()));
+    } else {
+      /// permission request ///
+      Permission.location.request();
+    }
+  }
+
+  Future<void> getLocation() async {
+    locationData = await loc.Location.instance.getLocation();
+  }
+
+  Future<void> allowLocation() async{
+    if (locationData != null){
+      placeMark = await placemarkFromCoordinates(
+          locationData!.latitude!, locationData!.longitude!);
+      log(placeMark.toString());
+    }else{
+      getLocation();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,16 +83,22 @@ class _LocationPageState extends State<LocationPage> {
              child: Image.asset(map),
            ),
               const SizedBox(height:60,),
-              Container(
-                margin: const EdgeInsets.only(left: 20,right: 20),
-                height: 40,
-                alignment: Alignment.center,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: textBlack,
-                    borderRadius: BorderRadius.circular(10)
+              GestureDetector(
+                onTap:(){
+                  getPermission();
+                 //Get.to(const NavigationPage());
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(left: 20,right: 20),
+                  height: 40,
+                  alignment: Alignment.center,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: textBlack,
+                      borderRadius: BorderRadius.circular(10)
+                  ),
+                  child:Text('Allow location access',style:GoogleFonts.alice(color: textWhite,fontWeight: FontWeight.bold,fontSize: 16),),
                 ),
-                child:Text('Allow location access',style:GoogleFonts.alice(color: textWhite,fontWeight: FontWeight.bold,fontSize: 16),),
               ),
               const SizedBox(height: 20,),
             GestureDetector(

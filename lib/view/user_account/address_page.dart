@@ -69,7 +69,7 @@ class _AddressPageState extends State<AddressPage> {
                     IconButton(onPressed: (){},
                         icon: const Icon(Icons.edit,color: Colors.grey,)),
                     IconButton(onPressed: (){},
-                        icon: const Icon(Icons.delete,color:location,))
+                        icon: const Icon(Icons.delete,color:red,))
 
                   ],
                 )

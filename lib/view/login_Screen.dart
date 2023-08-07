@@ -1,4 +1,5 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -19,7 +20,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final mobileNumber = TextEditingController();
-  String? dropdownValue;
+   String? dropdownValue;
   final ApiServices _apiService = ApiServices();
   final PrefService _prefService = PrefService();
 
@@ -89,6 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onChanged: (String? newStateId) {
                     setState(() {
                       dropdownValue = newStateId!;
+                      log("check$dropdownValue");
                     });
                   },
                 ),
@@ -140,14 +142,37 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               InkWell(
                   onTap: () {
-                    if (dropdownValue == 'Customer') {
-                      Get.to(const OtpScreen(
-                        dropdownValue: 'Customer',
-                      ));
-                    } else if (dropdownValue == 'Partner') {
-                      Get.to(const OtpScreen(
-                        dropdownValue: 'Partner',
-                      ));
+                    if (mobileNumber.text.trim() != "" &&
+                        mobileNumber.text.trim().length == 10 &&
+                        dropdownValue!.toLowerCase()=="customer") {
+                      _apiService
+                          .logInMobile(mobileNumber.text.trim(),
+                              dropdownValue!.toLowerCase())
+                          .then((value) {
+                        log("message${value["token"]}");
+                        _prefService.setSelectToken(value["token"]);
+                        _prefService.setRegId(value["data"]["_id"]);
+                        log("$dropdownValue");
+                        Get.to(const OtpScreen(
+                          dropdownValue: 'Customer',
+                        ));
+                      });
+                    } else if (mobileNumber.text.trim() != "" &&
+                        mobileNumber.text.trim().length == 10 &&
+                        dropdownValue!.toLowerCase()=="partner") {
+                      _apiService
+                          .logInMobile(mobileNumber.text.trim(),
+                              dropdownValue!.toLowerCase())
+                          .then((value) {
+
+                            log(value.toString());
+                        // _prefService.setSelectToken(value["token"]);
+                        // _prefService.setRegId(value["data"]["_id"]);
+                        Get.to(const OtpScreen(
+                          dropdownValue: 'Partner',
+
+                        ));
+                      });
                     } else {
                       Fluttertoast.showToast(
                         msg: 'Please Select Type',

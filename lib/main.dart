@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:xuseme/provider/location_provider.dart';
+import 'package:xuseme/provider/preference_provider.dart';
 import 'package:xuseme/view/screen/splash.dart';
 
-void main() {
+import 'api_services/preference_services.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await PrefService.init();
   runApp(const MyApp());
 }
 
@@ -12,13 +19,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context)=>PrefProvider()),
+        ChangeNotifierProvider(create: (context)=>LocationProvider()),
+      ],
+      child: GetMaterialApp(
+        title: 'XuseMe',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home:const SplashScreen(),
+        debugShowCheckedModeBanner: false,
       ),
-      home:const SplashScreen(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }

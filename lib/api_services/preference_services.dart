@@ -2,7 +2,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constant/app_constants.dart';
 
-
 class PrefService {
   static late SharedPreferences _prefs;
 
@@ -16,8 +15,24 @@ class PrefService {
     return setString(AppConstants.regIdKey, regId);
   }
 
+  setSelectType(String types) {
+    return setString(AppConstants.selectType, types);
+  }
+
+  setSelectToken(String tokens) {
+    return setString(AppConstants.saveToken, tokens);
+  }
+
+  getSelectType() {
+    return getString(AppConstants.selectType);
+  }
+
   getRegId() {
     return getString(AppConstants.regIdKey);
+  }
+
+  getToken() {
+    return getString(AppConstants.saveToken);
   }
 
   setMobile(String mobile) {

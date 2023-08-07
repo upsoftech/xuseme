@@ -8,8 +8,8 @@ class PrefProvider extends ChangeNotifier {
   final PrefService _prefService = PrefService();
 
   PrefProvider() {
-    getRegId();
-    getMobile();
+
+    getToken();
   }
 
   /// getting RegId
@@ -17,7 +17,11 @@ class PrefProvider extends ChangeNotifier {
     AppConstants.regId = await _prefService.getRegId();
     notifyListeners();
   }
-
+  /// getting Token
+  Future<void> getToken() async {
+    AppConstants.token = await _prefService.getToken();
+    notifyListeners();
+  }
   /// getting Mobile
   Future<void> getMobile() async {
     AppConstants.mobile = await _prefService.getMobile();

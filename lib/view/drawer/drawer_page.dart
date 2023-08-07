@@ -3,8 +3,10 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rating_dialog/rating_dialog.dart';
 import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
+import 'package:xuseme/view/login_Screen.dart';
 import 'package:xuseme/view/user_account/setting_page.dart';
 import '../../vendor/add_histroy.dart';
 import '../../vendor/my_adds.dart';
@@ -256,8 +258,12 @@ class _DrawerPageState extends State<DrawerPage> {
               ),
             ),
             ListTile(
-              onTap: () {
-                Navigator.pop(context);
+              onTap: () async {
+                SharedPreferences pref = await SharedPreferences.getInstance();
+                await pref.clear().then((value) {
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                 Get.to(const LoginScreen());
+                });
               },
               leading: const Icon(
                 Icons.logout,

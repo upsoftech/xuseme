@@ -19,6 +19,7 @@ class AppConstants {
 
   static String regId="";
   static String mobile="";
+  static String token="";
   static bool userSession = false;
 
   /// Shared Preference Keys ///
@@ -26,6 +27,8 @@ class AppConstants {
   static String regIdKey="regIdKey";
   static String mobileNoKey="mobileNoKey";
   static String userSessionKey="userSessionKey";
+  static String selectType="selectType";
+  static String saveToken="saveToken";
 }
 
 
