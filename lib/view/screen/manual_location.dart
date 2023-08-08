@@ -38,7 +38,7 @@ class _ManualLocationState extends State<ManualLocation> {
   }
 
   void getLocationAddress() async {
-    log(placeMark.toString());
+    // log(placeMark.toString());
 
     if (locationData != null) {
       placeMark = await placemarkFromCoordinates(

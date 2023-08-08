@@ -1,50 +1,78 @@
+import 'dart:developer';
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:xuseme/api_services/api_services.dart';
 import 'package:xuseme/constant/image.dart';
+import '../../api_services/preference_services.dart';
+import '../../constant/api_constant.dart';
 import '../../constant/color.dart';
 
 class EditProfile extends StatefulWidget {
-  const EditProfile({Key? key}) : super(key: key);
+  const EditProfile({Key? key, required this.data}) : super(key: key);
+  final Map<String, dynamic> data;
 
   @override
   State<EditProfile> createState() => _EditProfileState();
 }
 
 class _EditProfileState extends State<EditProfile> {
-  File? images;
-  final ImagePicker _picker1 = ImagePicker();
-  galleryFiles() async {
-    var galleryFile = await _picker1.pickImage(source: ImageSource.camera);
-    setState(() {
-      images = galleryFile as File?;
-    });
+  final nameController = TextEditingController();
+  final mobileController = TextEditingController();
+  final emailController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    nameController.text = widget.data?["name"] ?? "";
+    mobileController.text = widget.data?["mobile"] ?? "";
+    emailController.text = widget.data?["email"] ?? "";
   }
 
-  File? photo;
+  XFile? photo;
   final ImagePicker camera = ImagePicker();
-  openGalleryPhoto() async {
-    var galleryFile = await camera.pickImage(source: ImageSource.gallery);
-    setState(() {
-      photo = galleryFile as File?;
+
+  openGalleryPhoto(ImageSource imageSource) async {
+    await camera.pickImage(source: imageSource).then((value) {
+      photo = value;
+      setState(() {});
+      Navigator.pop(context);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Container(
-        alignment: Alignment.center,
-        height: 45,
-        width: double.infinity,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-            color: textBlack, borderRadius: BorderRadius.circular(10)),
-        child: Text(
-          'Submit',
-          style: GoogleFonts.salsa(fontSize: 16, color: textWhite),
+      bottomNavigationBar: GestureDetector(
+        onTap: () async {
+          ApiServices()
+              .updateUserProfile(
+                  nameController.text.trim(),
+                  mobileController.text.trim(),
+                  emailController.text.trim(),
+                  photo?.path)
+              .then((value) {
+            Fluttertoast.showToast(msg: "$value");
+            Get.back();
+          });
+        },
+        child: Container(
+          alignment: Alignment.center,
+          height: 45,
+          width: double.infinity,
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+              color: textBlack, borderRadius: BorderRadius.circular(10)),
+          child: Text(
+            'Submit',
+            style: GoogleFonts.salsa(fontSize: 16, color: textWhite),
+          ),
         ),
       ),
       appBar: AppBar(
@@ -59,17 +87,25 @@ class _EditProfileState extends State<EditProfile> {
       ),
       body: ListView(
         children: [
-          const SizedBox(height: 10,),
+          const SizedBox(
+            height: 10,
+          ),
           Align(
             alignment: Alignment.center,
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.grey.withOpacity(.2),
-                  backgroundImage: const AssetImage(window),
-                ),
+                photo != null
+                    ? CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.grey.withOpacity(.2),
+                        backgroundImage: FileImage(File(photo!.path)),
+                      )
+                    : CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.grey.withOpacity(.2),
+                        backgroundImage: const AssetImage(window),
+                      ),
                 Positioned(
                   bottom: -10,
                   child: IconButton(
@@ -79,7 +115,7 @@ class _EditProfileState extends State<EditProfile> {
                           builder: (ctx) => AlertDialog(
                             content: TextButton(
                                 onPressed: () {
-                                  galleryFiles();
+                                  openGalleryPhoto(ImageSource.camera);
                                 },
                                 child: Text(
                                   "From Camera",
@@ -90,7 +126,7 @@ class _EditProfileState extends State<EditProfile> {
                                 )),
                             title: TextButton(
                                 onPressed: () {
-                                  openGalleryPhoto();
+                                  openGalleryPhoto(ImageSource.gallery);
                                 },
                                 child: Text(
                                   "From Gallery",
@@ -114,6 +150,7 @@ class _EditProfileState extends State<EditProfile> {
           Container(
             padding: const EdgeInsets.fromLTRB(15, 20, 15, 0),
             child: TextFormField(
+              controller: nameController,
               cursorColor: Colors.black,
               decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(
@@ -133,6 +170,7 @@ class _EditProfileState extends State<EditProfile> {
           Container(
             padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
             child: TextFormField(
+              controller: mobileController,
               keyboardType: TextInputType.phone,
               cursorColor: Colors.black,
               decoration: InputDecoration(
@@ -153,6 +191,7 @@ class _EditProfileState extends State<EditProfile> {
           Container(
             padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
             child: TextFormField(
+              controller: emailController,
               keyboardType: TextInputType.emailAddress,
               cursorColor: Colors.black,
               decoration: InputDecoration(

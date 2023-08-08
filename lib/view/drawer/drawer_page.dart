@@ -6,7 +6,7 @@ import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
-import 'package:xuseme/view/login_Screen.dart';
+import 'package:xuseme/view/login_screen.dart';
 import 'package:xuseme/view/user_account/setting_page.dart';
 import '../../vendor/add_histroy.dart';
 import '../../vendor/my_adds.dart';

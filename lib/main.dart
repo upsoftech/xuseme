@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:xuseme/provider/home_provider.dart';
 import 'package:xuseme/provider/location_provider.dart';
 import 'package:xuseme/provider/preference_provider.dart';
+import 'package:xuseme/provider/profile_provider.dart';
 import 'package:xuseme/view/screen/splash.dart';
 
 import 'api_services/preference_services.dart';
@@ -23,6 +25,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context)=>PrefProvider()),
         ChangeNotifierProvider(create: (context)=>LocationProvider()),
+        ChangeNotifierProvider(create: (context)=>HomeProvider()),
+        ChangeNotifierProvider(create: (context)=>ProfileProvider()),
       ],
       child: GetMaterialApp(
         title: 'XuseMe',

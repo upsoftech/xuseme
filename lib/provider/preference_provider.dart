@@ -7,11 +7,6 @@ import '../constant/app_constants.dart';
 class PrefProvider extends ChangeNotifier {
   final PrefService _prefService = PrefService();
 
-  PrefProvider() {
-
-    getToken();
-  }
-
   /// getting RegId
   Future<void> getRegId() async {
     AppConstants.regId = await _prefService.getRegId();
@@ -19,7 +14,7 @@ class PrefProvider extends ChangeNotifier {
   }
   /// getting Token
   Future<void> getToken() async {
-    AppConstants.token = await _prefService.getToken();
+    AppConstants.token = await _prefService.getToken() ??"";
     notifyListeners();
   }
   /// getting Mobile

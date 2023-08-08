@@ -1,12 +1,14 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:xuseme/constant/api_constant.dart';
 import 'package:xuseme/constant/image.dart';
+import 'package:xuseme/provider/home_provider.dart';
 import 'package:xuseme/provider/location_provider.dart';
+import 'package:xuseme/view/home/remote_search.dart';
 import '../../constant/app_constants.dart';
 import '../../constant/color.dart';
 import '../category/food_list.dart';
@@ -21,7 +23,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   late LocationProvider locationProvider;
 
   @override
@@ -31,18 +32,18 @@ class _HomePageState extends State<HomePage> {
     loadData();
   }
 
-  loadData(){
-
-    final locationProvider=Provider.of<LocationProvider>(context, listen: false);
-
+  loadData() {
+    final locationProvider =
+        Provider.of<LocationProvider>(context, listen: false);
+    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    homeProvider.getBanner();
   }
 
   @override
   Widget build(BuildContext context) {
+    final locationProvider = Provider.of<LocationProvider>(context);
+    final homeProvider = Provider.of<HomeProvider>(context,);
 
-    final locationProvider=Provider.of<LocationProvider>(context);
-
-    log("message${locationProvider.placeMark}");
     return Scaffold(
       drawer: const DrawerPage(),
       appBar: AppBar(
@@ -57,7 +58,7 @@ class _HomePageState extends State<HomePage> {
               child: Image.asset(user),
             ),
             title: Text(
-              '${locationProvider.placeMark!.first.subLocality}, ${locationProvider.placeMark!.first.locality}',
+              '${locationProvider.placeMark?.first.subLocality ?? ""}, ${locationProvider.placeMark?.first.locality ?? ""}',
               style: GoogleFonts.salsa(fontSize: 16, color: textWhite),
             ),
           )),
@@ -102,37 +103,34 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Padding(
-                padding: const EdgeInsets.only(
-                    left: 10, right: 10, top: 15, bottom: 10),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: ImageSlideshow(
+              padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: homeProvider.bannerList.isNotEmpty
+                    ? ImageSlideshow(
                     width: double.infinity,
                     height: 200,
                     initialPage: 0,
                     indicatorColor: btnColor,
-                    indicatorBackgroundColor: textBlack,
-                    // onPageChanged: (value) {
-                    //   print('Page changed: $value');
-                    // },
+                    indicatorBackgroundColor:grey,
+                    onPageChanged: (value) {
+                      //  print('Page changed: $value');
+                    },
                     autoPlayInterval: 3000,
                     isLoop: true,
-                    children: [
-                      Image.asset(
-                        ro,
+                    children: homeProvider.bannerList.map((e) {
+                      return e["bannerImage"].toString() == ""
+                          ? Image.network(
+                       ApiConstant.baseUrl+"/uploads/banners/"+ e["bannerImage"],
                         fit: BoxFit.cover,
-                      ),
-                      Image.asset(
-                        window,
+                      )
+                          : Image.network(
+                        noImage,
                         fit: BoxFit.cover,
-                      ),
-                      Image.asset(
-                        hotel,
-                        fit: BoxFit.cover,
-                      ),
-                    ],
-                  ),
-                )
+                      );
+                    }).toList())
+                    : const SizedBox(),
+              ),
             ),
             Container(
               padding: const EdgeInsets.only(left: 15, right: 15, top: 20),
@@ -223,7 +221,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   GestureDetector(
                       onTap: () {
-                        Get.to(const FoodList());
+                        Get.to(const SearchProduct());
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -342,37 +340,35 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Padding(
-                padding: const EdgeInsets.only(
-                    left: 10, right: 10, top: 15, bottom: 10),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: ImageSlideshow(
+              padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: homeProvider.bannerList.isNotEmpty
+                    ? ImageSlideshow(
                     width: double.infinity,
                     height: 200,
                     initialPage: 0,
                     indicatorColor: btnColor,
-                    indicatorBackgroundColor: textBlack,
-                    // onPageChanged: (value) {
-                    //   print('Page changed: $value');
-                    // },
+                    indicatorBackgroundColor:grey,
+                    onPageChanged: (value) {
+                      //  print('Page changed: $value');
+                    },
                     autoPlayInterval: 3000,
                     isLoop: true,
-                    children: [
-                      Image.asset(
-                        hotel,
+                    children: homeProvider.bannerList.map((e) {
+                      return e["bannerImage"].toString() == ""
+                          ? Image.network(
+                        e["bannerImage"],
                         fit: BoxFit.cover,
-                      ),
-                      Image.asset(
-                        ro,
+                      )
+                          : Image.network(
+                        noImage,
                         fit: BoxFit.cover,
-                      ),
-                      Image.asset(
-                        window,
-                        fit: BoxFit.cover,
-                      ),
-                    ],
-                  ),
-                )),
+                      );
+                    }).toList())
+                    : const SizedBox(),
+              ),
+            ),
           ],
         ),
       ),

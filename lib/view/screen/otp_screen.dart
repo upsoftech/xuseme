@@ -1,16 +1,21 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';
+import 'package:pinput/pinput.dart';
 import 'package:xuseme/view/screen/location.dart';
+import '../../api_services/api_services.dart';
+import '../../api_services/preference_services.dart';
 import '../../constant/color.dart';
 import '../../vendor/vandor_registration.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({Key? key, required this.dropdownValue}) : super(key: key);
+  const OtpScreen({Key? key, required this.dropdownValue, required this.mobile}) : super(key: key);
   final String dropdownValue;
+  final String mobile;
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -51,6 +56,10 @@ class _OtpScreenState extends State<OtpScreen> {
     timer?.cancel();
     super.dispose();
   }
+  final ApiServices _apiService = ApiServices();
+
+  final otpController = TextEditingController();
+  final PrefService _prefService = PrefService();
 
 
   @override
@@ -79,26 +88,52 @@ class _OtpScreenState extends State<OtpScreen> {
             const SizedBox(
               height: 10,
             ),
-            OTPTextField(
-              length: 5,
-              width: MediaQuery.of(context).size.width,
-              fieldWidth: 40,
-              style: const TextStyle(fontSize: 16),
-              textFieldAlignment: MainAxisAlignment.spaceAround,
-              fieldStyle: FieldStyle.underline,
-              onCompleted: (pin) {
-                print("Completed: " + pin);
-              },
-            ),
+      Center(
+        child: Pinput(
+
+         controller: otpController,
+          pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+          showCursor: true,
+          onCompleted: (pin) => print(pin),
+        ),
+      ),
             const SizedBox(
               height: 35,
             ),
             InkWell(
                 onTap: () {
+
+
+
                   if (widget.dropdownValue == "Customer") {
-                    Get.to(const LocationPage());
+
+                    _apiService
+                        .verifyOtp(widget.mobile,
+                        widget.dropdownValue!.toLowerCase(),
+                        otpController.text.trim(),
+                    )
+                        .then((value) {
+                      log("message${value}");
+
+                      _prefService.setSelectToken(value["token"]);
+                      _prefService.setRegId(value["data"]["_id"]);
+                      Get.to(const LocationPage());
+                    });
+
                   } else if (widget.dropdownValue == 'Partner') {
-                    Get.to(const VendorRegistration());
+                    _apiService
+                        .verifyOtp(widget.mobile,
+                      widget.dropdownValue!.toLowerCase(),
+                      otpController.text.trim(),
+                    )
+                        .then((value) {
+                      log("message${value}");
+
+                      _prefService.setSelectToken(value["token"]);
+
+                      Get.to(const VendorRegistration());
+                    });
+
                   }
                 },
                 child: Container(

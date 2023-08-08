@@ -19,10 +19,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
   final mobileNumber = TextEditingController();
    String? dropdownValue;
   final ApiServices _apiService = ApiServices();
-  final PrefService _prefService = PrefService();
+
 
   bool valuefirst = false;
   @override
@@ -144,22 +145,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   onTap: () {
                     if (mobileNumber.text.trim() != "" &&
                         mobileNumber.text.trim().length == 10 &&
-                        dropdownValue!.toLowerCase()=="customer") {
+                        dropdownValue!.toLowerCase()=="customer"
+                    && valuefirst ==true) {
                       _apiService
                           .logInMobile(mobileNumber.text.trim(),
                               dropdownValue!.toLowerCase())
                           .then((value) {
-                        log("message${value["token"]}");
-                        _prefService.setSelectToken(value["token"]);
-                        _prefService.setRegId(value["data"]["_id"]);
+                        log("message${value}");
+                        Fluttertoast.showToast(msg: "OTP Is ${value["otp"]}");
+
                         log("$dropdownValue");
-                        Get.to(const OtpScreen(
+                        Get.to( OtpScreen(
                           dropdownValue: 'Customer',
+                          mobile: mobileNumber.text.trim(),
                         ));
                       });
                     } else if (mobileNumber.text.trim() != "" &&
                         mobileNumber.text.trim().length == 10 &&
-                        dropdownValue!.toLowerCase()=="partner") {
+                        dropdownValue!.toLowerCase()=="partner"
+                        && valuefirst ==true) {
                       _apiService
                           .logInMobile(mobileNumber.text.trim(),
                               dropdownValue!.toLowerCase())
@@ -168,14 +172,17 @@ class _LoginScreenState extends State<LoginScreen> {
                             log(value.toString());
                         // _prefService.setSelectToken(value["token"]);
                         // _prefService.setRegId(value["data"]["_id"]);
-                        Get.to(const OtpScreen(
+
+                            Fluttertoast.showToast(msg: "OTP Is ${value["otp"]}");
+                        Get.to( OtpScreen(
                           dropdownValue: 'Partner',
+                          mobile: mobileNumber.text.trim(),
 
                         ));
                       });
                     } else {
                       Fluttertoast.showToast(
-                        msg: 'Please Select Type',
+                        msg: 'Required',
                         backgroundColor: btnColor,
                       );
                     }

@@ -36,7 +36,7 @@ class LocationProvider extends ChangeNotifier {
     if (locationData != null) {
       _placeMark = await placemarkFromCoordinates(
           locationData!.latitude!, locationData!.longitude!);
-      log(_placeMark.toString());
+   //   log(_placeMark.toString());
       notifyListeners();
     } else {
       getPermission();

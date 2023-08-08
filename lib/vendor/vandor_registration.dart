@@ -4,14 +4,16 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:xuseme/api_services/api_services.dart';
+import '../constant/api_constant.dart';
 import '../constant/color.dart';
 import '../constant/image.dart';
 import '../view/screen/navigation_page.dart';
 import 'edit_profile.dart';
 
 class VendorRegistration extends StatefulWidget {
-  const VendorRegistration({Key? key}) : super(key: key);
-
+  const VendorRegistration({Key? key, this.data}) : super(key: key);
+  final Map<String, dynamic>? data;
   @override
   State<VendorRegistration> createState() => _VendorRegistrationState();
 }
@@ -48,7 +50,6 @@ class _VendorRegistrationState extends State<VendorRegistration> {
   final shopTypeController=TextEditingController();
   final addressController=TextEditingController();
   final landmarkController=TextEditingController();
-  final pincodeController=TextEditingController();
   final stateController=TextEditingController();
   final addServicesController=TextEditingController();
 
@@ -74,7 +75,25 @@ class _VendorRegistrationState extends State<VendorRegistration> {
       ),
       bottomNavigationBar: GestureDetector(
         onTap: () {
-          Get.to(const NavigationPage());
+          ApiServices().registerProfile({
+            "name":nameController.text.trim(),
+            "mobile":mobileController.text.trim(),
+            "landline":landlineController.text.trim(),
+            "email":emailController.text.trim(),
+            "shopName":shopNameController.text.trim(),
+            "address": addressController.text.trim(),
+            "landmark":landmarkController.text.trim(),
+            "pincode":pinController.text.trim(),
+            "services":addServicesController.text.trim(),
+            "shopType":shopType,
+            "state":dropdownButton,
+            "type":"partner"
+          }).then((value){
+            Fluttertoast.showToast(msg: "$value",backgroundColor: btnColor);
+          });
+
+          // _prefService.setRegId(value["data"]["_id"]);
+          // Get.to(const NavigationPage());
         },
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -216,15 +235,15 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                 value: shopType,
                 items: const [
                   DropdownMenuItem<String>(
-                    value: "1",
+                    value: "Cake shop",
                     child: Text("Cake shop"),
                   ),
                   DropdownMenuItem<String>(
-                    value: "2",
+                    value: "Mobile Center",
                     child: Text("Mobile Center"),
                   ),
                   DropdownMenuItem<String>(
-                    value: "3",
+                    value: "Pet Shop",
                     child: Text("Pet Shop"),
                   ),
                 ],
@@ -333,115 +352,115 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                       value: dropdownButton,
                       items: const [
                         DropdownMenuItem<String>(
-                          value: "1",
+                          value: "Andhra Pradesh",
                           child: Text("Andhra Pradesh"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "2",
+                          value: "Arunachal Pradesh",
                           child: Text("Arunachal Pradesh"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "3",
+                          value: "Assam",
                           child: Text("Assam"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "4",
+                          value: "Bihar",
                           child: Text("Bihar"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "5",
+                          value: "Chhattisgarh",
                           child: Text("Chhattisgarh"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "6",
+                          value: "Goa",
                           child: Text("Goa"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "7",
+                          value: "Gujarat",
                           child: Text("Gujarat"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "8",
+                          value: "Haryana",
                           child: Text("Haryana"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "9",
+                          value: "Himachal Pradesh",
                           child: Text("Himachal Pradesh"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "10",
+                          value: "Jharkhand",
                           child: Text("Jharkhand"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "11",
+                          value: "Karnataka",
                           child: Text("Karnataka"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "12",
+                          value: "Kerala",
                           child: Text("Kerala"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "13",
+                          value: "Madhya Pradesh",
                           child: Text("Madhya Pradesh"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "14",
+                          value: "Maharashtra",
                           child: Text("Maharashtra"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "15",
+                          value: "Manipur",
                           child: Text("Manipur"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "16",
+                          value: "Meghalaya",
                           child: Text("Meghalaya"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "17",
+                          value: "Mizoram",
                           child: Text("Mizoram"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "18",
+                          value: "Nagaland",
                           child: Text("Nagaland"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "19",
+                          value: "Odisha",
                           child: Text("Odisha"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "20",
+                          value: "Punjab",
                           child: Text("Punjab"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "21",
+                          value: "Rajasthan",
                           child: Text("Rajasthan"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "22",
+                          value: "Sikkim",
                           child: Text("Sikkim"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "23",
+                          value: "Tamil Nadu",
                           child: Text("Tamil Nadu"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "24",
+                          value: "Telangana",
                           child: Text("Telangana"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "25",
+                          value: "Tripura",
                           child: Text("Tripura"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "26",
+                          value: "Uttar Pradesh",
                           child: Text("Uttar Pradesh"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "27",
+                          value: "Uttarakhand",
                           child: Text("Uttarakhand"),
                         ),
                         DropdownMenuItem<String>(
-                          value: "28",
+                          value: "West Bengal",
                           child: Text("West Bengal"),
                         ),
                       ],
@@ -493,7 +512,11 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: Colors.grey.withOpacity(.2),
-                    backgroundImage: const AssetImage(window),
+                    // backgroundImage: NetworkImage(
+                    //   widget.data!["shopLogo"].toString() != ""
+                    //       ? "${ApiConstant.baseUrl}/${widget.data!["shopLogo"]}"
+                    //       : noImage,
+                    // ),
                   ),
                   Positioned(
                     bottom: -10,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:xuseme/constant/color.dart';
-import 'package:xuseme/view/home/home_Page.dart';
+import 'package:xuseme/view/home/home_page.dart';
 import '../category/category_details.dart';
 import '../user_account/inquiry_page.dart';
 import '../user_account/setting_page.dart';
