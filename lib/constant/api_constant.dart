@@ -10,6 +10,11 @@ class ApiConstant {
   static const String addUserAddress = "$baseUrl/api/user/address";
   static const String getUserAddress = "$baseUrl/api/user/address/";
   static const String updateUsersAddress = "$baseUrl/api/user/address/";
+  static const String deleteUsersAddress = "$baseUrl/api/user/address/";
+  static const String inquiryEndpoint = "$baseUrl/api/enquiry/";
+  static const String addInquiryEndpoint = "$baseUrl/api/enquiry";
+
+
 
 
 }

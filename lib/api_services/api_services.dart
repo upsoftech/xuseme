@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:xuseme/api_services/preference_services.dart';
 import 'package:http/http.dart' as http;
+import 'package:xuseme/model/inquiry_model.dart';
 import '../constant/api_constant.dart';
 import '../model/address_model.dart';
 import 'network_service.dart';
@@ -132,11 +133,51 @@ class ApiServices {
 
   /// update user address from the server ///
   Future<dynamic> updateAddress(String id,Map<String, dynamic> mapData) async {
-    var regIds = PrefService().getRegId();
+
+    var tokenIds = PrefService().getToken();
 
 
     var response =
-    http.patch(Uri.parse(ApiConstant.updateUsersAddress + id), body: mapData);
+    http.patch(Uri.parse(ApiConstant.updateUsersAddress + id), body: mapData, headers: {
+      'Authorization': 'Bearer $tokenIds',
+    });
+    var body;
+    response.then((value) {
+      log("message${value.body}");
+      body = value.body;
+    });
+
+    return body;
+  }
+
+  /// delete user Address from the server ///
+
+  Future<dynamic> deleteAddress(String addressId) async {
+    var data = await networkCalls.delete(
+        ApiConstant.deleteUsersAddress+addressId);
+
+    return jsonDecode(data);
+  }
+
+
+  /// Get inquiry From the Server ///
+
+  Future<List<InquiryModel>> userInquiryAddress() async {
+
+    var p = PrefService().getRegId();
+    List<InquiryModel> myList = [];
+    var data = await networkCalls.get("${ApiConstant.inquiryEndpoint}$p");
+    for (var i in jsonDecode(data)) {
+      myList.add(InquiryModel.fromJson(i));
+    }
+    return myList;
+  }
+
+
+  /// Add Address from the server //
+  Future<dynamic> addInquiry(Map<String, dynamic> mapData) async {
+    var response =
+    http.post(Uri.parse(ApiConstant.addInquiryEndpoint), body: mapData);
     var body;
     response.then((value) {
       log("message${value.body}");

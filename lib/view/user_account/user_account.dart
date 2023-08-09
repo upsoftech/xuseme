@@ -31,12 +31,11 @@ class _UserAccountState extends State<UserAccount> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: textBlack),
+        backgroundColor: btnColor,
         elevation: 0,
         title: Text(
           "Profile",
-          style: GoogleFonts.alice(color: textBlack, fontSize: 16),
+          style: GoogleFonts.alice(color: textWhite, fontSize: 16,fontWeight: FontWeight.bold),
         ),
       ),
       body: Consumer<ProfileProvider>(builder: (context, value, child) {
@@ -64,7 +63,7 @@ class _UserAccountState extends State<UserAccount> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "${profileProvider.profileData["name"] ?? ""}",
+                        "${value.profileData["name"] ?? ""}",
                         style: GoogleFonts.alice(
                             fontSize: 18,
                             color: textBlack,
@@ -101,7 +100,7 @@ class _UserAccountState extends State<UserAccount> {
                         width: MediaQuery.of(context).size.width * .1,
                       ),
                       Text(
-                        "${profileProvider.profileData["mobile"] ?? ""}",
+                        "${value.profileData["mobile"] ?? ""}",
                         style: GoogleFonts.alice(
                             fontSize: 14,
                             color: grey,
@@ -125,7 +124,7 @@ class _UserAccountState extends State<UserAccount> {
                         width: MediaQuery.of(context).size.width * .18,
                       ),
                       Text(
-                        "${profileProvider.profileData["email"] ?? ""}",
+                        "${value.profileData["email"] ?? ""}",
                         style: GoogleFonts.alice(
                             fontSize: 14,
                             color: grey,

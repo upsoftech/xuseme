@@ -42,7 +42,7 @@ class _AddAddressState extends State<AddAddress> {
 
   @override
   Widget build(BuildContext context) {
-    log("check ${widget.data!.id}");
+    log("check ${widget.data?.id}");
 
     return Scaffold(
       bottomNavigationBar: GestureDetector(
@@ -67,6 +67,8 @@ class _AddAddressState extends State<AddAddress> {
               "pincode": pinController.text.trim(),
               "state": stateController.text.trim()
             }).then((value) {
+              log(value.toString());
+              Provider.of<ProfileProvider>(context, listen: false).getAddress();
               Get.back();
             });
           }
@@ -87,12 +89,11 @@ class _AddAddressState extends State<AddAddress> {
       ),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: textBlack),
+        backgroundColor: btnColor,
         elevation: 0,
         title: Text(
           "${widget.isEdit ? "Edit" : "Add"} Address",
-          style: GoogleFonts.alice(color: textBlack, fontSize: 16),
+          style: GoogleFonts.alice(color: textWhite, fontSize: 16,fontWeight: FontWeight.bold),
         ),
       ),
       body: ListView(
@@ -160,6 +161,7 @@ class _AddAddressState extends State<AddAddress> {
           Container(
             padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
             child: TextFormField(
+              keyboardType: TextInputType.number,
               controller: pinController,
               cursorColor: Colors.black,
               decoration: InputDecoration(

@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import '../api_services/api_services.dart';
 import '../model/address_model.dart';
 
+
+Set<int> addAddressList = {};
+
 class ProfileProvider extends ChangeNotifier {
   final ApiServices _apiServices = ApiServices();
 
@@ -16,6 +19,8 @@ class ProfileProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   dynamic get profileData => _profileData;
+
+
 
   Future<dynamic> getProfile() async {
     await _apiServices.getProfile().then((value) {
@@ -34,5 +39,12 @@ class ProfileProvider extends ChangeNotifier {
       _addressList = value;
       notifyListeners();
     });
+  }
+
+
+
+  Future<void> removeAddress(int i) async {
+    addressList.removeAt(i);
+    notifyListeners();
   }
 }

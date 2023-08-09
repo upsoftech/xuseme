@@ -46,35 +46,35 @@ class _SearchProductState extends State<SearchProduct> {
               ),
             ),
           ),
-          // Container(
-          //   padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-          //   child: TextFormField(
-          //     controller: pinCodeController,
-          //     onChanged: (v) {
-          //       if (v.length >= 7) {
-          //         pinCodeController.text = "";
-          //         Fluttertoast.showToast(
-          //             msg: "Only Required 6 digit",
-          //             backgroundColor: btnColor);
-          //       }
-          //     },
-          //     cursorColor: Colors.black,
-          //     keyboardType: TextInputType.number,
-          //     decoration: InputDecoration(
-          //       focusedBorder: OutlineInputBorder(
-          //           borderSide: const BorderSide(width: 1, color: textBlack),
-          //           borderRadius: BorderRadius.circular(10)),
-          //       enabledBorder: OutlineInputBorder(
-          //           borderSide: const BorderSide(width: 1, color: textBlack),
-          //           borderRadius: BorderRadius.circular(10)),
-          //       border: OutlineInputBorder(
-          //           borderRadius: BorderRadius.circular(10)),
-          //       labelText: ('Pin Code'),
-          //       labelStyle: GoogleFonts.alice(),
-          //       contentPadding: const EdgeInsets.only(top: 10, left: 20),
-          //     ),
-          //   ),
-          // ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+            child: TextFormField(
+              controller: pinCodeController,
+              onChanged: (v) {
+                if (v.length >= 7) {
+                  pinCodeController.text = "";
+                  Fluttertoast.showToast(
+                      msg: "Only Required 6 digit",
+                      backgroundColor: btnColor);
+                }
+              },
+              cursorColor: Colors.black,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(width: 1, color: textBlack),
+                    borderRadius: BorderRadius.circular(10)),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(width: 1, color: textBlack),
+                    borderRadius: BorderRadius.circular(10)),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                labelText: ('Pin Code'),
+                labelStyle: GoogleFonts.alice(),
+                contentPadding: const EdgeInsets.only(top: 10, left: 20),
+              ),
+            ),
+          ),
           Container(
             padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
             child: DropdownButtonFormField<String>(

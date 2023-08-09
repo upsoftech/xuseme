@@ -27,10 +27,10 @@ class NetworkCalls {
   }
 
   /// delete api call ///
-  Future<dynamic> delete(String url, Map<String, String> map) async {
+  Future<dynamic> delete(String url,) async {
     log("message: ${Uri.parse(url)}");
     var tokenIds = PrefService().getToken();
-    var response = await http.delete(Uri.parse(url), body: map,
+    var response = await http.delete(Uri.parse(url),
         headers: {
       'Authorization': 'Bearer $tokenIds',
     });
@@ -42,9 +42,17 @@ class NetworkCalls {
   /// patch Api call///
 
   Future<dynamic> patch(String url, Object map) async {
-    var response = await http.patch(Uri.parse(url), body: map);
+    var tokenIds = PrefService().getToken();
+    var response = await http.patch(Uri.parse(url), body: map,
+        headers: {
+          'Authorization': 'Bearer $tokenIds',
+        });
+
+
+
     checkAndThrowError(response);
     return response.body;
+
   }
 
   /// throwing  error ///

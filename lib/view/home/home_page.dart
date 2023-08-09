@@ -121,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                     children: homeProvider.bannerList.map((e) {
                       return e["bannerImage"].toString() == ""
                           ? Image.network(
-                       ApiConstant.baseUrl+"/uploads/banners/"+ e["bannerImage"],
+                       "${ApiConstant.baseUrl}/uploads/banners/"+ e["bannerImage"],
                         fit: BoxFit.cover,
                       )
                           : Image.network(
@@ -244,7 +244,7 @@ class _HomePageState extends State<HomePage> {
                       )),
                   GestureDetector(
                       onTap: () {
-                        Get.to(const FoodList());
+                        Get.to(const UserAccount());
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,

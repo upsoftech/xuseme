@@ -7,11 +7,13 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:xuseme/api_services/api_services.dart';
 import 'package:xuseme/constant/image.dart';
 import '../../api_services/preference_services.dart';
 import '../../constant/api_constant.dart';
 import '../../constant/color.dart';
+import '../../provider/profile_provider.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key, required this.data}) : super(key: key);
@@ -60,6 +62,7 @@ class _EditProfileState extends State<EditProfile> {
               .then((value) {
             Fluttertoast.showToast(msg: "$value");
             Get.back();
+            Provider.of<ProfileProvider>(context, listen: false).getProfile();
           });
         },
         child: Container(
