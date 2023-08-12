@@ -9,7 +9,7 @@ import '../constant/api_constant.dart';
 import '../constant/color.dart';
 import '../constant/image.dart';
 import '../view/screen/navigation_page.dart';
-import 'edit_profile.dart';
+import 'edit_vndor_profile.dart';
 
 class VendorRegistration extends StatefulWidget {
   const VendorRegistration({Key? key, this.data}) : super(key: key);

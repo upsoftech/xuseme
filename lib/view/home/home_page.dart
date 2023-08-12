@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:get/get.dart';
@@ -33,8 +32,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   loadData() {
-    final locationProvider =
-        Provider.of<LocationProvider>(context, listen: false);
+    locationProvider = Provider.of<LocationProvider>(context, listen: false);
     final homeProvider = Provider.of<HomeProvider>(context, listen: false);
     homeProvider.getBanner();
   }
@@ -42,7 +40,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final locationProvider = Provider.of<LocationProvider>(context);
-    final homeProvider = Provider.of<HomeProvider>(context,);
+    final homeProvider = Provider.of<HomeProvider>(
+      context,
+    );
 
     return Scaffold(
       drawer: const DrawerPage(),
@@ -108,27 +108,29 @@ class _HomePageState extends State<HomePage> {
                 borderRadius: BorderRadius.circular(10),
                 child: homeProvider.bannerList.isNotEmpty
                     ? ImageSlideshow(
-                    width: double.infinity,
-                    height: 200,
-                    initialPage: 0,
-                    indicatorColor: btnColor,
-                    indicatorBackgroundColor:grey,
-                    onPageChanged: (value) {
-                      //  print('Page changed: $value');
-                    },
-                    autoPlayInterval: 3000,
-                    isLoop: true,
-                    children: homeProvider.bannerList.map((e) {
-                      return e["bannerImage"].toString() == ""
-                          ? Image.network(
-                       "${ApiConstant.baseUrl}/uploads/banners/"+ e["bannerImage"],
-                        fit: BoxFit.cover,
-                      )
-                          : Image.network(
-                        noImage,
-                        fit: BoxFit.cover,
-                      );
-                    }).toList())
+                        width: double.infinity,
+                        height: 200,
+                        initialPage: 0,
+                        indicatorColor: btnColor,
+                        indicatorBackgroundColor: grey,
+                        onPageChanged: (value) {
+                          //  print('Page changed: $value');
+                        },
+                        autoPlayInterval: 3000,
+                        isLoop: true,
+                        children: homeProvider.bannerList.map((e) {
+                          return e["bannerImage"].toString() == ""
+                              ? Image.network(
+                                  // ignore: prefer_interpolation_to_compose_strings
+                                  "${ApiConstant.baseUrl}/uploads/banners/" +
+                                      e["bannerImage"],
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  noImage,
+                                  fit: BoxFit.cover,
+                                );
+                        }).toList())
                     : const SizedBox(),
               ),
             ),
@@ -340,32 +342,33 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+              padding: const EdgeInsets.only(
+                  left: 15, right: 15, top: 10, bottom: 10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: homeProvider.bannerList.isNotEmpty
                     ? ImageSlideshow(
-                    width: double.infinity,
-                    height: 200,
-                    initialPage: 0,
-                    indicatorColor: btnColor,
-                    indicatorBackgroundColor:grey,
-                    onPageChanged: (value) {
-                      //  print('Page changed: $value');
-                    },
-                    autoPlayInterval: 3000,
-                    isLoop: true,
-                    children: homeProvider.bannerList.map((e) {
-                      return e["bannerImage"].toString() == ""
-                          ? Image.network(
-                        e["bannerImage"],
-                        fit: BoxFit.cover,
-                      )
-                          : Image.network(
-                        noImage,
-                        fit: BoxFit.cover,
-                      );
-                    }).toList())
+                        width: double.infinity,
+                        height: 200,
+                        initialPage: 0,
+                        indicatorColor: btnColor,
+                        indicatorBackgroundColor: grey,
+                        onPageChanged: (value) {
+                          //  print('Page changed: $value');
+                        },
+                        autoPlayInterval: 3000,
+                        isLoop: true,
+                        children: homeProvider.bannerList.map((e) {
+                          return e["bannerImage"].toString() == ""
+                              ? Image.network(
+                                  e["bannerImage"],
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  noImage,
+                                  fit: BoxFit.cover,
+                                );
+                        }).toList())
                     : const SizedBox(),
               ),
             ),

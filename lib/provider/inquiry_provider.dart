@@ -20,7 +20,7 @@ class InquiryProvider extends ChangeNotifier {
     _inquiryList.clear();
     await _apiServices.userInquiryAddress().then((value){
       _inquiryList=value;
-
+      _isLoading = false;
       notifyListeners();
 
     });

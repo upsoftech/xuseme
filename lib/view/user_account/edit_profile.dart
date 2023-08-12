@@ -4,14 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:xuseme/api_services/api_services.dart';
 import 'package:xuseme/constant/image.dart';
-import '../../api_services/preference_services.dart';
-import '../../constant/api_constant.dart';
 import '../../constant/color.dart';
 import '../../provider/profile_provider.dart';
 
@@ -123,7 +120,7 @@ class _EditProfileState extends State<EditProfile> {
                                 child: Text(
                                   "From Camera",
                                   style: GoogleFonts.alice(
-                                      color: Colors.blue,
+                                      color:textBlack,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold),
                                 )),
@@ -134,7 +131,7 @@ class _EditProfileState extends State<EditProfile> {
                                 child: Text(
                                   "From Gallery",
                                   style: GoogleFonts.alice(
-                                      color: Colors.blue,
+                                      color:textBlack,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold),
                                 )),

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:rating_dialog/rating_dialog.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/view/login_screen.dart';
-import 'package:xuseme/view/user_account/setting_page.dart';
+import '../../provider/profile_provider.dart';
 import '../../vendor/add_histroy.dart';
 import '../../vendor/my_adds.dart';
 import '../../vendor/my_leads.dart';
 import '../../vendor/post_add.dart';
 import '../../vendor/publish_offer.dart';
-import '../screen/navigation_page.dart';
 import '../user_account/user_account.dart';
 
 class DrawerPage extends StatefulWidget {
@@ -25,8 +25,18 @@ class DrawerPage extends StatefulWidget {
 }
 
 class _DrawerPageState extends State<DrawerPage> {
+  late ProfileProvider profileProvider;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    profileProvider=Provider.of<ProfileProvider>(context, listen: false);
+    profileProvider.getProfile();
+  }
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    var data=profileProvider.profileData;
     return SafeArea(
       child: Drawer(
         width: 200,
@@ -38,15 +48,12 @@ class _DrawerPageState extends State<DrawerPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const CircleAvatar(
-                      backgroundImage: AssetImage(banner),
+                     CircleAvatar(
+                      backgroundImage: NetworkImage(data["profileLogo"]??""),
                       radius: 50,
                     ),
-                    const SizedBox(
-                      height: 5,
-                    ),
                     Text(
-                      'Pankaj Kumar',
+                      '${data["name"] ?? ""}',
                       style: GoogleFonts.alice(
                           color: textWhite,
                           fontWeight: FontWeight.bold,

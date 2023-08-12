@@ -1,12 +1,9 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:provider/provider.dart';
 import 'package:xuseme/view/screen/navigation_page.dart';
 import '../../api_services/preference_services.dart';
-import '../../constant/app_constants.dart';
 import '../../constant/image.dart';
 import '../../provider/preference_provider.dart';
 import '../login_screen.dart';

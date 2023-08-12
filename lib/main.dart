@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:xuseme/provider/category_provider.dart';
 import 'package:xuseme/provider/home_provider.dart';
 import 'package:xuseme/provider/inquiry_provider.dart';
 import 'package:xuseme/provider/location_provider.dart';
 import 'package:xuseme/provider/preference_provider.dart';
 import 'package:xuseme/provider/profile_provider.dart';
+import 'package:xuseme/provider/sub_category_provider.dart';
 import 'package:xuseme/view/screen/splash.dart';
 
 import 'api_services/preference_services.dart';
@@ -29,6 +31,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context)=>HomeProvider()),
         ChangeNotifierProvider(create: (context)=>ProfileProvider()),
         ChangeNotifierProvider(create: (context)=>InquiryProvider()),
+        ChangeNotifierProvider(create: (context)=>SubShopsProvider()),
+        ChangeNotifierProvider(create: (context)=>CategoryProvider()),
       ],
       child: GetMaterialApp(
         title: 'XuseMe',

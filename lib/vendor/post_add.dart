@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:xuseme/api_services/api_services.dart';
 import '../constant/color.dart';
 import 'by_company.dart';
 import 'by_self.dart';
@@ -32,6 +34,13 @@ class _PostAddState extends State<PostAdd>
     return Scaffold(
       bottomNavigationBar: GestureDetector(
         onTap:(){
+          ApiServices().addBanner(
+             " partnerId",
+              "validity",
+             " bannerImage",
+          ).then((value){
+            Fluttertoast.showToast(msg: "$value",backgroundColor: btnColor);
+          });
         },
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
