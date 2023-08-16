@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:xuseme/api_services/preference_services.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
 import '../../api_services/api_services.dart';
@@ -207,10 +210,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                           GestureDetector(
                                             onTap: () {
                                               ApiServices().callInquiry({
-                                                "customerId": subShopProvider
-                                                        .subShopList[index]
-                                                        .id ??
-                                                    "",
+                                                "customerId": PrefService().getRegId(),
                                                 "partnerId": subShopProvider
                                                         .subShopList[index]
                                                         .id ??
@@ -235,11 +235,11 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                           ),
                                           GestureDetector(
                                             onTap: () {
+                                              log("message${subShopProvider
+                                                  .subShopList[index].id}");
+
                                               ApiServices().callInquiry({
-                                                "customerId": subShopProvider
-                                                        .subShopList[index]
-                                                        .id ??
-                                                    "",
+                                                "customerId":PrefService().getRegId(),
                                                 "partnerId": subShopProvider
                                                         .subShopList[index]
                                                         .id ??

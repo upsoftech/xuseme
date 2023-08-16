@@ -176,7 +176,7 @@ class _HomePageState extends State<HomePage> {
                             height: 10,
                           ),
                           Text(
-                            'Shopkeepers\non the way',
+                            'Shopkeepers\nOn the way',
                             style: GoogleFonts.salsa(
                               fontSize: 14,
                             ),

@@ -7,13 +7,15 @@ import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';
 import 'package:pinput/pinput.dart';
 import 'package:xuseme/view/screen/location.dart';
+import 'package:xuseme/view/screen/navigation_page.dart';
 import '../../api_services/api_services.dart';
 import '../../api_services/preference_services.dart';
 import '../../constant/color.dart';
 import '../../vendor/vandor_registration.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({Key? key, required this.dropdownValue, required this.mobile}) : super(key: key);
+  const OtpScreen({Key? key, required this.dropdownValue, required this.mobile})
+      : super(key: key);
   final String dropdownValue;
   final String mobile;
 
@@ -26,7 +28,6 @@ bool enableResend = false;
 Timer? timer;
 
 class _OtpScreenState extends State<OtpScreen> {
-
   @override
   initState() {
     super.initState();
@@ -56,11 +57,11 @@ class _OtpScreenState extends State<OtpScreen> {
     timer?.cancel();
     super.dispose();
   }
+
   final ApiServices _apiService = ApiServices();
 
   final otpController = TextEditingController();
   final PrefService _prefService = PrefService();
-
 
   @override
   Widget build(BuildContext context) {
@@ -88,41 +89,23 @@ class _OtpScreenState extends State<OtpScreen> {
             const SizedBox(
               height: 10,
             ),
-      Center(
-        child: Pinput(
-
-         controller: otpController,
-          pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
-          showCursor: true,
-          onCompleted: (pin) => print(pin),
-        ),
-      ),
+            Center(
+              child: Pinput(
+                controller: otpController,
+                pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+                showCursor: true,
+                onCompleted: (pin) => print(pin),
+              ),
+            ),
             const SizedBox(
               height: 35,
             ),
             InkWell(
                 onTap: () {
-
-
-
                   if (widget.dropdownValue == "Customer") {
-
                     _apiService
-                        .verifyOtp(widget.mobile,
-                        widget.dropdownValue!.toLowerCase(),
-                        otpController.text.trim(),
-                    )
-                        .then((value) {
-                      log("message${value}");
-
-                      _prefService.setSelectToken(value["token"]);
-                      _prefService.setRegId(value["data"]["_id"]);
-                      Get.to(const LocationPage());
-                    });
-
-                  } else if (widget.dropdownValue == 'Partner') {
-                    _apiService
-                        .verifyOtp(widget.mobile,
+                        .verifyOtp(
+                      widget.mobile,
                       widget.dropdownValue!.toLowerCase(),
                       otpController.text.trim(),
                     )
@@ -130,10 +113,35 @@ class _OtpScreenState extends State<OtpScreen> {
                       log("message${value}");
 
                       _prefService.setSelectToken(value["token"]);
-
-                      Get.to(const VendorRegistration());
+                      _prefService.setRegId(value["data"]["_id"]);
+                      _prefService.setSelectType(value["data"]["type"]);
+                      Get.to(const LocationPage());
                     });
+                  } else if (widget.dropdownValue! == 'Partner') {
+                    _apiService
+                        .verifyOtp(
+                      widget.mobile,
+                      widget.dropdownValue.toLowerCase(),
+                      otpController.text.trim(),
+                    )
+                        .then((value) {
+                      log("message$value");
 
+                      _prefService.setSelectToken(value["token"]);
+                      if(value["data"]!=null && value["data"]!=""){
+                        _prefService.setRegId(value["data"]["_id"]);
+                        _prefService.setSelectType(value["data"]["type"]);
+                        Get.to(const NavigationPage());
+                      }else{
+
+                        Get.to( VendorRegistration(
+                          data: {
+                            "mobile":widget.mobile
+                          },
+                        ));
+                      }
+
+                    });
                   }
                 },
                 child: Container(
@@ -163,7 +171,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     style: GoogleFonts.alice(fontSize: 16),
                   ),
                   GestureDetector(
-                    onTap:enableResend ? _resendCode : null,
+                    onTap: enableResend ? _resendCode : null,
                     child: Text(
                       " Resend",
                       style: GoogleFonts.alice(
@@ -175,7 +183,10 @@ class _OtpScreenState extends State<OtpScreen> {
                   Text(
                     "  00.$secondsRemaining",
                     style: GoogleFonts.alice(
-                        fontSize: 17, fontWeight: FontWeight.bold,color: enableResend? textBlack: btnColor,),
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: enableResend ? textBlack : btnColor,
+                    ),
                   )
                 ],
               ),

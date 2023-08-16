@@ -7,6 +7,7 @@ class ApiConstant {
   static const String banner = "$baseUrl/api/ads/banner/";
   static const String updateProfile = "$baseUrl/api/user/";
   static const String getProfile = "$baseUrl/api/user/";
+  static const String vendorGetProfile = "$baseUrl/api/user/";
   static const String addUserAddress = "$baseUrl/api/user/address";
   static const String getUserAddress = "$baseUrl/api/user/address/";
   static const String updateUsersAddress = "$baseUrl/api/user/address/";

@@ -30,23 +30,26 @@ class ApiServices {
     return jsonDecode(data);
   }
 
+
+
   /// Vendor Registration ///
 
   Future<dynamic> registerProfile(Map<String, dynamic> mapData) async {
     var tokenIds = PrefService().getToken();
-    log(ApiConstant.vendorRegistration);
+    log("FlutterTesting${jsonEncode(mapData)}");
+    log("test1${Uri.parse(ApiConstant.vendorRegistration)}");
     log(tokenIds);
     var response = await http.post(Uri.parse(ApiConstant.vendorRegistration),
         headers: {
           'Authorization': 'Bearer $tokenIds',
         },
         body: mapData);
-    var body;
+    log("FlutterTesting$mapData");
     log("FlutterTesting${response.body}");
-    body = response.body;
-
-    return body;
+    return response.body;
   }
+
+
 
   /// Get  Banner from the server ///
 
@@ -55,6 +58,7 @@ class ApiServices {
 
     return jsonDecode(data);
   }
+
 
   ///update profile from the server ///
 
@@ -172,6 +176,7 @@ class ApiServices {
     return myList;
   }
 
+
   /// Call Inquiry from the server //
   Future<dynamic> callInquiry(Map<String, dynamic> mapData) async {
     var tokenIds = PrefService().getToken();
@@ -185,6 +190,8 @@ class ApiServices {
     return jsonDecode(response.body)["message"];
   }
 
+
+
   /// subShop data get from the server ///
 
   Future<List<ShopSubCategoryModel>> subShopData() async {
@@ -195,6 +202,7 @@ class ApiServices {
     }
     return myList;
   }
+
 
   /// Add New Banner on the Server ///
 
@@ -242,5 +250,14 @@ class ApiServices {
       myList.add(CategoryModel.fromJson(i));
     }
     return myList;
+  }
+
+
+
+  /// get profile from the server ///
+  Future<dynamic> getVendorProfile() async {
+    var p = PrefService().getRegId();
+    var data = await networkCalls.get("${ApiConstant.vendorGetProfile}$p");
+    return jsonDecode(data);
   }
 }

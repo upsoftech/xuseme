@@ -16,9 +16,10 @@ class ManualLocation extends StatefulWidget {
   @override
   State<ManualLocation> createState() => _ManualLocationState();
 }
-LocationData? locationData;
-class _ManualLocationState extends State<ManualLocation> {
 
+LocationData? locationData;
+
+class _ManualLocationState extends State<ManualLocation> {
   final locationAddress = TextEditingController();
 
   List<Placemark>? placeMark;
@@ -54,21 +55,22 @@ class _ManualLocationState extends State<ManualLocation> {
     }
   }
 
+  final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: GestureDetector(
         onTap: () {
-          Get.to(const NavigationPage());
+          if (formKey.currentState!.validate()) {
+            Get.to(const NavigationPage());
+          }
         },
         child: Container(
           height: 45,
           width: double.infinity,
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
           decoration: BoxDecoration(
-            color: textBlack,
-            borderRadius: BorderRadius.circular(10)
-          ),
+              color: textBlack, borderRadius: BorderRadius.circular(10)),
           alignment: Alignment.center,
           child: Text(
             "Next",
@@ -79,72 +81,81 @@ class _ManualLocationState extends State<ManualLocation> {
       ),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: textBlack),
+        backgroundColor: btnColor,
+        iconTheme: const IconThemeData(color: textWhite),
         elevation: 0,
         title: Text(
-          'Enter Your Location or apartment name',
+          'Enter Your Location ',
           style: GoogleFonts.alice(fontSize: 16),
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-              child: TextFormField(
-                controller: locationAddress,
-                cursorColor: Colors.black,
-                decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 1, color: textBlack),
-                        borderRadius: BorderRadius.circular(10)),
-                    enabledBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 1, color: textBlack),
-                        borderRadius: BorderRadius.circular(10)),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    labelText: ('Enter Location'),
-                    labelStyle: GoogleFonts.alice(),
-                    contentPadding: const EdgeInsets.only(top: 10, left: 20),
-                    prefixIcon: IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.search_outlined,
-                          color: textBlack,
-                        ))),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                getLocationAddress();
-              },
-              child: Container(
-                padding: const EdgeInsets.only(left: 10, top: 15),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on_rounded,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(
-                      width: 15,
-                    ),
-                    Text(
-                      'Use my current location',
-                      style: GoogleFonts.alice(
-                          color: textBlack,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                  ],
+        child: Form(
+          key: formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+                child: TextFormField(
+                  controller: locationAddress,
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(width: 1, color: textBlack),
+                          borderRadius: BorderRadius.circular(10)),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(width: 1, color: textBlack),
+                          borderRadius: BorderRadius.circular(10)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      labelText: ('Enter Location'),
+                      labelStyle: GoogleFonts.alice(),
+                      contentPadding: const EdgeInsets.only(top: 10, left: 20),
+                      prefixIcon: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.search_outlined,
+                            color: textBlack,
+                          ))),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter Location';
+                    }
+                    return null;
+                  },
                 ),
               ),
-            )
-          ],
+              GestureDetector(
+                onTap: () {
+                  getLocationAddress();
+                },
+                child: Container(
+                  padding: const EdgeInsets.only(left: 10, top: 15),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_rounded,
+                        color: Colors.red,
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      Text(
+                        'Use my current location',
+                        style: GoogleFonts.alice(
+                            color: textBlack,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

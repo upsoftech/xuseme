@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import '../api_services/api_services.dart';
 import '../model/address_model.dart';
@@ -11,6 +13,7 @@ class ProfileProvider extends ChangeNotifier {
   bool _isLoading = false;
 
   Map _profileData = {};
+  Map _vendorProfileData = {};
 
   List<AddressModel> _addressList = [];
 
@@ -19,7 +22,7 @@ class ProfileProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   dynamic get profileData => _profileData;
-
+  dynamic get vendorProfileData => _vendorProfileData;
 
 
   Future<dynamic> getProfile() async {
@@ -43,8 +46,21 @@ class ProfileProvider extends ChangeNotifier {
 
 
 
+
   Future<void> removeAddress(int i) async {
     addressList.removeAt(i);
+    notifyListeners();
+  }
+
+  /// Get Vendor Profile with provider  ///
+
+  Future<dynamic> vendorProfile() async {
+    await _apiServices.getVendorProfile().then((value) {
+      log("message$value");
+      _vendorProfileData = value;
+      notifyListeners();
+    });
+    _isLoading = false;
     notifyListeners();
   }
 }

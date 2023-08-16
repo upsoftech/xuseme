@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:xuseme/provider/profile_provider.dart';
+import '../../api_services/preference_services.dart';
 import '../../constant/color.dart';
 import 'address_page.dart';
 import 'edit_profile.dart';
@@ -16,12 +19,15 @@ class UserAccount extends StatefulWidget {
 }
 
 class _UserAccountState extends State<UserAccount> {
+  final PrefService _prefService=PrefService();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
     Provider.of<ProfileProvider>(context, listen: false).getProfile();
+    Provider.of<ProfileProvider>(context, listen: false).vendorProfile();
+
   }
 
   @override
@@ -35,17 +41,19 @@ class _UserAccountState extends State<UserAccount> {
         elevation: 0,
         title: Text(
           "Profile",
-          style: GoogleFonts.alice(color: textWhite, fontSize: 16,fontWeight: FontWeight.bold),
+          style: GoogleFonts.alice(
+              color: textWhite, fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
       body: Consumer<ProfileProvider>(builder: (context, value, child) {
+        log("message${value.vendorProfileData}");
         return ListView(
           children: [
-            Container(
+            _prefService.getSelectType()!="partner"? Container(
               width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               padding: const EdgeInsets.only(
-                  left: 15, right: 15, top: 10, bottom: 10),
+                  left: 10, right: 15, top: 10, bottom: 10),
               decoration: BoxDecoration(
                   // border: Border.all(color: grey),
                   boxShadow: [
@@ -132,67 +140,278 @@ class _UserAccountState extends State<UserAccount> {
                       )
                     ],
                   ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .01,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Get.to(const AddressPage());
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      height: 45,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: btnColor.withOpacity(.2),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Address",
+                            style: GoogleFonts.alice(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: textBlack),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            color: textBlack,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Get.to(const InquiryPage());
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      margin: const EdgeInsets.symmetric(vertical: 5),
+                      height: 45,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: btnColor.withOpacity(.2),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Inquiry",
+                            style: GoogleFonts.alice(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: textBlack),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            color: textBlack,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            ),
-            // ListTile(
-            //   onTap:(){
-            //     Get.to(const FavouriteScreen());
-            //   },
-            //   leading:const Icon(Icons.favorite_border,color: grey,),
-            //       title:Text("Favourite",style:GoogleFonts.alice(fontSize: 16,fontWeight: FontWeight.w500,color: textBlack),),
-            //   trailing:const Icon(Icons.arrow_forward_ios,color: grey,size: 20,) ,
-            // ),
-            ListTile(
-              onTap: () {
-                Get.to(const AddressPage());
-              },
-              leading: const Icon(
-                Icons.home,
-                color: grey,
+            ):const SizedBox(),
+            _prefService.getSelectType()!="customer"? Container(
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.only(
+                  left: 15, right: 15, top: 10, bottom: 10),
+              decoration: BoxDecoration(
+                  // border: Border.all(color: grey),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.shade200,
+                      spreadRadius: 1,
+                    )
+                  ],
+                  borderRadius: BorderRadius.circular(10)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: btnColor,
+                    backgroundImage:
+                        NetworkImage(value.vendorProfileData["shopLogo"] ?? ""),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .01,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Name :",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .18,
+                      ),
+                      Text(
+                        "${value.vendorProfileData["name"] ?? ""}",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .01,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Mobile No. :",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .1,
+                      ),
+                      Text(
+                        "${value.vendorProfileData["mobile"] ?? ""}",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .01,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Email :",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .18,
+                      ),
+                      Text(
+                        "${value.vendorProfileData["email"] ?? ""}",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .01,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Shop Name :",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .09,
+                      ),
+                      Text(
+                        "${value.vendorProfileData["shopName"] ?? ""}",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .01,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Landline No. :",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .07,
+                      ),
+                      Text(
+                        "${value.vendorProfileData["landline"] ?? ""}",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .01,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Shop Type :",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .11,
+                      ),
+                      Text(
+                        "${value.vendorProfileData["shopType"] ?? ""}",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * .01,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Services :",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .14,
+                      ),
+                      Text(
+                        "${value.vendorProfileData["services"] ?? ""}",
+                        style: GoogleFonts.alice(
+                            fontSize: 14,
+                            color: grey,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * .14,
+                  ),
+                  Text(
+                    "${value.vendorProfileData["address"] ?? ""} ${value.vendorProfileData["landmark"] ?? ""} ${value.vendorProfileData["pincode"] ?? ""} ${value.vendorProfileData["state"] ?? ""}",
+                    style: GoogleFonts.alice(
+                        fontSize: 14, color: grey, fontWeight: FontWeight.bold),
+                  )
+                ],
               ),
-              title: Text(
-                "Address",
-                style: GoogleFonts.alice(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: textBlack),
-              ),
-              trailing: const Icon(
-                Icons.arrow_forward_ios,
-                color: grey,
-                size: 20,
-              ),
-            ),
-            ListTile(
-              onTap: () {
-                Get.to(const InquiryPage());
-              },
-              leading: const Icon(
-                Icons.delivery_dining,
-                color: grey,
-              ),
-              title: Text(
-                "Inquiry",
-                style: GoogleFonts.alice(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: textBlack),
-              ),
-              trailing: const Icon(
-                Icons.arrow_forward_ios,
-                color: grey,
-                size: 20,
-              ),
-            ),
-            // ListTile(
-            //   onTap:(){
-            //     Get.to(const SettingPage());
-            //   },
-            //   leading:const Icon(Icons.settings,color: grey,),
-            //   title:Text("Setting",style:GoogleFonts.alice(fontSize: 16,fontWeight: FontWeight.w500,color: textBlack),),
-            //   trailing:const Icon(Icons.arrow_forward_ios,color: grey,size: 20,) ,
-            // ),
+            ):const SizedBox()
           ],
         );
       }),

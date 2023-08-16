@@ -170,8 +170,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           .then((value) {
 
                             log(value.toString());
-                        // _prefService.setSelectToken(value["token"]);
-                        // _prefService.setRegId(value["data"]["_id"]);
 
                             Fluttertoast.showToast(msg: "OTP Is ${value["otp"]}");
                         Get.to( OtpScreen(
@@ -182,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                     } else {
                       Fluttertoast.showToast(
-                        msg: 'Required',
+                        msg: 'Please Select Required',
                         backgroundColor: btnColor,
                       );
                     }
