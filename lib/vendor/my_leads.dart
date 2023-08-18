@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:xuseme/constant/color.dart';
+import '../utils/utility.dart';
+import '../provider/inquiry_provider.dart';
 
 class MyLead extends StatefulWidget {
   const MyLead({Key? key}) : super(key: key);
@@ -10,8 +13,16 @@ class MyLead extends StatefulWidget {
 }
 
 class _MyLeadState extends State<MyLead> {
+  late InquiryProvider inquiryProvider;
+  @override
+  void initState() {
+    super.initState();
+    inquiryProvider = Provider.of<InquiryProvider>(context, listen: false);
+    inquiryProvider.inquiryData();
+  }
   @override
   Widget build(BuildContext context) {
+    final inquiryProvider = Provider.of<InquiryProvider>(context,);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -24,7 +35,7 @@ class _MyLeadState extends State<MyLead> {
         ),
       ),
       body: ListView.builder(
-          itemCount: 5,
+          itemCount: inquiryProvider.inquiryList.length,
           itemBuilder: (context, index) {
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -50,7 +61,7 @@ class _MyLeadState extends State<MyLead> {
                         width: MediaQuery.of(context).size.width * .1,
                       ),
                       Text(
-                        "Rehan Ali Khan",
+                        inquiryProvider.inquiryList[index].customerInfo?.name??"",
                         style:
                             GoogleFonts.alice(color: textBlack, fontSize: 16),
                       ),
@@ -69,7 +80,7 @@ class _MyLeadState extends State<MyLead> {
                         width: MediaQuery.of(context).size.width * .02,
                       ),
                       Text(
-                        "1234567890",
+                        inquiryProvider.inquiryList[index].customerInfo?.mobile??"",
                         style:
                             GoogleFonts.alice(color: textBlack, fontSize: 16),
                       ),
@@ -88,7 +99,9 @@ class _MyLeadState extends State<MyLead> {
                         width: MediaQuery.of(context).size.width * .123,
                       ),
                       Text(
-                        "10/12/2023",
+                        Utility.formatMongoDate(inquiryProvider.inquiryList[index].customerInfo?.updatedAt ??"2023-08-17T12:34:56.789Z")   ,
+
+
                         style:
                             GoogleFonts.alice(color: textBlack, fontSize: 16),
                       ),
@@ -107,7 +120,9 @@ class _MyLeadState extends State<MyLead> {
                         width: MediaQuery.of(context).size.width * .117,
                       ),
                       Text(
-                        "10:00 AM",
+                        Utility.formatMongoTime(inquiryProvider.inquiryList[index].customerInfo?.updatedAt ??"2023-08-17T12:34:56.789Z")   ,
+
+
                         style:
                             GoogleFonts.alice(color: textBlack, fontSize: 16),
                       ),

@@ -34,21 +34,45 @@ class ApiServices {
 
   /// Vendor Registration ///
 
-  Future<dynamic> registerProfile(Map<String, dynamic> mapData) async {
-    var tokenIds = PrefService().getToken();
-    log("FlutterTesting${jsonEncode(mapData)}");
-    log("test1${Uri.parse(ApiConstant.vendorRegistration)}");
-    log(tokenIds);
-    var response = await http.post(Uri.parse(ApiConstant.vendorRegistration),
-        headers: {
-          'Authorization': 'Bearer $tokenIds',
-        },
-        body: mapData);
-    log("FlutterTesting$mapData");
-    log("FlutterTesting${response.body}");
-    return response.body;
-  }
+  Future<dynamic> registerProfile(String path,name,mobile,
+      landline,email,shopName,shopType,address,landmark,
+      pincode,state,services) async {
+    try {
+      var tokenIds = PrefService().getToken();
 
+
+      final Uri apiUrl = Uri.parse("${ApiConstant.baseUrl}/api/user/partner/v2");
+      final Map<String, String> headers = {'Authorization': 'Bearer $tokenIds'};
+
+      var request = http.MultipartRequest('POST', apiUrl)
+        ..headers.addAll(headers)
+        ..fields['name'] = name
+        ..fields['mobile'] = mobile
+        ..fields['landline'] = landline
+        ..fields['email'] = email
+        ..fields['type'] = 'partner'
+        ..fields['shopName'] = shopName
+        ..fields['shopType'] = shopType
+        ..fields['address'] = address
+        ..fields['landmark'] = landmark
+        ..fields['pincode'] =pincode
+        ..fields['state'] = state
+        ..fields['services'] = services;
+
+      // Add file if needed
+       request.files.add(await http.MultipartFile.fromPath('shopLogo', path));
+
+      var response = await request.send();
+      var data = await  http.Response.fromStream(response);
+
+      return jsonDecode(data.body);
+
+
+    } catch (e) {
+
+      return e;
+    }
+  }
 
 
   /// Get  Banner from the server ///
@@ -62,14 +86,14 @@ class ApiServices {
 
   ///update profile from the server ///
 
-  Future<dynamic> updateUserProfile(name, mobile, email, path) async {
+  Future<dynamic> updateUserProfile(name,email, path,latitude,longitude) async {
     var tokenIds = PrefService().getToken();
 
     var regId = PrefService().getRegId();
 
     var response;
     var uri = Uri.parse("${ApiConstant.updateProfile}$regId");
-    log("message$uri");
+    log("message11 : $uri");
     try {
       var request = http.MultipartRequest(
           'PATCH', Uri.parse("${ApiConstant.updateProfile}$regId"));
@@ -85,11 +109,11 @@ class ApiServices {
 
       // Add additional string parameter
       request.fields['name'] = name;
-      request.fields['mobile'] = mobile;
       request.fields['email'] = email;
+      request.fields['latitude'] = latitude;
+      request.fields['longitude'] = longitude;
 
-      log("message${request.fields}");
-      log("message${request.files}");
+
       // Send the request and get the response
       response = await request.send();
 

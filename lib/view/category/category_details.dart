@@ -8,6 +8,7 @@ import 'package:xuseme/api_services/preference_services.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
 import '../../api_services/api_services.dart';
+import '../../constant/api_constant.dart';
 import '../../constant/app_constants.dart';
 import '../../provider/sub_category_provider.dart';
 
@@ -115,8 +116,13 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                         onTap: () async {
                                           await showDialog(
                                               context: context,
-                                              builder: (_) =>
-                                                  const ImageDialog());
+                                              builder: (_) => ImageDialog(
+                                                    url: ApiConstant.baseUrl +
+                                                        subShopProvider
+                                                            .subShopList[index]
+                                                            .shopLogo
+                                                            .toString(),
+                                                  ));
                                         },
                                         child: CircleAvatar(
                                             radius: 30,
@@ -210,7 +216,8 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                           GestureDetector(
                                             onTap: () {
                                               ApiServices().callInquiry({
-                                                "customerId": PrefService().getRegId(),
+                                                "customerId":
+                                                    PrefService().getRegId(),
                                                 "partnerId": subShopProvider
                                                         .subShopList[index]
                                                         .id ??
@@ -235,11 +242,11 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                           ),
                                           GestureDetector(
                                             onTap: () {
-                                              log("message${subShopProvider
-                                                  .subShopList[index].id}");
+                                              log("message${subShopProvider.subShopList[index].id}");
 
                                               ApiServices().callInquiry({
-                                                "customerId":PrefService().getRegId(),
+                                                "customerId":
+                                                    PrefService().getRegId(),
                                                 "partnerId": subShopProvider
                                                         .subShopList[index]
                                                         .id ??
@@ -270,18 +277,21 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
 }
 
 class ImageDialog extends StatelessWidget {
-  const ImageDialog({super.key});
-
+  const ImageDialog({super.key, required this.url});
+  final String url;
   @override
   Widget build(BuildContext context) {
     return Dialog(
+        child: ClipRRect(
+      borderRadius: BorderRadius.circular(30),
       child: Container(
         width: double.infinity,
         height: 250,
-        decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: ExactAssetImage(banner), fit: BoxFit.cover)),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Image.network(url, fit: BoxFit.cover),
       ),
-    );
+    ));
   }
 }

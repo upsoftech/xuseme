@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:xuseme/api_services/api_services.dart';
 import 'package:xuseme/constant/image.dart';
+import 'package:xuseme/provider/location_provider.dart';
 import '../../constant/color.dart';
 import '../../provider/profile_provider.dart';
 
@@ -29,9 +30,9 @@ class _EditProfileState extends State<EditProfile> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    nameController.text = widget.data?["name"] ?? "";
-    mobileController.text = widget.data?["mobile"] ?? "";
-    emailController.text = widget.data?["email"] ?? "";
+    nameController.text = widget.data["name"] ?? "";
+    mobileController.text = widget.data["mobile"] ?? "";
+    emailController.text = widget.data["email"] ?? "";
   }
 
   XFile? photo;
@@ -47,15 +48,20 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final locationProvider = Provider.of<LocationProvider>(context);
+
+    log("message${locationProvider.locationData!.latitude}");
     return Scaffold(
       bottomNavigationBar: GestureDetector(
         onTap: () async {
           ApiServices()
               .updateUserProfile(
-                  nameController.text.trim(),
-                  mobileController.text.trim(),
-                  emailController.text.trim(),
-                  photo?.path)
+            nameController.text.trim(),
+            emailController.text.trim(),
+            photo?.path,
+            locationProvider.locationData!.latitude,
+            locationProvider.locationData!.longitude,
+          )
               .then((value) {
             Fluttertoast.showToast(msg: "$value");
             Get.back();
@@ -120,7 +126,7 @@ class _EditProfileState extends State<EditProfile> {
                                 child: Text(
                                   "From Camera",
                                   style: GoogleFonts.alice(
-                                      color:textBlack,
+                                      color: textBlack,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold),
                                 )),
@@ -131,7 +137,7 @@ class _EditProfileState extends State<EditProfile> {
                                 child: Text(
                                   "From Gallery",
                                   style: GoogleFonts.alice(
-                                      color:textBlack,
+                                      color: textBlack,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold),
                                 )),

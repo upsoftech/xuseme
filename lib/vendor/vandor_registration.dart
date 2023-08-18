@@ -21,13 +21,12 @@ import 'package:http/http.dart';
 class VendorRegistration extends StatefulWidget {
   const VendorRegistration({Key? key, this.data}) : super(key: key);
   final Map<String, dynamic>? data;
+
   @override
   State<VendorRegistration> createState() => _VendorRegistrationState();
 }
 
 class _VendorRegistrationState extends State<VendorRegistration> {
-
-
   XFile? images;
   final ImagePicker _picker = ImagePicker();
 
@@ -63,55 +62,6 @@ class _VendorRegistrationState extends State<VendorRegistration> {
     mobileController.text = widget.data!["mobile"];
   }
 
-  void signup(String name, mobile, landline, email,
-      shopName, shopType, address,
-      landmark, pincode, state, addServices,
-      {required String  partner}) async {
-    try {
-      var tokenIds = PrefService().getToken();
-      var response =
-          await post(Uri.parse(ApiConstant.vendorRegistration), body: {
-        "name": name,
-        "mobile": mobile,
-        "landline": landline,
-        "email": email,
-        "shopName": shopName,
-        "address": address,
-        "landmark": landmark,
-        "pincode": pincode,
-        "services": addServices,
-        "shopType": shopType,
-        "state": state,
-        "type": "partner"
-      },
-            headers: {
-            'Authorization': 'Bearer $tokenIds',
-            },
-      );
-
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body.toString());
-        if (kDebugMode) {
-          print(data['token']);
-        }
-        log("message:$response");
-        log("message:${response.body}");
-        if (kDebugMode) {
-          print('Signup successfully');
-        }
-      } else {
-        if (kDebugMode) {
-          print('Signup failed');
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-          print(e.toString());
-      }
-    }
-
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -126,48 +76,26 @@ class _VendorRegistrationState extends State<VendorRegistration> {
         ),
       ),
       bottomNavigationBar: GestureDetector(
-        onTap: () {
+        onTap: () async {
           if (formKey.currentState!.validate()) {
-            // ApiServices().registerProfile({
-            //   "name":nameController.text.trim(),
-            //   "mobile":mobileController.text.trim(),
-            //   "landline":landlineController.text.trim(),
-            //   "email":emailController.text.trim(),
-            //   "shopName":shopNameController.text.trim(),
-            //   "address": addressController.text.trim(),
-            //   "landmark":landmarkController.text.trim(),
-            //   "pincode":pinController.text.trim(),
-            //   "services":addServicesController.text.trim(),
-            //   "shopType":shopType,
-            //   "state":dropdownButton,
-            //   "type":"partner"
-            // }).then((value){
-            //
-            //   log("value$value");
-            //   PrefService().setRegId(value["data"]["_id"]);
-            //
-            //   Fluttertoast.showToast(msg: "$value",backgroundColor: btnColor);
-            // });
-
-            // _prefService.setRegId(value["data"]["_id"]);
-            // Get.to(const NavigationPage());
-            // log("message1111$shopType");
-
-            signup(
-                nameController.text.toString().trim(),
-                mobileController.text.toString().trim(),
-                landlineController.text.toString().trim(),
-                emailController.text.toString().trim(),
-                shopNameController.text.toString().trim(),
-                addressController.text.toString().trim(),
-                landmarkController.text.toString().trim(),
-                pinController.text.toString().trim(),
-                addServicesController.text.toString().trim(),
-                shopType,
-                dropdownButton,
-                partner: 'partner'
-            );
-
+            ApiServices()
+                .registerProfile(
+                    images!.path,
+                    nameController.text.trim(),
+                    mobileController.text.trim(),
+                    landlineController.text.trim(),
+                    emailController.text.trim(),
+                    shopNameController.text.trim(),
+                    shopType,
+                    addressController.text.trim(),
+                    landmarkController.text.trim(),
+                    pinController.text.trim(),
+                    stateController.text.trim(),
+                    addServicesController.text.trim())
+                .then((value) {
+              log("message$value");
+              Get.to(const NavigationPage());
+            });
           }
         },
         child: Container(
@@ -305,13 +233,13 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                     contentPadding: const EdgeInsets.only(top: 10, left: 20),
                   ),
                   validator: (value) {
-                    if (value!.isEmpty ||
-                        !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                            .hasMatch(value)) {
-                      return "Enter valid Email";
-                    } else {
-                      return null;
+                    if (value == null || value.isEmpty) {
+                      return 'This field is required';
                     }
+                    if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                      return "Please enter a valid email address";
+                    }
+                    return null;
                   },
                 ),
               ),

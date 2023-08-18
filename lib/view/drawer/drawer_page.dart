@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/view/login_screen.dart';
+import '../../api_services/preference_services.dart';
 import '../../provider/profile_provider.dart';
 import '../../vendor/add_histroy.dart';
 import '../../vendor/my_adds.dart';
@@ -33,6 +34,7 @@ class _DrawerPageState extends State<DrawerPage> {
     profileProvider=Provider.of<ProfileProvider>(context, listen: false);
     profileProvider.getProfile();
   }
+  final PrefService _prefService=PrefService();
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ProfileProvider>(context);
