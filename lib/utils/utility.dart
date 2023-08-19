@@ -2,7 +2,15 @@
 import 'package:intl/intl.dart';
 
 class Utility {
- static String formatMongoDate(String mongoTimeString) {
+ static String formatMongoDateAndTime(String mongoTimeString) {
+    DateTime mongoDateTime = DateTime.parse(mongoTimeString).toLocal(); // Convert UTC to local time
+
+    // Format the date and time using the desired format
+    String formattedDateTime = DateFormat('dd-MMMM-yyyy h:mm a').format(mongoDateTime);
+
+    return formattedDateTime;
+  }
+  static String formatMongoDate(String mongoTimeString) {
     DateTime mongoDateTime = DateTime.parse(mongoTimeString).toLocal(); // Convert UTC to local time
 
     // Format the date and time using the desired format

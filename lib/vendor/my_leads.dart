@@ -18,7 +18,7 @@ class _MyLeadState extends State<MyLead> {
   void initState() {
     super.initState();
     inquiryProvider = Provider.of<InquiryProvider>(context, listen: false);
-    inquiryProvider.inquiryData();
+    inquiryProvider.inquiryData("warm"); //hot
   }
   @override
   Widget build(BuildContext context) {

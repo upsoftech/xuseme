@@ -24,7 +24,7 @@ class _InquiryPageState extends State<InquiryPage> {
   void initState() {
     super.initState();
     inquiryProvider = Provider.of<InquiryProvider>(context, listen: false);
-    inquiryProvider.inquiryData();
+    inquiryProvider.inquiryData("cold");
   }
 
   @override
@@ -134,6 +134,7 @@ class _InquiryPageState extends State<InquiryPage> {
                                             .partnerInfo
                                             ?.id ??
                                         "",
+                                    "type":"warm"
                                   }).then((value) {
                                     Fluttertoast.showToast(
                                         msg: "$value",

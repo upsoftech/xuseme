@@ -23,8 +23,10 @@ class _SplashScreenState extends State<SplashScreen> {
     prefProvider.getToken();
     var p = PrefService();
     var token = p.getToken();
+    var regId = p.getRegId();
     log(token.toString());
-    if (token != "" && token !=null) {
+    log(regId.toString());
+    if (token != "" && token !=null && regId !=null) {
       _navigethome();
     } else {
       _navigeteLogin();

@@ -9,7 +9,7 @@ import 'package:xuseme/view/home/home_page.dart';
 import '../../model/inquiry_model.dart';
 import '../category/category_details.dart';
 import '../user_account/inquiry_page.dart';
-import '../user_account/setting_page.dart';
+
 
 class NavigationPage extends StatefulWidget {
   const NavigationPage({
@@ -30,7 +30,9 @@ class _NavigationPageState extends State<NavigationPage> {
     const HomePage(),
     const InquiryPage(),
     //   const SettingPage(),
-    const CategoryDetailsList()
+     const CategoryDetailsList(filter: {},
+
+     )
   ];
 
   void _onItemTapped(index) {

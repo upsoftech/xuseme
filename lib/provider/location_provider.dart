@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:geocoding/geocoding.dart' as geocoding;
 
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -14,6 +15,8 @@ class LocationProvider extends ChangeNotifier {
   }
 
   LocationData? locationData;
+  geocoding.Location? _geocodingLocation;
+  geocoding.Location? get  geocodingLocation=>_geocodingLocation;
 
   List<Placemark>? _placeMark;
 
@@ -42,4 +45,28 @@ class LocationProvider extends ChangeNotifier {
       getPermission();
     }
   }
+
+
+  Future<void> getCoordinatesFromAddress(String address) async {
+    try {
+      List<geocoding.Location> locations = await locationFromAddress(address);
+      if (locations.isNotEmpty) {
+        geocoding.Location location = locations.first;
+        double latitude = location.latitude;
+        double longitude = location.longitude;
+        print("Latitude: $latitude, Longitude: $longitude");
+        _geocodingLocation = location;
+        notifyListeners();
+      } else {
+        print("No location found for the given address");
+        throw Exception("No location found for the given address");
+      }
+    } catch (e) {
+      print("Error: $e");
+      rethrow; // Rethrow the caught exception
+    }
+  }
+
+
+
 }

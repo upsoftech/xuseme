@@ -1,22 +1,18 @@
-import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:xuseme/api_services/api_services.dart';
+import 'package:provider/provider.dart';
+
+import '../api_services/api_services.dart';
 import '../api_services/preference_services.dart';
-import '../constant/api_constant.dart';
 import '../constant/color.dart';
-import '../constant/image.dart';
+import '../provider/category_provider.dart';
+import '../provider/location_provider.dart';
 import '../view/screen/navigation_page.dart';
-import 'edit_vndor_profile.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 
 class VendorRegistration extends StatefulWidget {
   const VendorRegistration({Key? key, this.data}) : super(key: key);
@@ -60,10 +56,14 @@ class _VendorRegistrationState extends State<VendorRegistration> {
     // TODO: implement initState
     super.initState();
     mobileController.text = widget.data!["mobile"];
+    Provider.of<CategoryProvider>(context, listen: false).getCategoryData();
   }
 
   @override
   Widget build(BuildContext context) {
+    final locationProvider = Provider.of<LocationProvider>(context);
+    final catProvider = Provider.of<CategoryProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -78,23 +78,55 @@ class _VendorRegistrationState extends State<VendorRegistration> {
       bottomNavigationBar: GestureDetector(
         onTap: () async {
           if (formKey.currentState!.validate()) {
-            ApiServices()
-                .registerProfile(
-                    images!.path,
-                    nameController.text.trim(),
-                    mobileController.text.trim(),
-                    landlineController.text.trim(),
-                    emailController.text.trim(),
-                    shopNameController.text.trim(),
-                    shopType,
-                    addressController.text.trim(),
-                    landmarkController.text.trim(),
-                    pinController.text.trim(),
-                    stateController.text.trim(),
-                    addServicesController.text.trim())
+            Provider.of<LocationProvider>(context, listen: false)
+                .getCoordinatesFromAddress(
+              "${addressController.text.trim()}, ${landmarkController.text.trim()}, "
+              "${pinController.text.trim()},"
+              "${stateController.text.trim()}",
+            )
                 .then((value) {
-              log("message$value");
-              Get.to(const NavigationPage());
+              if (locationProvider.geocodingLocation != null) {
+                ApiServices()
+                    .registerProfile(
+                        images?.path,
+                        nameController.text.trim(),
+                        mobileController.text.trim(),
+                        landlineController.text.trim(),
+                        emailController.text.trim(),
+                        shopNameController.text.trim(),
+                        shopType,
+                        addressController.text.trim(),
+                        landmarkController.text.trim(),
+                        pinController.text.trim(),
+                        locationProvider.geocodingLocation!.latitude.toString(),
+                        locationProvider.geocodingLocation!.longitude
+                            .toString(),
+                        stateController.text.trim(),
+                        addServicesController.text.trim())
+                    .then((value) {
+                  log("message$value");
+                  if (value.toString().contains("PathNotFoundException")) {
+                    Fluttertoast.showToast(
+                        msg: "Please Select Image", backgroundColor: btnColor);
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: "${value["message"]}", backgroundColor: btnColor);
+                    PrefService().setRegId(value["data"]["_id"]);
+                    PrefService().setSelectType(value["data"]["type"]);
+                  }
+
+                  Get.to(const NavigationPage());
+                });
+              } else {
+                // No location found for the given address
+                log("No location found for the given address");
+              }
+            }).catchError((error) {
+              // Handle the error from geocoding operation
+              log("Error during geocoding: $error");
+              Fluttertoast.showToast(
+                  msg: "Please Provide Correct Address",
+                  backgroundColor: btnColor);
             });
           }
         },
@@ -295,20 +327,15 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                     return null;
                   },
                   value: shopType,
-                  items: const [
-                    DropdownMenuItem<String>(
-                      value: "Cake shop",
-                      child: Text("Cake shop"),
-                    ),
-                    DropdownMenuItem<String>(
-                      value: "Mobile Center",
-                      child: Text("Mobile Center"),
-                    ),
-                    DropdownMenuItem<String>(
-                      value: "Pet Shop",
-                      child: Text("Pet Shop"),
-                    ),
-                  ],
+                  items: catProvider.categoryList.map((e) {
+                    return DropdownMenuItem<String>(
+                      value: e.title,
+                      child: Text(
+                        "${e.title}",
+                        style: GoogleFonts.alice(),
+                      ),
+                    );
+                  }).toList(),
                   onChanged: (String? newStateId) {
                     setState(() {
                       shopType = newStateId!;

@@ -63,7 +63,7 @@ class _EditProfileState extends State<EditProfile> {
             locationProvider.locationData!.longitude,
           )
               .then((value) {
-            Fluttertoast.showToast(msg: "$value");
+            Fluttertoast.showToast(msg: "${value["message"]}");
             Get.back();
             Provider.of<ProfileProvider>(context, listen: false).getProfile();
           });

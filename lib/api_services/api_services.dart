@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:xuseme/api_services/preference_services.dart';
 import 'package:http/http.dart' as http;
+import 'package:xuseme/model/banner_model.dart';
 import 'package:xuseme/model/inquiry_model.dart';
 import '../constant/api_constant.dart';
 import '../model/address_model.dart';
@@ -34,14 +35,14 @@ class ApiServices {
 
   /// Vendor Registration ///
 
-  Future<dynamic> registerProfile(String path,name,mobile,
+  Future<dynamic> registerProfile(String? path,name,mobile,
       landline,email,shopName,shopType,address,landmark,
-      pincode,state,services) async {
+      pincode,latitude,longitude,state,services) async {
     try {
       var tokenIds = PrefService().getToken();
 
 
-      final Uri apiUrl = Uri.parse("${ApiConstant.baseUrl}/api/user/partner/v2");
+      final Uri apiUrl = Uri.parse("${ApiConstant.baseUrl}/api/user/partner/v1");
       final Map<String, String> headers = {'Authorization': 'Bearer $tokenIds'};
 
       var request = http.MultipartRequest('POST', apiUrl)
@@ -57,10 +58,14 @@ class ApiServices {
         ..fields['landmark'] = landmark
         ..fields['pincode'] =pincode
         ..fields['state'] = state
+        ..fields['latitude'] = latitude.toString()
+        ..fields['longitude'] = longitude.toString()
         ..fields['services'] = services;
 
-      // Add file if needed
-       request.files.add(await http.MultipartFile.fromPath('shopLogo', path));
+      if(path!=null){
+        request.files.add(await http.MultipartFile.fromPath('shopLogo', path));
+      }
+
 
       var response = await request.send();
       var data = await  http.Response.fromStream(response);
@@ -110,8 +115,8 @@ class ApiServices {
       // Add additional string parameter
       request.fields['name'] = name;
       request.fields['email'] = email;
-      request.fields['latitude'] = latitude;
-      request.fields['longitude'] = longitude;
+      request.fields['latitude'] = latitude.toString();
+      request.fields['longitude'] = longitude.toString();
 
 
       // Send the request and get the response
@@ -126,7 +131,11 @@ class ApiServices {
       print('Error during image upload: $e');
     }
 
-    return response;
+
+    var data = await  http.Response.fromStream(response);
+
+    return jsonDecode(data.body);
+
   }
 
   /// get profile from the server ///
@@ -137,16 +146,13 @@ class ApiServices {
   }
 
   /// Add Address from the server //
-  Future<dynamic> updateUserAddress(Map<String, dynamic> mapData) async {
-    var response =
-        http.post(Uri.parse(ApiConstant.addUserAddress), body: mapData);
-    var body;
-    response.then((value) {
-      log("message${value.body}");
-      body = value.body;
-    });
+  Future<dynamic> addAddress(Map<String, dynamic> mapData) async {
+    var response = 
+      await  http.post(Uri.parse(ApiConstant.addUserAddress), body: mapData);
+    
+   
 
-    return body;
+    return jsonDecode(response.body);
   }
 
   /// Get Address From the Server ///
@@ -165,18 +171,13 @@ class ApiServices {
   Future<dynamic> updateAddress(String id, Map<String, dynamic> mapData) async {
     var tokenIds = PrefService().getToken();
 
-    var response = http.patch(Uri.parse(ApiConstant.updateUsersAddress + id),
+    var response = await http.patch(Uri.parse(ApiConstant.updateUsersAddress + id),
         body: mapData,
         headers: {
           'Authorization': 'Bearer $tokenIds',
         });
-    var body;
-    response.then((value) {
-      log("message${value.body}");
-      body = value.body;
-    });
-
-    return body;
+    
+    return jsonDecode(response.body);
   }
 
   /// delete user Address from the server ///
@@ -190,10 +191,10 @@ class ApiServices {
 
   /// Get inquiry From the Server ///
 
-  Future<List<InquiryModel>> userInquiryAddress() async {
+  Future<List<InquiryModel>> userInquiry(String type) async {
     var p = PrefService().getRegId();
     List<InquiryModel> myList = [];
-    var data = await networkCalls.get("${ApiConstant.inquiryEndpoint}$p");
+    var data = await networkCalls.get("${ApiConstant.inquiryEndpoint}$p?search=$type");
     for (var i in jsonDecode(data)) {
       myList.add(InquiryModel.fromJson(i));
     }
@@ -218,10 +219,21 @@ class ApiServices {
 
   /// subShop data get from the server ///
 
-  Future<List<ShopSubCategoryModel>> subShopData() async {
+  Future<List<ShopSubCategoryModel>> getShopData(Map<String,dynamic> filter) async {
     List<ShopSubCategoryModel> myList = [];
-    var data = await networkCalls.get(ApiConstant.subShopEndpoint);
-    for (var i in jsonDecode(data)) {
+
+    const baseUrl = ApiConstant.subShopEndpoint;
+    final queryParams = filter;
+
+    var tokenIds = PrefService().getToken();
+    final uri = Uri.parse(baseUrl).replace(queryParameters: queryParams);
+
+    final response = await http.get(uri, headers: {
+      'Authorization': 'Bearer $tokenIds',
+    });
+
+
+    for (var i in jsonDecode(response.body)) {
       myList.add(ShopSubCategoryModel.fromJson(i));
     }
     return myList;
@@ -230,13 +242,13 @@ class ApiServices {
 
   /// Add New Banner on the Server ///
 
-  Future<dynamic> addBanner(partnerId, validity, bannerImage) async {
+  Future<dynamic> addBannerBySelf(partnerId, validity, bannerImage,price) async {
     var tokenIds = PrefService().getToken();
 
-    var response;
-    var uri = Uri.parse(ApiConstant.addBannerEndpoint);
+
+    var uri = Uri.parse(ApiConstant.selfBannerEndpoint);
     log("message$uri");
-    try {
+
       var request = http.MultipartRequest('POST', uri);
       request.headers['Authorization'] = 'Bearer $tokenIds';
       //bannerImage
@@ -249,21 +261,69 @@ class ApiServices {
 
       request.fields["partnerId"] = partnerId;
       request.fields["validity"] = validity;
+      request.fields["price"] = price;
 
-      response = await request.send();
+    var response = await request.send();
+    var data = await  http.Response.fromStream(response);
 
-      if (response.statusCode == 200) {
-        print('Image uploaded successfully');
-      } else {
-        print('Image upload failed with status: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error during image upload: $e');
-    }
+    return jsonDecode(data.body);
 
-    return response;
+
   }
 
+
+  Future<dynamic> addBannerByCompany(partnerId, validity, price) async {
+    var tokenIds = PrefService().getToken();
+
+
+    var uri = Uri.parse(ApiConstant.companyBannerEndpoint);
+    log("message$uri");
+
+      var request = http.MultipartRequest('POST', uri);
+      request.headers['Authorization'] = 'Bearer $tokenIds';
+
+
+      request.fields["partnerId"] = partnerId;
+      request.fields["validity"] = validity;
+      request.fields["price"] = price;
+
+    var response = await request.send();
+    var data = await  http.Response.fromStream(response);
+
+    return jsonDecode(data.body);
+
+
+  }
+
+  /// PUBLISH OFFER
+  Future<dynamic> publishOffer(partnerId,  offerImage,offer) async {
+    var tokenIds = PrefService().getToken();
+
+
+    var uri = Uri.parse(ApiConstant.offerEndpoint);
+    log("message$uri");
+
+    var request = http.MultipartRequest('POST', uri);
+    request.headers['Authorization'] = 'Bearer $tokenIds';
+    //bannerImage
+    if (offerImage != null) {
+      http.MultipartFile multipartFile =
+      await http.MultipartFile.fromPath('offerImage', offerImage);
+
+      request.files.add(multipartFile);
+    }
+
+    request.fields["partnerId"] = partnerId;
+    request.fields["offer"] = offer;
+
+
+    var response = await request.send();
+    var data = await  http.Response.fromStream(response);
+
+    return jsonDecode(data.body);
+
+
+  }
 
   ///  get category data from the server ///
 
@@ -272,6 +332,16 @@ class ApiServices {
     var data = await networkCalls.get(ApiConstant.grtCategoryEndpoint);
     for (var i in jsonDecode(data)) {
       myList.add(CategoryModel.fromJson(i));
+    }
+    return myList;
+  }
+  ///  get category data from the server ///
+
+  Future<List<BannerModel>> getBannerHistory() async {
+    List<BannerModel> myList = [];
+    var data = await networkCalls.get(ApiConstant.getBannerEndPoint);
+    for (var i in jsonDecode(data)) {
+      myList.add(BannerModel.fromJson(i));
     }
     return myList;
   }

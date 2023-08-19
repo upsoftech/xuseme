@@ -10,6 +10,7 @@ import '../../api_services/api_services.dart';
 import '../../api_services/preference_services.dart';
 import '../../constant/color.dart';
 import '../../model/address_model.dart';
+import '../../provider/location_provider.dart';
 import '../../provider/profile_provider.dart';
 
 class AddAddress extends StatefulWidget {
@@ -44,19 +45,29 @@ class _AddAddressState extends State<AddAddress> {
   Widget build(BuildContext context) {
     log("check ${widget.data?.id}");
 
+    final locationProvider = Provider.of<LocationProvider>(context);
+
+    log("message${locationProvider.locationData!.latitude}");
+
+
+
     return Scaffold(
       bottomNavigationBar: GestureDetector(
         onTap: () {
           if (!widget.isEdit) {
             var regIds = PrefService().getRegId();
-            ApiServices().updateUserAddress({
+            ApiServices().addAddress({
               "userId": regIds,
               "address": houseController.text.trim(),
               "landmark": apartController.text.trim(),
               "state": stateController.text.trim(),
               "pincode": pinController.text.trim(),
+             "longitude": locationProvider.locationData!.latitude.toString(),
+              "latitude":locationProvider.locationData!.longitude.toString(),
+              "type":address
+
             }).then((value) {
-              Fluttertoast.showToast(msg: "$value");
+              Fluttertoast.showToast(msg: "${value["message"]}");
               Provider.of<ProfileProvider>(context, listen: false).getAddress();
               Get.back();
             });
@@ -65,9 +76,13 @@ class _AddAddressState extends State<AddAddress> {
               "address": houseController.text.trim(),
               "landmark": apartController.text.trim(),
               "pincode": pinController.text.trim(),
-              "state": stateController.text.trim()
+              "state": stateController.text.trim(),
+              "longitude": locationProvider.locationData!.latitude.toString(),
+              "latitude":locationProvider.locationData!.longitude.toString(),
+              "type":address
             }).then((value) {
               log(value.toString());
+              Fluttertoast.showToast(msg: "${value["message"]}");
               Provider.of<ProfileProvider>(context, listen: false).getAddress();
               Get.back();
             });

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:xuseme/api_services/api_services.dart';
+
 import '../../api_services/preference_services.dart';
 import '../../constant/color.dart';
 import '../../provider/profile_provider.dart';
@@ -13,7 +14,6 @@ class AddressPage extends StatefulWidget {
   const AddressPage({
     Key? key,
   }) : super(key: key);
-  // final List<AddressModel>address;
 
   @override
   State<AddressPage> createState() => _AddressPageState();
@@ -21,6 +21,7 @@ class AddressPage extends StatefulWidget {
 
 class _AddressPageState extends State<AddressPage> {
   late ProfileProvider profileProvider;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -81,15 +82,17 @@ class _AddressPageState extends State<AddressPage> {
                 children: [
                   Row(
                     children: [
-                      const Icon(
-                        Icons.business_center_sharp,
+                      Icon(
+                        e.type.toString().toLowerCase().contains("h")
+                            ? Icons.home
+                            : Icons.work_outline,
                         color: grey,
                       ),
                       const SizedBox(
                         width: 15,
                       ),
                       Text(
-                        "Office",
+                        e.type ?? "",
                         style:
                             GoogleFonts.alice(color: textBlack, fontSize: 16),
                       ),

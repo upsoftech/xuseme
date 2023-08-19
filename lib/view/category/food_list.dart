@@ -22,7 +22,7 @@ class _FoodListState extends State<FoodList> {
     // TODO: implement initState
     super.initState();
     categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
-    categoryProvider.categoryData();
+    categoryProvider.getCategoryData();
   }
 
   @override

@@ -12,7 +12,7 @@ class CategoryProvider extends ChangeNotifier {
   List<CategoryModel> get categoryList => _categoryList;
   bool get isLoading => _isLoading;
 
-  Future<void> categoryData() async {
+  Future<void> getCategoryData() async {
     _isLoading = true;
     _categoryList.clear();
     await _apiServices.getCategory().then((value) {

@@ -8,6 +8,7 @@ import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/provider/home_provider.dart';
 import 'package:xuseme/provider/location_provider.dart';
 import 'package:xuseme/view/home/remote_search.dart';
+import 'package:xuseme/view/screen/navigation_page.dart';
 import '../../constant/app_constants.dart';
 import '../../constant/color.dart';
 import '../category/food_list.dart';
@@ -66,7 +67,11 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+           /*
+
+           Uncomment for serach
+
+           Container(
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
               child: TextFormField(
                 cursorColor: Colors.black,
@@ -101,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     )),
               ),
-            ),
+            ),*/
             Padding(
               padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
               child: ClipRRect(
@@ -269,7 +274,8 @@ class _HomePageState extends State<HomePage> {
                       )),
                   GestureDetector(
                       onTap: () {
-                        Get.to(const FoodList());
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>NavigationPage(page: 2,)));
+
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -311,7 +317,7 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.circular(10)),
               child: ListTile(
                 leading: Text(
-                  'Swiggy\nOne',
+                  'XuseME \nOne',
                   style: GoogleFonts.salsa(fontSize: 16, color: btnColor),
                 ),
                 trailing: Container(

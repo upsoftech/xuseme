@@ -1,15 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../../constant/app_constants.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+
 import '../../constant/color.dart';
-import '../../constant/image.dart';
 import '../../provider/category_provider.dart';
 import 'category_details.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class CategoryList extends StatefulWidget {
   const CategoryList({
@@ -26,6 +23,7 @@ class _CategoryListState extends State<CategoryList> {
   String _textSpeech = 'Hello';
 
   TextEditingController searchController = TextEditingController();
+
   void onListen() async {
     bool available = await _speech.initialize(
         onStatus: (val) => print('onStatus: $val'),
@@ -58,7 +56,7 @@ class _CategoryListState extends State<CategoryList> {
     // TODO: implement initState
     super.initState();
     categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
-    categoryProvider.categoryData();
+    categoryProvider.getCategoryData();
   }
 
   @override
@@ -68,7 +66,11 @@ class _CategoryListState extends State<CategoryList> {
       itemBuilder: (context, position) {
         return GestureDetector(
           onTap: () {
-            Get.to(const CategoryDetailsList());
+            Get.to(CategoryDetailsList(
+              filter: {
+                "shopType": categoryProvider.categoryList[position].title,
+              },
+            ));
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

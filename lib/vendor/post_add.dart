@@ -32,28 +32,7 @@ class _PostAddState extends State<PostAdd>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: GestureDetector(
-        onTap:(){
-          ApiServices().addBanner(
-             " partnerId",
-              "validity",
-             " bannerImage",
-          ).then((value){
-            Fluttertoast.showToast(msg: "$value",backgroundColor: btnColor);
-          });
-        },
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
-          alignment: Alignment.center,
-          height: 45,
-          width: double.infinity,
-          decoration: BoxDecoration(
-              color: textBlack,
-              borderRadius: BorderRadius.circular(15)
-          ),
-          child: Text("Pay",style: GoogleFonts.alice(color: textWhite,fontSize: 16,fontWeight: FontWeight.bold),),
-        ),
-      ),
+
       appBar: AppBar(
         backgroundColor: btnColor,
         elevation: 0,

@@ -1,7 +1,12 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:xuseme/api_services/preference_services.dart';
+
+import '../api_services/api_services.dart';
 import '../constant/color.dart';
 
 class BySelf extends StatefulWidget {
@@ -25,9 +30,39 @@ class _BySelfState extends State<BySelf> {
       Navigator.pop(context);
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: GestureDetector(
+        onTap: () {
+          if (upload?.path != null) {
+            ApiServices()
+                .addBannerBySelf(PrefService().getRegId(), dropdownValues,
+                    upload!.path, "${100 * selectedMonth}")
+                .then((value) {
+              Fluttertoast.showToast(
+                  msg: "${value["message"]}", backgroundColor: btnColor);
+            });
+            Navigator.pop(context);
+          } else {
+            Fluttertoast.showToast(msg: "Please Select Banner ");
+          }
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          alignment: Alignment.center,
+          height: 45,
+          width: double.infinity,
+          decoration: BoxDecoration(
+              color: textBlack, borderRadius: BorderRadius.circular(15)),
+          child: Text(
+            "Pay",
+            style: GoogleFonts.alice(
+                color: textWhite, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
       body: Column(
         children: [
           Container(
@@ -137,7 +172,7 @@ class _BySelfState extends State<BySelf> {
                                 child: Text(
                                   "From Gallery",
                                   style: GoogleFonts.alice(
-                                      color:textBlack,
+                                      color: textBlack,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold),
                                 )),
@@ -153,14 +188,15 @@ class _BySelfState extends State<BySelf> {
                       )),
                 )
               : Container(
-            margin:
-            const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            height: MediaQuery.of(context).size.height * .25,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              image: DecorationImage(fit: BoxFit.cover,image: FileImage(File(upload!.path)))
-            ),
-          ),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  height: MediaQuery.of(context).size.height * .25,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: FileImage(File(upload!.path)))),
+                ),
           Text(
             "( 1280 pixels by 720 pixels )",
             style: GoogleFonts.alice(

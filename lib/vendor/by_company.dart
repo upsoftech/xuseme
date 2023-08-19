@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../api_services/api_services.dart';
+import '../api_services/preference_services.dart';
 import '../constant/color.dart';
+
 class ByCompany extends StatefulWidget {
   const ByCompany({Key? key}) : super(key: key);
 
@@ -11,22 +15,48 @@ class ByCompany extends StatefulWidget {
 
 class _ByCompanyState extends State<ByCompany> {
   String? dropdownValues1;
-  int selectedMonths=1;
+  int selectedMonths = 1;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: GestureDetector(
+        onTap: () {
+          ApiServices()
+              .addBannerByCompany(PrefService().getRegId(), dropdownValues1,
+                  "${100 * selectedMonths}")
+              .then((value) {
+            Fluttertoast.showToast(
+                msg: "${value["message"]}", backgroundColor: btnColor);
+            Navigator.pop(context);
+          });
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          alignment: Alignment.center,
+          height: 45,
+          width: double.infinity,
+          decoration: BoxDecoration(
+              color: textBlack, borderRadius: BorderRadius.circular(15)),
+          child: Text(
+            "Pay",
+            style: GoogleFonts.alice(
+                color: textWhite, fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
       body: Column(
         children: [
           Container(
-            padding: const EdgeInsets.fromLTRB(15,20, 15, 0),
+            padding: const EdgeInsets.fromLTRB(15, 20, 15, 0),
             child: DropdownButtonFormField<String>(
               key: UniqueKey(),
               decoration: InputDecoration(
                 enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1,color:textBlack),
+                    borderSide: const BorderSide(width: 1, color: textBlack),
                     borderRadius: BorderRadius.circular(5)),
                 focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1,color:textBlack),
+                    borderSide: const BorderSide(width: 1, color: textBlack),
                     borderRadius: BorderRadius.circular(5)),
                 hintText: 'Select Month',
                 contentPadding: const EdgeInsets.only(left: 10, right: 10),
@@ -83,24 +113,29 @@ class _ByCompanyState extends State<ByCompany> {
                   value: "12",
                   child: Text("Twelve Month"),
                 ),
-
               ],
               onChanged: (String? newStateId) {
                 setState(() {
                   dropdownValues1 = newStateId!;
-                  selectedMonths=int.parse(newStateId);
+                  selectedMonths = int.parse(newStateId);
                 });
               },
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 15),
-            child:Row(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+            child: Row(
               children: [
-                Text("Total Amount",style: GoogleFonts.alice(
-                    color: textBlack,fontSize: 16,
-                    fontWeight: FontWeight.w600),),
-                const SizedBox(width: 15,),
+                Text(
+                  "Total Amount",
+                  style: GoogleFonts.alice(
+                      color: textBlack,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
                 Container(
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -108,11 +143,14 @@ class _ByCompanyState extends State<ByCompany> {
                   width: 100,
                   decoration: BoxDecoration(
                       color: primary.withOpacity(.1),
-                      borderRadius: BorderRadius.circular(10)
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Text(
+                    "₹ ${200 * selectedMonths}.00",
+                    style: GoogleFonts.alice(
+                        color: textBlack,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600),
                   ),
-                  child:  Text("₹ ${200*selectedMonths}.00",style: GoogleFonts.alice(
-                      color: textBlack,fontSize: 16,
-                      fontWeight: FontWeight.w600),),
                 )
               ],
             ),

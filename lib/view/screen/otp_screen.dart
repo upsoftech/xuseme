@@ -79,7 +79,7 @@ class _OtpScreenState extends State<OtpScreen> {
             Container(
               padding: const EdgeInsets.only(left: 15, top: 10),
               child: Text(
-                'Verify with OTP send to 1234567890',
+                'Verify with OTP send to ${widget.mobile}',
                 style: GoogleFonts.salsa(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,

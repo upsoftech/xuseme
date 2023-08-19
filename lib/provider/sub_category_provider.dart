@@ -14,10 +14,10 @@ class SubShopsProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  Future<void> shopData() async {
+  Future<void> getShopData(Map<String,dynamic> filter) async {
     _isLoading = true;
     _subShopList.clear();
-    await _apiServices.subShopData().then((value) {
+    await _apiServices.getShopData(filter).then((value) {
       _subShopList = value;
       _isLoading = false;
       notifyListeners();

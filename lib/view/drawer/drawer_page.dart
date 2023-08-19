@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/view/login_screen.dart';
-import '../../api_services/preference_services.dart';
+
 import '../../provider/profile_provider.dart';
 import '../../vendor/add_histroy.dart';
 import '../../vendor/my_adds.dart';
@@ -27,18 +27,19 @@ class DrawerPage extends StatefulWidget {
 
 class _DrawerPageState extends State<DrawerPage> {
   late ProfileProvider profileProvider;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    profileProvider=Provider.of<ProfileProvider>(context, listen: false);
+    profileProvider = Provider.of<ProfileProvider>(context, listen: false);
     profileProvider.getProfile();
   }
-  final PrefService _prefService=PrefService();
+
   @override
   Widget build(BuildContext context) {
     final profileProvider = Provider.of<ProfileProvider>(context);
-    var data=profileProvider.profileData;
+    var data = profileProvider.profileData;
     return SafeArea(
       child: Drawer(
         width: 200,
@@ -50,8 +51,9 @@ class _DrawerPageState extends State<DrawerPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                     CircleAvatar(
-                      backgroundImage: NetworkImage(data["profileLogo"]??""),
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(/*data["profileLogo"]??*/
+                          noImage),
                       radius: 50,
                     ),
                     Text(
@@ -80,106 +82,96 @@ class _DrawerPageState extends State<DrawerPage> {
                     fontSize: 16),
               ),
             ),
-            // ListTile(
-            //   onTap: () {
-            //    Get.to(const SettingPage());
-            //   },
-            //   leading: const Icon(
-            //     Icons.settings,
-            //     color: btnColor,
-            //   ),
-            //   title: Text(
-            //     "Setting",
-            //     style: GoogleFonts.alice(
-            //         color: textBlack,
-            //         fontWeight: FontWeight.w500,
-            //         fontSize: 16),
-            //   ),
-            // ),
-            ListTile(
-              onTap: () {
-                Get.to(const MyLead());
-              },
-              leading: const Icon(
-                Icons.leaderboard_outlined,
-                color: btnColor,
-              ),
-
-              title: Text(
-                "My leads",
-                style: GoogleFonts.alice(
-                    color: textBlack,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16),
-              ),
-            ),
-
-            ListTile(
-              onTap: () {
-                Get.to(const PostAdd());
-              },
-              leading: const Icon(
-                Icons.post_add,
-                color: btnColor,
-              ),
-              title: Text(
-                "Post Add",
-                style: GoogleFonts.alice(
-                    color: textBlack,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16),
-              ),
-            ),
-
-            ListTile(
-              onTap: () {
-                Get.to(const MyAdds());
-              },
-              leading: const Icon(
-                Icons.add_chart,
-                color: btnColor,
-              ),
-              title: Text(
-                "My Adds",
-                style: GoogleFonts.alice(
-                    color: textBlack,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16),
-              ),
-            ),
-
-            ListTile(
-              onTap: () {
-                Get.to(const PublishedOffer());
-              },
-              leading: const Icon(
-                Icons.local_offer_outlined,
-                color: btnColor,
-              ),
-              title: Text(
-                "Published Offer",
-                style: GoogleFonts.alice(
-                    color: textBlack,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16),
-              ),
-            ),
-            ListTile(
-              onTap: () {
-                Get.to(const AddHistory());
-              },
-              leading: const Icon(
-                Icons.history,
-                color: btnColor,
-              ),
-              title: Text(
-                "Add History",
-                style: GoogleFonts.alice(
-                    color: textBlack,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16),
-              ),
-            ),
+            data["type"] == "partner"
+                ? ListTile(
+                    onTap: () {
+                      Get.to(const MyLead());
+                    },
+                    leading: const Icon(
+                      Icons.leaderboard_outlined,
+                      color: btnColor,
+                    ),
+                    title: Text(
+                      "My leads",
+                      style: GoogleFonts.alice(
+                          color: textBlack,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16),
+                    ),
+                  )
+                : SizedBox(),
+            data["type"] == "partner"
+                ? ListTile(
+                    onTap: () {
+                      Get.to(const PostAdd());
+                    },
+                    leading: const Icon(
+                      Icons.post_add,
+                      color: btnColor,
+                    ),
+                    title: Text(
+                      "Post Add",
+                      style: GoogleFonts.alice(
+                          color: textBlack,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16),
+                    ),
+                  )
+                : SizedBox(),
+            data["type"] == "partner"
+                ? ListTile(
+                    onTap: () {
+                      Get.to(const MyAdds());
+                    },
+                    leading: const Icon(
+                      Icons.add_chart,
+                      color: btnColor,
+                    ),
+                    title: Text(
+                      "My Adds",
+                      style: GoogleFonts.alice(
+                          color: textBlack,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16),
+                    ),
+                  )
+                : SizedBox(),
+            data["type"] == "partner"
+                ? ListTile(
+                    onTap: () {
+                      Get.to(const PublishedOffer());
+                    },
+                    leading: const Icon(
+                      Icons.local_offer_outlined,
+                      color: btnColor,
+                    ),
+                    title: Text(
+                      "Published Offer",
+                      style: GoogleFonts.alice(
+                          color: textBlack,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16),
+                    ),
+                  )
+                : SizedBox(),
+            data["type"] == "partner"
+                ? ListTile(
+                    onTap: () {
+                      Get.to(const AddHistory());
+                    },
+                    leading: const Icon(
+                      Icons.history,
+                      color: btnColor,
+                    ),
+                    title: Text(
+                      "Add History",
+                      style: GoogleFonts.alice(
+                          color: textBlack,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16),
+                    ),
+                  )
+                : SizedBox(),
             ListTile(
               onTap: () {},
               leading: const Icon(
@@ -271,7 +263,7 @@ class _DrawerPageState extends State<DrawerPage> {
                 SharedPreferences pref = await SharedPreferences.getInstance();
                 await pref.clear().then((value) {
                   Navigator.popUntil(context, (route) => route.isFirst);
-                 Get.to(const LoginScreen());
+                  Get.to(const LoginScreen());
                 });
               },
               leading: const Icon(
