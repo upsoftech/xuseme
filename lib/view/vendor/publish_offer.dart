@@ -5,9 +5,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../api_services/api_services.dart';
-import '../api_services/preference_services.dart';
-import '../constant/color.dart';
+import '../../api_services/api_services.dart';
+import '../../api_services/preference_services.dart';
+import '../../constant/color.dart';
+
 
 class PublishedOffer extends StatefulWidget {
   const PublishedOffer({Key? key}) : super(key: key);

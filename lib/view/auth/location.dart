@@ -10,7 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/view/screen/manual_location.dart';
 import '../../constant/color.dart';
-import 'navigation_page.dart';
+import '../screen/navigation_page.dart';
 class LocationPage extends StatefulWidget {
   const LocationPage({Key? key}) : super(key: key);
 

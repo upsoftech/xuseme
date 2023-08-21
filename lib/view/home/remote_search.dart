@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -6,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../constant/color.dart';
 import '../../provider/category_provider.dart';
+import '../../provider/location_provider.dart';
 import '../category/category_details.dart';
 
 class SearchProduct extends StatefulWidget {
@@ -34,6 +37,7 @@ class _SearchProductState extends State<SearchProduct> {
   @override
   Widget build(BuildContext context) {
     final catProvider = Provider.of<CategoryProvider>(context);
+    final locationProvider = Provider.of<LocationProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -298,14 +302,31 @@ class _SearchProductState extends State<SearchProduct> {
               ),
               GestureDetector(
                 onTap: () {
-                  if (formKey.currentState!.validate()) {
-                    Get.to( CategoryDetailsList(filter: {
-                      "address":cityController.text.trim(),
-                      "pincode":pinCodeController.text.trim(),
-                      "state":selectState,
-                      "shopType":shopTypes,
 
-                    },));
+
+                  if (formKey.currentState!.validate()) {
+
+                    Provider.of<LocationProvider>(context,listen: false)
+                    .getCoordinatesFromAddress(
+                      "${cityController.text.trim()}, "
+                          "${pinCodeController.text.trim()}, "
+                          "$selectState ,"
+                    ).then((value) {
+                      log("message : ${locationProvider.locationData!}");
+                      Get.to( CategoryDetailsList(filter: {
+                        "address":cityController.text.trim(),
+                        "pincode":pinCodeController.text.trim(),
+                        "state":selectState,
+                        "shopType":shopTypes,
+                        "latitude":locationProvider.locationData!.latitude.toString(),
+                        "longitude":locationProvider.locationData!.longitude.toString()
+                      },));
+                    });
+
+
+
+                  }else{
+                    Fluttertoast.showToast(msg: "Please fill correct address");
                   }
                 },
                 child: Container(

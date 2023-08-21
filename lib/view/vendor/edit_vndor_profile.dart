@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../constant/color.dart';
+import '../../constant/color.dart';
 class EditVendorProfile extends StatefulWidget {
   const EditVendorProfile({Key? key}) : super(key: key);
 

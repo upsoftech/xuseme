@@ -6,12 +6,13 @@ import 'package:get/get.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';
 import 'package:pinput/pinput.dart';
-import 'package:xuseme/view/screen/location.dart';
+import 'package:xuseme/view/auth/location.dart';
 import 'package:xuseme/view/screen/navigation_page.dart';
 import '../../api_services/api_services.dart';
 import '../../api_services/preference_services.dart';
 import '../../constant/color.dart';
-import '../../vendor/vandor_registration.dart';
+import '../vendor/vandor_registration.dart';
+
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({Key? key, required this.dropdownValue, required this.mobile})

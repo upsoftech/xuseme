@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:xuseme/api_services/api_services.dart';
-import '../constant/color.dart';
+
+import '../../constant/color.dart';
 import 'by_company.dart';
 import 'by_self.dart';
 class PostAdd extends StatefulWidget {

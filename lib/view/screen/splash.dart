@@ -6,7 +6,7 @@ import 'package:xuseme/view/screen/navigation_page.dart';
 import '../../api_services/preference_services.dart';
 import '../../constant/image.dart';
 import '../../provider/preference_provider.dart';
-import '../login_screen.dart';
+import '../auth/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

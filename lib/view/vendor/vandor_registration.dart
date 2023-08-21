@@ -7,12 +7,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../api_services/api_services.dart';
-import '../api_services/preference_services.dart';
-import '../constant/color.dart';
-import '../provider/category_provider.dart';
-import '../provider/location_provider.dart';
-import '../view/screen/navigation_page.dart';
+import '../../api_services/api_services.dart';
+import '../../api_services/preference_services.dart';
+import '../../constant/color.dart';
+import '../../provider/category_provider.dart';
+import '../../provider/location_provider.dart';
+import '../screen/navigation_page.dart';
+
+
 
 class VendorRegistration extends StatefulWidget {
   const VendorRegistration({Key? key, this.data}) : super(key: key);
@@ -35,7 +37,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
   }
 
   final pinController = TextEditingController();
-  String? dropdownButton;
+  String? state;
   String? shopType;
 
   /// Controller for textfield ///
@@ -47,7 +49,6 @@ class _VendorRegistrationState extends State<VendorRegistration> {
   final shopTypeController = TextEditingController();
   final addressController = TextEditingController();
   final landmarkController = TextEditingController();
-  final stateController = TextEditingController();
   final addServicesController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
@@ -82,7 +83,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                 .getCoordinatesFromAddress(
               "${addressController.text.trim()}, ${landmarkController.text.trim()}, "
               "${pinController.text.trim()},"
-              "${stateController.text.trim()}",
+              "${state}",
             )
                 .then((value) {
               if (locationProvider.geocodingLocation != null) {
@@ -101,21 +102,26 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                         locationProvider.geocodingLocation!.latitude.toString(),
                         locationProvider.geocodingLocation!.longitude
                             .toString(),
-                        stateController.text.trim(),
+                        state,
                         addServicesController.text.trim())
                     .then((value) {
                   log("message$value");
                   if (value.toString().contains("PathNotFoundException")) {
                     Fluttertoast.showToast(
                         msg: "Please Select Image", backgroundColor: btnColor);
-                  } else {
+                  } else if (value.toString().contains("All parameters are required")){
+                    Fluttertoast.showToast(
+                        msg: "${value["message"]}", backgroundColor: btnColor);
+                  }
+                  else {
                     Fluttertoast.showToast(
                         msg: "${value["message"]}", backgroundColor: btnColor);
                     PrefService().setRegId(value["data"]["_id"]);
                     PrefService().setSelectType(value["data"]["type"]);
+                    Get.to(const NavigationPage());
                   }
 
-                  Get.to(const NavigationPage());
+
                 });
               } else {
                 // No location found for the given address
@@ -264,7 +270,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                     labelStyle: GoogleFonts.alice(),
                     contentPadding: const EdgeInsets.only(top: 10, left: 20),
                   ),
-                  validator: (value) {
+               /*   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'This field is required';
                     }
@@ -272,7 +278,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                       return "Please enter a valid email address";
                     }
                     return null;
-                  },
+                  },*/
                 ),
               ),
               Container(
@@ -306,7 +312,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
               Container(
                 padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                 child: DropdownButtonFormField<String>(
-                  key: UniqueKey(),
+
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                         borderSide:
@@ -336,6 +342,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                       ),
                     );
                   }).toList(),
+
                   onChanged: (String? newStateId) {
                     setState(() {
                       shopType = newStateId!;
@@ -469,7 +476,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                           }
                           return null;
                         },
-                        value: dropdownButton,
+                        value: state,
                         items: const [
                           DropdownMenuItem<String>(
                             value: "Andhra Pradesh",
@@ -590,7 +597,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                         ],
                         onChanged: (String? newStateId) {
                           setState(() {
-                            dropdownButton = newStateId!;
+                            state = newStateId!;
                           });
                         },
                       ),

@@ -1,35 +1,53 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:xuseme/api_services/preference_services.dart';
 
-import '../api_services/api_services.dart';
-import '../api_services/preference_services.dart';
-import '../constant/color.dart';
+import '../../api_services/api_services.dart';
+import '../../constant/color.dart';
 
-class ByCompany extends StatefulWidget {
-  const ByCompany({Key? key}) : super(key: key);
+class BySelf extends StatefulWidget {
+  const BySelf({Key? key}) : super(key: key);
 
   @override
-  State<ByCompany> createState() => _ByCompanyState();
+  State<BySelf> createState() => _BySelfState();
 }
 
-class _ByCompanyState extends State<ByCompany> {
-  String? dropdownValues1;
-  int selectedMonths = 1;
+class _BySelfState extends State<BySelf> {
+  String? dropdownValues;
+  int selectedMonth = 1;
+
+  XFile? upload;
+  final ImagePicker _uploadImage = ImagePicker();
+
+  uploadPhoto(ImageSource imageSource) async {
+    await _uploadImage.pickImage(source: imageSource).then((value) {
+      upload = value;
+      setState(() {});
+      Navigator.pop(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: GestureDetector(
         onTap: () {
-          ApiServices()
-              .addBannerByCompany(PrefService().getRegId(), dropdownValues1,
-                  "${100 * selectedMonths}")
-              .then((value) {
-            Fluttertoast.showToast(
-                msg: "${value["message"]}", backgroundColor: btnColor);
+          if (upload?.path != null) {
+            ApiServices()
+                .addBannerBySelf(PrefService().getRegId(), dropdownValues,
+                    upload!.path, "${100 * selectedMonth}")
+                .then((value) {
+              Fluttertoast.showToast(
+                  msg: "${value["message"]}", backgroundColor: btnColor);
+            });
             Navigator.pop(context);
-          });
+          } else {
+            Fluttertoast.showToast(msg: "Please Select Banner ");
+          }
         },
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -63,7 +81,7 @@ class _ByCompanyState extends State<ByCompany> {
                 suffixStyle: const TextStyle(
                     color: textBlack, fontWeight: FontWeight.bold),
               ),
-              value: dropdownValues1,
+              value: dropdownValues,
               items: const [
                 DropdownMenuItem<String>(
                   value: "1",
@@ -116,11 +134,73 @@ class _ByCompanyState extends State<ByCompany> {
               ],
               onChanged: (String? newStateId) {
                 setState(() {
-                  dropdownValues1 = newStateId!;
-                  selectedMonths = int.parse(newStateId);
+                  dropdownValues = newStateId!;
+                  selectedMonth = int.parse(newStateId);
                 });
               },
             ),
+          ),
+          upload == null
+              ? Container(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  height: MediaQuery.of(context).size.height * .25,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      border: Border.all(color: textBlack),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: TextButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            content: TextButton(
+                                onPressed: () {
+                                  uploadPhoto(ImageSource.camera);
+                                },
+                                child: Text(
+                                  "From Camera",
+                                  style: GoogleFonts.alice(
+                                      color: textBlack,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )),
+                            title: TextButton(
+                                onPressed: () {
+                                  uploadPhoto(ImageSource.gallery);
+                                },
+                                child: Text(
+                                  "From Gallery",
+                                  style: GoogleFonts.alice(
+                                      color: textBlack,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "Choose Photo",
+                        style: GoogleFonts.alice(
+                            color: Colors.blue,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                      )),
+                )
+              : Container(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  height: MediaQuery.of(context).size.height * .25,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: FileImage(File(upload!.path)))),
+                ),
+          Text(
+            "( 1280 pixels by 720 pixels )",
+            style: GoogleFonts.alice(
+                color: red, fontWeight: FontWeight.w400, fontSize: 16),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -145,7 +225,7 @@ class _ByCompanyState extends State<ByCompany> {
                       color: primary.withOpacity(.1),
                       borderRadius: BorderRadius.circular(10)),
                   child: Text(
-                    "₹ ${200 * selectedMonths}.00",
+                    "₹ ${100 * selectedMonth}.00",
                     style: GoogleFonts.alice(
                         color: textBlack,
                         fontSize: 16,

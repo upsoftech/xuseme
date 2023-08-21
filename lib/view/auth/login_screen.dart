@@ -6,10 +6,10 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:xuseme/constant/image.dart';
-import 'package:xuseme/view/screen/otp_screen.dart';
-import '../api_services/api_services.dart';
-import '../api_services/preference_services.dart';
-import '../constant/color.dart';
+import 'package:xuseme/view/auth/otp_screen.dart';
+import '../../api_services/api_services.dart';
+import '../../api_services/preference_services.dart';
+import '../../constant/color.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

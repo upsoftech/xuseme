@@ -4,8 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:xuseme/provider/inquiry_provider.dart';
 
-import '../constant/color.dart';
-import '../utils/utility.dart';
+import '../../constant/color.dart';
+import '../../utils/utility.dart';
 
 class AddHistory extends StatefulWidget {
   const AddHistory({Key? key}) : super(key: key);

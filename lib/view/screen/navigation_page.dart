@@ -8,6 +8,7 @@ import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/view/home/home_page.dart';
 import '../../model/inquiry_model.dart';
 import '../category/category_details.dart';
+import '../category/category_list.dart';
 import '../user_account/inquiry_page.dart';
 
 
@@ -30,9 +31,7 @@ class _NavigationPageState extends State<NavigationPage> {
     const HomePage(),
     const InquiryPage(),
     //   const SettingPage(),
-     const CategoryDetailsList(filter: {},
-
-     )
+     const CategoryList(     )
   ];
 
   void _onItemTapped(index) {

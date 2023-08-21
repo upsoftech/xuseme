@@ -8,10 +8,9 @@ import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/provider/home_provider.dart';
 import 'package:xuseme/provider/location_provider.dart';
 import 'package:xuseme/view/home/remote_search.dart';
-import 'package:xuseme/view/screen/navigation_page.dart';
-import '../../constant/app_constants.dart';
+
 import '../../constant/color.dart';
-import '../category/food_list.dart';
+import '../category/category_list.dart';
 import '../drawer/drawer_page.dart';
 import '../user_account/user_account.dart';
 
@@ -34,6 +33,16 @@ class _HomePageState extends State<HomePage> {
 
   loadData() {
     locationProvider = Provider.of<LocationProvider>(context, listen: false);
+
+    locationProvider.getLocation().then((value) {
+      locationProvider.getCoordinatesFromAddress(
+        '${locationProvider.placeMark?.first.subLocality},'
+        ' ${locationProvider.placeMark?.first.locality}, '
+        ' ${locationProvider.placeMark?.first.postalCode}'
+        ' ${locationProvider.placeMark?.first.subAdministrativeArea}'
+        ,
+      );
+    });
     final homeProvider = Provider.of<HomeProvider>(context, listen: false);
     homeProvider.getBanner();
   }
@@ -67,7 +76,7 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-           /*
+            /*
 
            Uncomment for serach
 
@@ -146,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   GestureDetector(
                       onTap: () {
-                        Get.to(const FoodList());
+                        Get.to(const CategoryList());
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -169,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                       )),
                   GestureDetector(
                       onTap: () {
-                        Get.to(const FoodList());
+                        Get.to(const CategoryList());
                       },
                       child: Column(
                         children: [
@@ -191,7 +200,7 @@ class _HomePageState extends State<HomePage> {
                       )),
                   GestureDetector(
                       onTap: () {
-                        Get.to(const FoodList());
+                        Get.to(const CategoryList());
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -274,8 +283,9 @@ class _HomePageState extends State<HomePage> {
                       )),
                   GestureDetector(
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>NavigationPage(page: 2,)));
+                        //  Navigator.push(context, MaterialPageRoute(builder: (context)=>NavigationPage(page: 2,)));
 
+                        Get.to(const CategoryList());
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:xuseme/constant/image.dart';
 
-import '../constant/color.dart';
+import '../../constant/color.dart';
 
 class MyAdds extends StatefulWidget {
   const MyAdds({Key? key}) : super(key: key);

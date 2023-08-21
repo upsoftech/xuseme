@@ -7,15 +7,16 @@ import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
-import 'package:xuseme/view/login_screen.dart';
+import 'package:xuseme/view/auth/login_screen.dart';
 
 import '../../provider/profile_provider.dart';
-import '../../vendor/add_histroy.dart';
-import '../../vendor/my_adds.dart';
-import '../../vendor/my_leads.dart';
-import '../../vendor/post_add.dart';
-import '../../vendor/publish_offer.dart';
+
 import '../user_account/user_account.dart';
+import '../vendor/add_histroy.dart';
+import '../vendor/my_adds.dart';
+import '../vendor/my_leads.dart';
+import '../vendor/post_add.dart';
+import '../vendor/publish_offer.dart';
 
 class DrawerPage extends StatefulWidget {
   const DrawerPage({Key? key, this.page}) : super(key: key);

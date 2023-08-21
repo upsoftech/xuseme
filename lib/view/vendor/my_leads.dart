@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:xuseme/constant/color.dart';
-import '../utils/utility.dart';
-import '../provider/inquiry_provider.dart';
+
+import '../../provider/inquiry_provider.dart';
+import '../../utils/utility.dart';
+
 
 class MyLead extends StatefulWidget {
   const MyLead({Key? key}) : super(key: key);
