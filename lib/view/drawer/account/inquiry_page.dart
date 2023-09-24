@@ -1,17 +1,24 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:xuseme/api_services/api_services.dart';
+import 'package:xuseme/services/api_services.dart';
+import 'package:xuseme/constant/api_constant.dart';
+import 'package:xuseme/constant/app_constants.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
-import '../../provider/inquiry_provider.dart';
+
+import '../../../provider/inquiry_provider.dart';
+import '../../widgets/custom_image_view.dart';
 
 class InquiryPage extends StatefulWidget {
   const InquiryPage({
     Key? key,
     // required this.data,
   }) : super(key: key);
+
   // final InquiryModel data;
 
   @override
@@ -20,6 +27,7 @@ class InquiryPage extends StatefulWidget {
 
 class _InquiryPageState extends State<InquiryPage> {
   late InquiryProvider inquiryProvider;
+
   @override
   void initState() {
     super.initState();
@@ -32,10 +40,12 @@ class _InquiryPageState extends State<InquiryPage> {
     inquiryProvider = Provider.of<InquiryProvider>(
       context,
     );
+
+    // log("HI : ${inquiryProvider.inquiryList[0].partnerInfo!.shopLogo}");
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          backgroundColor: btnColor,
+          backgroundColor: primaryColor,
           elevation: 0,
           title: Text(
             "Inquiry",
@@ -45,14 +55,14 @@ class _InquiryPageState extends State<InquiryPage> {
         body: Center(
           child: inquiryProvider.isLoading
               ? const CircularProgressIndicator(
-                  color: btnColor,
+                  color: primaryColor,
                 )
               : inquiryProvider.inquiryList.isEmpty
                   ? Center(
                       child: Text(
                         "No Data Found",
                         style: GoogleFonts.alice(
-                            color: btnColor,
+                            color: primaryColor,
                             fontSize: 18,
                             fontWeight: FontWeight.w600),
                       ),
@@ -78,11 +88,38 @@ class _InquiryPageState extends State<InquiryPage> {
                                     //color: boxColor,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
-                                  child: Image.network(
-                                    /*inquiryProvider
-                                .inquiryList[index].partnerInfo?.profileLogo ??*/
-                                    noImage,
-                                    width: 90,
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      await showDialog(
+                                      context: context,
+                                      builder: (_) => ImageDialog(
+                                        url:inquiryProvider.inquiryList[index]
+                                            .partnerInfo?.shopLogo !=
+                                            null && inquiryProvider.inquiryList[index]
+                                            .partnerInfo?.shopLogo !=
+                                            ""
+                                            ? ApiConstant.baseUrl +
+                                            "uploads/" +
+                                            inquiryProvider.inquiryList[index]
+                                                .partnerInfo!.shopLogo.toString()
+                                            : noImage,
+                                      ));
+                                    },
+                                    child: Image.network(
+                                      inquiryProvider.inquiryList[index]
+                                                  .partnerInfo?.shopLogo !=
+                                              null && inquiryProvider.inquiryList[index]
+                                                  .partnerInfo?.shopLogo !=
+                                              ""
+                                          ? ApiConstant.baseUrl +
+                                              "uploads/" +
+                                              inquiryProvider.inquiryList[index]
+                                                  .partnerInfo!.shopLogo.toString()
+                                          : noImage,
+                                      width: AppConstant.width(context)*0.2,
+                                      fit: BoxFit.cover,
+                                      height: AppConstant.height(context)*0.1,
+                                    ),
                                   )),
                               const SizedBox(
                                 width: 10,
@@ -134,11 +171,11 @@ class _InquiryPageState extends State<InquiryPage> {
                                             .partnerInfo
                                             ?.id ??
                                         "",
-                                    "type":"warm"
+                                    "type": "warm"
                                   }).then((value) {
                                     Fluttertoast.showToast(
                                         msg: "$value",
-                                        backgroundColor: btnColor);
+                                        backgroundColor: primaryColor);
                                   });
                                 },
                                 child: Container(
@@ -153,7 +190,6 @@ class _InquiryPageState extends State<InquiryPage> {
                           ),
                         );
                       }),
-        )
-    );
+        ));
   }
 }

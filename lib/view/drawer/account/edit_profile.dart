@@ -7,11 +7,11 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:xuseme/api_services/api_services.dart';
+import 'package:xuseme/services/api_services.dart';
 import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/provider/location_provider.dart';
-import '../../constant/color.dart';
-import '../../provider/profile_provider.dart';
+import '../../../constant/color.dart';
+import '../../../provider/profile_provider.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key, required this.data}) : super(key: key);
@@ -146,7 +146,7 @@ class _EditProfileState extends State<EditProfile> {
                       },
                       icon: const Icon(
                         Icons.camera_alt,
-                        color: btnColor,
+                        color: primaryColor,
                         size: 30,
                       )),
                 )
@@ -179,6 +179,7 @@ class _EditProfileState extends State<EditProfile> {
               controller: mobileController,
               keyboardType: TextInputType.phone,
               cursorColor: Colors.black,
+              readOnly: true,
               decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(width: 1, color: textBlack),

@@ -2,11 +2,12 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:xuseme/view/screen/navigation_page.dart';
-import '../../api_services/preference_services.dart';
+
+import '../../services/preference_services.dart';
 import '../../constant/image.dart';
 import '../../provider/preference_provider.dart';
 import '../auth/login_screen.dart';
+import '../navigation/navigation_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -36,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
   _navigethome() async {
     await Future.delayed(const Duration(seconds: 4), () {});
     // ignore: use_build_context_synchronously
-    Get.to(const NavigationPage());
+  Get.to(()=>const NavigationPage());
   }
 
   _navigeteLogin() async {

@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../api_services/api_services.dart';
-import '../../api_services/preference_services.dart';
+import '../../services/api_services.dart';
+import '../../services/preference_services.dart';
 import '../../constant/color.dart';
 
 class ByCompany extends StatefulWidget {
@@ -26,8 +28,9 @@ class _ByCompanyState extends State<ByCompany> {
               .addBannerByCompany(PrefService().getRegId(), dropdownValues1,
                   "${100 * selectedMonths}")
               .then((value) {
+                log("message1111$value");
             Fluttertoast.showToast(
-                msg: "${value["message"]}", backgroundColor: btnColor);
+                msg: "${value["message"]}", backgroundColor: primaryColor);
             Navigator.pop(context);
           });
         },

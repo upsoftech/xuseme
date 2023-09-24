@@ -2,22 +2,29 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:xuseme/api_services/preference_services.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
+import 'package:xuseme/services/preference_services.dart';
+import 'package:xuseme/utils/utility.dart';
 
-import '../../api_services/api_services.dart';
 import '../../constant/api_constant.dart';
 import '../../constant/app_constants.dart';
+import '../../provider/inquiry_provider.dart';
 import '../../provider/sub_category_provider.dart';
+import '../../services/api_services.dart';
+import '../widgets/custom_image_view.dart';
 
 class CategoryDetailsList extends StatefulWidget {
-  const CategoryDetailsList({Key? key, required this.filter}) : super(key: key);
+  const CategoryDetailsList({Key? key, required this.filter, this.type})
+      : super(key: key);
 
   final Map<String, dynamic> filter;
+  final String? type;
 
   @override
   State<CategoryDetailsList> createState() => _CategoryDetailsListState();
@@ -25,6 +32,7 @@ class CategoryDetailsList extends StatefulWidget {
 
 class _CategoryDetailsListState extends State<CategoryDetailsList> {
   late SubShopsProvider subShopProvider;
+  late InquiryProvider inquiryProvider;
 
   @override
   void initState() {
@@ -32,25 +40,74 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
     subShopProvider = Provider.of<SubShopsProvider>(context, listen: false);
 
     subShopProvider.getShopData(widget.filter);
+    inquiryProvider = Provider.of<InquiryProvider>(context, listen: false);
+
+    log("message444444${inquiryProvider.offerAdHistoryList}");
   }
 
+  final searchTextController = TextEditingController();
 
-  final searchController = TextEditingController();
+  final SpeechToText _speechToText = SpeechToText();
+
+  bool _speechEnabled = false;
+  String _lastWords = '';
+
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+    if (!_speechEnabled) {
+      log("message11");
+    }
+  }
+
+  void _startListening() async {
+    try {
+      await _speechToText.listen(onResult: _onSpeechResult);
+    } catch (e) {
+      print(e);
+      log("message11${e}");
+    }
+    setState(() {});
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    searchTextController.text = result.recognizedWords;
+
+    log("message11${result.recognizedWords}");
+  }
 
   @override
   Widget build(BuildContext context) {
     subShopProvider = Provider.of<SubShopsProvider>(context);
+    inquiryProvider = Provider.of<InquiryProvider>(context);
+    //
+    // log("${widget.filter["latitude"]}");
+    // log("${widget.filter["longitude"]}");
+
+    log("${widget.filter}");
 
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: btnColor,
+          backgroundColor: primaryColor,
           elevation: 0,
           title: Container(
             padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
             child: TextFormField(
               cursorColor: textWhite,
               style: const TextStyle(color: textWhite),
-              controller: searchController,
+              controller: searchTextController,
+              onChanged: (v) {
+                if (v.trim() != "") {
+                  subShopProvider.getShopData({"search": v});
+                } else {
+                  subShopProvider.getShopData(widget.filter);
+                }
+              },
               decoration: InputDecoration(
                   focusedBorder: OutlineInputBorder(
                       borderSide: const BorderSide(width: 1, color: textWhite),
@@ -64,14 +121,13 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                   labelStyle: GoogleFonts.alice(color: textWhite),
                   contentPadding: const EdgeInsets.only(top: 10, left: 20),
                   suffixIcon: SizedBox(
-                    width: AppConstants.width(context) * 0.3,
+                    width: AppConstant.width(context) * 0.3,
                     child: Row(
                       children: [
                         IconButton(
                             onPressed: () {
-                              subShopProvider.getShopData({
-                                "search":searchController.text.trim()
-                              });
+                              subShopProvider.getShopData(
+                                  {"search": searchTextController.text.trim()});
                             },
                             icon: const Icon(
                               Icons.search,
@@ -79,9 +135,13 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                             )),
                         const Text('|'),
                         IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.mic,
+                            onPressed: _speechToText.isNotListening
+                                ? _startListening
+                                : _stopListening,
+                            icon: Icon(
+                              _speechToText.isNotListening
+                                  ? Icons.mic_off
+                                  : Icons.mic,
                               color: textWhite,
                             ))
                       ],
@@ -93,7 +153,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
         body: subShopProvider.isLoading
             ? const Center(
                 child: CircularProgressIndicator(
-                  color: btnColor,
+                  color: primaryColor,
                 ),
               )
             : subShopProvider.subShopList.isEmpty
@@ -101,7 +161,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                     child: Text(
                       "No Data Found",
                       style: GoogleFonts.alice(
-                          color: btnColor,
+                          color: primaryColor,
                           fontSize: 18,
                           fontWeight: FontWeight.w600),
                     ),
@@ -132,19 +192,19 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                       await showDialog(
                                           context: context,
                                           builder: (_) => ImageDialog(
-                                                url: ApiConstant.baseUrl +
-                                                    subShopProvider
-                                                        .subShopList[index]
-                                                        .shopLogo
-                                                        .toString(),
+                                                url:
+                                                    "${ApiConstant.baseUrl}uploads/${subShopProvider.subShopList[index].shopLogo}",
                                               ));
                                     },
                                     child: CircleAvatar(
                                         radius: 30,
-                                        backgroundImage: NetworkImage(
-                                            subShopProvider
-                                                .subShopList[index].shopLogo
-                                                .toString())),
+                                        backgroundImage: subShopProvider
+                                                    .subShopList[index]
+                                                    .shopLogo !=
+                                                ""
+                                            ? NetworkImage(
+                                                "${ApiConstant.baseUrl}uploads/${subShopProvider.subShopList[index].shopLogo}")
+                                            : NetworkImage(noImage)),
                                   ),
                                   const SizedBox(
                                     width: 10,
@@ -166,7 +226,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                       Text(
                                         "Owner Name : ${subShopProvider.subShopList[index].name ?? ""}",
                                         style: GoogleFonts.alice(
-                                            color: btnColor,
+                                            color: primaryColor,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14),
                                       )
@@ -181,7 +241,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                 "My business Address:",
                                 style: GoogleFonts.alice(
                                     fontSize: 16,
-                                    color: btnColor,
+                                    color: primaryColor,
                                     fontWeight: FontWeight.w400),
                               ),
                               const SizedBox(
@@ -198,7 +258,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                 "My Services:",
                                 style: GoogleFonts.alice(
                                     fontSize: 16,
-                                    color: btnColor,
+                                    color: primaryColor,
                                     fontWeight: FontWeight.w400),
                               ),
                               Text(
@@ -211,7 +271,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "10 KM Away",
+                                    "${Utility.calculateDistance(double.parse(widget.filter["latitude"]), double.parse(widget.filter["longitude"]), subShopProvider.subShopList[index].latitude ?? 0, subShopProvider.subShopList[index].longitude ?? 0)} KM Away",
                                     style: GoogleFonts.alice(
                                         color: primary,
                                         fontSize: 16,
@@ -219,15 +279,29 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                   ),
                                   Row(
                                     children: [
-                                      Image.asset(
-                                        whatsapp,
-                                        height: 40,
+                                      GestureDetector(
+                                        onTap: () {
+                                          final phoneNumber = Uri.encodeComponent(
+                                              "+91${subShopProvider.subShopList[index].mobile}");
+                                          final message =
+                                              Uri.encodeComponent("Hi");
+                                          final whatsappUrl = Uri.parse(
+                                              "https://wa.me/$phoneNumber/?text=$message");
+                                          launchUrl(whatsappUrl);
+                                        },
+                                        child: Image.asset(
+                                          whatsapp,
+                                          height: 40,
+                                        ),
                                       ),
                                       const SizedBox(
                                         width: 10,
                                       ),
                                       GestureDetector(
                                         onTap: () {
+                                          log("message111${subShopProvider.subShopList[index].mobile}");
+                                          launchUrl(Uri.parse(
+                                              "tel://${subShopProvider.subShopList[index].mobile}"));
                                           ApiServices().callInquiry({
                                             "customerId":
                                                 PrefService().getRegId(),
@@ -238,7 +312,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                           }).then((value) {
                                             Fluttertoast.showToast(
                                                 msg: "$value",
-                                                backgroundColor: btnColor);
+                                                backgroundColor: primaryColor);
                                           });
                                         },
                                         child: const CircleAvatar(
@@ -255,8 +329,9 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                       ),
                                       GestureDetector(
                                         onTap: () {
-                                          log("message${subShopProvider.subShopList[index].id}");
-
+                                          log("message111${subShopProvider.subShopList[index].landline}");
+                                          launchUrl(Uri.parse(
+                                              "tel://${subShopProvider.subShopList[index].landline}"));
                                           ApiServices().callInquiry({
                                             "customerId":
                                                 PrefService().getRegId(),
@@ -267,7 +342,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                           }).then((value) {
                                             Fluttertoast.showToast(
                                                 msg: "$value",
-                                                backgroundColor: btnColor);
+                                                backgroundColor: primaryColor);
                                           });
                                         },
                                         child: const CircleAvatar(
@@ -286,27 +361,5 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                             ],
                           ));
                     }));
-  }
-}
-
-class ImageDialog extends StatelessWidget {
-  const ImageDialog({super.key, required this.url});
-
-  final String url;
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-        child: ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: Container(
-        width: double.infinity,
-        height: 250,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Image.network(url, fit: BoxFit.cover),
-      ),
-    ));
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,14 +8,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../../api_services/api_services.dart';
-import '../../api_services/preference_services.dart';
 import '../../constant/color.dart';
 import '../../provider/category_provider.dart';
 import '../../provider/location_provider.dart';
-import '../screen/navigation_page.dart';
-
-
+import '../../services/api_services.dart';
+import '../../services/preference_services.dart';
+import '../navigation/navigation_page.dart';
 
 class VendorRegistration extends StatefulWidget {
   const VendorRegistration({Key? key, this.data}) : super(key: key);
@@ -57,7 +56,8 @@ class _VendorRegistrationState extends State<VendorRegistration> {
     // TODO: implement initState
     super.initState();
     mobileController.text = widget.data!["mobile"];
-    Provider.of<CategoryProvider>(context, listen: false).getCategoryData();
+    Provider.of<CategoryProvider>(context, listen: false)
+        .getCategoryData(query: '');
   }
 
   @override
@@ -68,7 +68,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: btnColor,
+        backgroundColor: primaryColor,
         elevation: 0,
         title: Text(
           "Registration",
@@ -108,20 +108,22 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                   log("message$value");
                   if (value.toString().contains("PathNotFoundException")) {
                     Fluttertoast.showToast(
-                        msg: "Please Select Image", backgroundColor: btnColor);
-                  } else if (value.toString().contains("All parameters are required")){
+                        msg: "Please Select Image",
+                        backgroundColor: primaryColor);
+                  } else if (value
+                      .toString()
+                      .contains("All parameters are required")) {
                     Fluttertoast.showToast(
-                        msg: "${value["message"]}", backgroundColor: btnColor);
-                  }
-                  else {
+                        msg: "${value["message"]}",
+                        backgroundColor: primaryColor);
+                  } else {
                     Fluttertoast.showToast(
-                        msg: "${value["message"]}", backgroundColor: btnColor);
+                        msg: "${value["message"]}",
+                        backgroundColor: primaryColor);
                     PrefService().setRegId(value["data"]["_id"]);
                     PrefService().setSelectType(value["data"]["type"]);
-                    Get.to(const NavigationPage());
+                    Get.to(() => const NavigationPage());
                   }
-
-
                 });
               } else {
                 // No location found for the given address
@@ -132,7 +134,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
               log("Error during geocoding: $error");
               Fluttertoast.showToast(
                   msg: "Please Provide Correct Address",
-                  backgroundColor: btnColor);
+                  backgroundColor: primaryColor);
             });
           }
         },
@@ -270,7 +272,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                     labelStyle: GoogleFonts.alice(),
                     contentPadding: const EdgeInsets.only(top: 10, left: 20),
                   ),
-               /*   validator: (value) {
+                  /*   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'This field is required';
                     }
@@ -312,7 +314,6 @@ class _VendorRegistrationState extends State<VendorRegistration> {
               Container(
                 padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                 child: DropdownButtonFormField<String>(
-
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                         borderSide:
@@ -342,7 +343,6 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                       ),
                     );
                   }).toList(),
-
                   onChanged: (String? newStateId) {
                     setState(() {
                       shopType = newStateId!;
@@ -419,7 +419,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                             pinController.text = "";
                             Fluttertoast.showToast(
                                 msg: "Only Required 6 digit",
-                                backgroundColor: btnColor);
+                                backgroundColor: primaryColor);
                           }
                         },
                         cursorColor: Colors.black,
@@ -652,11 +652,9 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                     CircleAvatar(
                       radius: 50,
                       backgroundColor: Colors.grey.withOpacity(.2),
-                      // backgroundImage: NetworkImage(
-                      //   widget.data!["shopLogo"].toString() != ""
-                      //       ? "${ApiConstant.baseUrl}/${widget.data!["shopLogo"]}"
-                      //       : noImage,
-                      // ),
+                      child: images != null
+                          ? Image.file(fit: BoxFit.cover, File(images!.path))
+                          : SizedBox(),
                     ),
                     Positioned(
                       bottom: -10,
@@ -692,7 +690,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                           },
                           icon: const Icon(
                             Icons.camera_alt,
-                            color: btnColor,
+                            color: primaryColor,
                             size: 30,
                           )),
                     )

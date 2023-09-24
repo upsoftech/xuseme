@@ -8,9 +8,9 @@ import 'package:location/location.dart' as loc;
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:xuseme/constant/image.dart';
-import 'package:xuseme/view/screen/manual_location.dart';
 import '../../constant/color.dart';
-import '../screen/navigation_page.dart';
+import '../navigation/navigation_page.dart';
+import 'manual_location.dart';
 class LocationPage extends StatefulWidget {
   const LocationPage({Key? key}) : super(key: key);
 
@@ -26,7 +26,7 @@ class _LocationPageState extends State<LocationPage> {
     if (await Permission.location.isGranted) {
       /// location get ///
 
-      getLocation().then((value) =>  Get.to(const NavigationPage()));
+      getLocation().then((value) =>Get.to(()=>const NavigationPage()));
     } else {
       /// permission request ///
       Permission.location.request();
@@ -52,7 +52,7 @@ class _LocationPageState extends State<LocationPage> {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [btnColor.withOpacity(0.9), textWhite],
+          colors: [primaryColor.withOpacity(0.9), textWhite],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -103,7 +103,7 @@ class _LocationPageState extends State<LocationPage> {
               const SizedBox(height: 20,),
             GestureDetector(
               onTap:(){
-                Get.to(const ManualLocation());
+              Get.to(()=>const ManualLocation());
               },
               child: Container(
                 alignment: Alignment.center,

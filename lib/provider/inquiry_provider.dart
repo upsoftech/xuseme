@@ -2,7 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:xuseme/model/banner_model.dart';
-import '../api_services/api_services.dart';
+
+import '../services/api_services.dart';
 import '../model/inquiry_model.dart';
 
 class InquiryProvider extends ChangeNotifier {
@@ -12,13 +13,15 @@ class InquiryProvider extends ChangeNotifier {
 
   List<InquiryModel> _inquiryList = [];
   List<BannerModel> _bannerHistoryList = [];
+  List<dynamic> _offerAdHistoryList = [];
 
   List<InquiryModel> get inquiryList => _inquiryList;
+
+  List<dynamic> get offerAdHistoryList => _offerAdHistoryList;
+
   bool get isLoading => _isLoading;
 
-
   List<BannerModel> get bannerHistoryList => _bannerHistoryList;
-
 
   Future<void> inquiryData(String type) async {
     log("message");
@@ -30,16 +33,32 @@ class InquiryProvider extends ChangeNotifier {
       notifyListeners();
     });
   }
-    /// Banner History Add ///
+
+  /// Banner History Add ///
   Future<void> bannerHistory() async {
     log("message");
     _isLoading = true;
-    await _apiServices.getBannerHistory().then((value){
-      _bannerHistoryList=value;
+    await _apiServices.getBannerHistory().then((value) {
+      _bannerHistoryList = value;
       _isLoading = false;
       notifyListeners();
-
     });
+  }
 
+  /// GET Publish Offer Ad History
+  Future<dynamic> getOfferAdHistory(String id) async {
+    _isLoading = true;
+    var value = await _apiServices.getOfferAdHistory(id);
+
+    _offerAdHistoryList = value;
+    _isLoading = false;
+    notifyListeners();
+
+    return value;
+  }
+
+  Future<void> removeOfferItem(int i) async {
+    _offerAdHistoryList.removeAt(i);
+    notifyListeners();
   }
 }

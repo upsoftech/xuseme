@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:otp_text_field/otp_field.dart';
-import 'package:otp_text_field/style.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:xuseme/view/auth/location.dart';
-import 'package:xuseme/view/screen/navigation_page.dart';
-import '../../api_services/api_services.dart';
-import '../../api_services/preference_services.dart';
-import '../../constant/color.dart';
-import '../vendor/vandor_registration.dart';
 
+import '../../services/api_services.dart';
+import '../../services/preference_services.dart';
+import '../../constant/color.dart';
+import '../navigation/navigation_page.dart';
+import '../vendor/vandor_registration.dart';
 
 class OtpScreen extends StatefulWidget {
   const OtpScreen({Key? key, required this.dropdownValue, required this.mobile})
@@ -107,18 +107,27 @@ class _OtpScreenState extends State<OtpScreen> {
                     _apiService
                         .verifyOtp(
                       widget.mobile,
-                      widget.dropdownValue!.toLowerCase(),
+                      widget.dropdownValue.toLowerCase(),
                       otpController.text.trim(),
                     )
                         .then((value) {
-                      log("message${value}");
+                      log("Otp : ${value}");
 
                       _prefService.setSelectToken(value["token"]);
                       _prefService.setRegId(value["data"]["_id"]);
                       _prefService.setSelectType(value["data"]["type"]);
-                      Get.to(const LocationPage());
+
+                      if (value["message"].toString() == "Login Successfully") {
+                        Get.to(() => const NavigationPage());
+                      } else if (value["message"].toString() == "Registered Successfully") {
+                        Get.to(() => const LocationPage());
+                      }  else{
+                        log("11111 : $value");
+                        Fluttertoast.showToast(msg: value.toString());
+                      }
                     });
-                  } else if (widget.dropdownValue! == 'Partner') {
+                  }
+                  else if (widget.dropdownValue == 'Partner') {
                     _apiService
                         .verifyOtp(
                       widget.mobile,
@@ -129,20 +138,19 @@ class _OtpScreenState extends State<OtpScreen> {
                       log("message$value");
 
                       _prefService.setSelectToken(value["token"]);
-                      if(value["data"]!=null && value["data"]!=""){
+                      if (value["data"]["shopType"] != null && value["data"]["shopType"] != "") {
                         _prefService.setRegId(value["data"]["_id"]);
                         _prefService.setSelectType(value["data"]["type"]);
-                        Get.to(const NavigationPage());
-                      }else{
-
-                        Get.to( VendorRegistration(
-                          data: {
-                            "mobile":widget.mobile
-                          },
-                        ));
+                        Get.to(() => const NavigationPage());
+                      } else {
+                        Get.to(() => VendorRegistration(
+                              data: {"mobile": widget.mobile},
+                            ));
                       }
-
                     });
+                  }
+                  else{
+                    Fluttertoast.showToast(msg: "Something went wrong");
                   }
                 },
                 child: Container(
@@ -186,7 +194,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     style: GoogleFonts.alice(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
-                      color: enableResend ? textBlack : btnColor,
+                      color: enableResend ? textBlack : primaryColor,
                     ),
                   )
                 ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:xuseme/api_services/api_services.dart';
+import 'package:xuseme/services/api_services.dart';
 
 import '../../constant/color.dart';
 import 'by_company.dart';
@@ -35,10 +35,10 @@ class _PostAddState extends State<PostAdd>
     return Scaffold(
 
       appBar: AppBar(
-        backgroundColor: btnColor,
+        backgroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
-        title: Text("Post Add",style: GoogleFonts.alice(color: textWhite,fontWeight: FontWeight.bold,fontSize: 16),),
+        title: Text("Post Premium Add",style: GoogleFonts.alice(color: textWhite,fontWeight: FontWeight.bold,fontSize: 16),),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -50,7 +50,7 @@ class _PostAddState extends State<PostAdd>
               Container(
                 width: MediaQuery.of(context).size.height,
                 decoration: BoxDecoration(
-                    color:btnColor,
+                    color:primaryColor,
                     borderRadius: BorderRadius.circular(5)),
                 child: Column(
                   children: [

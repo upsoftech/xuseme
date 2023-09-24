@@ -4,9 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:xuseme/constant/api_constant.dart';
+import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/provider/profile_provider.dart';
-import '../../api_services/preference_services.dart';
-import '../../constant/color.dart';
+import '../../../services/preference_services.dart';
+import '../../../constant/color.dart';
+import '../../vendor/edit_vndor_profile.dart';
+import '../../widgets/custom_image_view.dart';
 import 'address_page.dart';
 import 'edit_profile.dart';
 import 'inquiry_page.dart';
@@ -36,7 +40,7 @@ class _UserAccountState extends State<UserAccount> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: btnColor,
+        backgroundColor: primaryColor,
         elevation: 0,
         title: Text(
           "Profile",
@@ -45,10 +49,10 @@ class _UserAccountState extends State<UserAccount> {
         ),
       ),
       body: Consumer<ProfileProvider>(builder: (context, value, child) {
-        log("message${value.vendorProfileData}");
+        //log("message${value.vendorProfileData}");
         return ListView(
           children: [
-            _prefService.getSelectType() != "partner"
+            _prefService.getSelectType() == "customer"
                 ? Container(
                     width: double.infinity,
                     margin: const EdgeInsets.symmetric(
@@ -56,7 +60,7 @@ class _UserAccountState extends State<UserAccount> {
                     padding: const EdgeInsets.only(
                         left: 10, right: 15, top: 10, bottom: 10),
                     decoration: BoxDecoration(
-                        // border: Border.all(color: grey),
+                        border: Border.all(color: grey),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.grey.shade200,
@@ -80,7 +84,7 @@ class _UserAccountState extends State<UserAccount> {
                             ),
                             GestureDetector(
                                 onTap: () {
-                                  Get.to(EditProfile(
+                                Get.to(()=>EditProfile(
                                     data: profileProvider.profileData,
                                   ));
                                 },
@@ -93,6 +97,7 @@ class _UserAccountState extends State<UserAccount> {
                                 ))
                           ],
                         ),
+
                         SizedBox(
                           height: MediaQuery.of(context).size.height * .01,
                         ),
@@ -146,7 +151,7 @@ class _UserAccountState extends State<UserAccount> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Get.to(const AddressPage());
+                          Get.to(()=>const AddressPage());
                           },
                           child: Container(
                             alignment: Alignment.center,
@@ -155,7 +160,7 @@ class _UserAccountState extends State<UserAccount> {
                             height: 45,
                             width: double.infinity,
                             decoration: BoxDecoration(
-                                color: btnColor.withOpacity(.2),
+                                color: primaryColor.withOpacity(.2),
                                 borderRadius: BorderRadius.circular(10)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -178,7 +183,7 @@ class _UserAccountState extends State<UserAccount> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Get.to(const InquiryPage());
+                          Get.to(()=>const InquiryPage());
                           },
                           child: Container(
                             alignment: Alignment.center,
@@ -187,7 +192,7 @@ class _UserAccountState extends State<UserAccount> {
                             height: 45,
                             width: double.infinity,
                             decoration: BoxDecoration(
-                                color: btnColor.withOpacity(.2),
+                                color: primaryColor.withOpacity(.2),
                                 borderRadius: BorderRadius.circular(10)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -212,7 +217,7 @@ class _UserAccountState extends State<UserAccount> {
                     ),
                   )
                 : const SizedBox(),
-            _prefService.getSelectType() != "customer"
+            _prefService.getSelectType() == "partner"
                 ? Container(
                     width: double.infinity,
                     margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -230,15 +235,45 @@ class _UserAccountState extends State<UserAccount> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 40,
-                          backgroundColor: btnColor,
-                          backgroundImage: NetworkImage(
-                              value.vendorProfileData["shopLogo"] ?? ""),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                await showDialog(
+                                context: context,
+                                builder: (_) => ImageDialog(
+                                  url: value.vendorProfileData["shopLogo"]!=null &&
+                                      value.vendorProfileData["shopLogo"]!=""?
+                                  ApiConstant.baseUrl+"uploads/"+ value.vendorProfileData["shopLogo"] :noImage,
+                                ));
+                              },
+                              child: CircleAvatar(
+                                radius: 40,
+                                backgroundColor: primaryColor,
+                                backgroundImage: NetworkImage(
+                                    value.vendorProfileData["shopLogo"]!=null &&
+                                    value.vendorProfileData["shopLogo"]!=""?
+                                   ApiConstant.baseUrl+"uploads/"+ value.vendorProfileData["shopLogo"] :noImage ),
+                              ),
+                            ),
+                            GestureDetector(
+                                onTap: () {
+                                Get.to(()=>EditVendorProfile(
+                                   data: value.vendorProfileData,
+                                  ));
+                                },
+                                child: Text(
+                                  "Edit",
+                                  style: GoogleFonts.alice(
+                                      fontSize: 20,
+                                      color: secondry,
+                                      fontWeight: FontWeight.bold),
+                                ))
+                          ],
                         ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * .01,
-                        ),
+
+
                         Row(
                           children: [
                             Text(

@@ -1,78 +1,102 @@
 class ShopSubCategoryModel {
   final String? id;
-  final String? name;
   final String? mobile;
-  final String? landline;
-  final String? email;
   final String? type;
-  final String? shopName;
-  final String? shopType;
-  final String? address;
-  final String? landmark;
-  final String? pincode;
-  final String? state;
-  final String? services;
-  final String? shopLogo;
-  final String? profileLogo;
+  final bool? isPremium;
   final String? createdAt;
   final String? updatedAt;
+  final int? v;
+  final String? address;
+  final String? email;
+  final String? landline;
+  final String? landmark;
+  final double? latitude;
+  final double? longitude;
+  final String? name;
+  final String? pincode;
+  final String? profileLogo;
+  final String? services;
+  final String? shopLogo;
+  final String? shopName;
+  final String? shopType;
+  final String? state;
+  final List<dynamic>? offers;
+  final List<dynamic>? premiumOffers;
 
   ShopSubCategoryModel({
     this.id,
-    this.name,
     this.mobile,
-    this.landline,
-    this.email,
     this.type,
-    this.shopName,
-    this.shopType,
-    this.address,
-    this.landmark,
-    this.pincode,
-    this.state,
-    this.services,
-    this.shopLogo,
-    this.profileLogo,
+    this.isPremium,
     this.createdAt,
     this.updatedAt,
+    this.v,
+    this.address,
+    this.email,
+    this.landline,
+    this.landmark,
+    this.latitude,
+    this.longitude,
+    this.name,
+    this.pincode,
+    this.profileLogo,
+    this.services,
+    this.shopLogo,
+    this.shopName,
+    this.shopType,
+    this.state,
+    this.offers,
+    this.premiumOffers,
   });
 
   ShopSubCategoryModel.fromJson(Map<String, dynamic> json)
       : id = json['_id'] as String?,
-        name = json['name'] as String?,
         mobile = json['mobile'] as String?,
-        landline = json['landline'] as String?,
-        email = json['email'] as String?,
         type = json['type'] as String?,
-        shopName = json['shopName'] as String?,
-        shopType = json['shopType'] as String?,
+        isPremium = json['isPremium'] as bool?,
+        createdAt = json['createdAt'] as String?,
+        updatedAt = json['updatedAt'] as String?,
+        v = json['__v'] as int?,
         address = json['address'] as String?,
+        email = json['email'] as String?,
+        landline = json['landline'] as String?,
         landmark = json['landmark'] as String?,
+        latitude = json['latitude'] as double?,
+        longitude = json['longitude'] as double?,
+        name = json['name'] as String?,
         pincode = json['pincode'] as String?,
-        state = json['state'] as String?,
+        profileLogo = json['profileLogo'] as String?,
         services = json['services'] as String?,
         shopLogo = json['shopLogo'] as String?,
-        profileLogo = json['profileLogo'] as String?,
-        createdAt = json['createdAt'] as String?,
-        updatedAt = json['updatedAt'] as String?;
+        shopName = json['shopName'] as String?,
+        shopType = json['shopType'] as String?,
+        state = json['state'] as String?,
+        offers = json['offers'] as List?,
+        premiumOffers = json['premiumOffers'] as List?;
 
   Map<String, dynamic> toJson() => {
     '_id' : id,
-    'name' : name,
     'mobile' : mobile,
-    'landline' : landline,
-    'email' : email,
     'type' : type,
-    'shopName' : shopName,
-    'shopType' : shopType,
+    'isPremium' : isPremium,
+    'createdAt' : createdAt,
+    'updatedAt' : updatedAt,
+    '__v' : v,
     'address' : address,
+    'email' : email,
+    'landline' : landline,
     'landmark' : landmark,
+    'latitude' : latitude,
+    'longitude' : longitude,
+    'name' : name,
     'pincode' : pincode,
-    'state' : state,
+    'profileLogo' : profileLogo,
     'services' : services,
     'shopLogo' : shopLogo,
-    'profileLogo' : profileLogo,
-    'createdAt' : createdAt,
-    'updatedAt' : updatedAt
+    'shopName' : shopName,
+    'shopType' : shopType,
+    'state' : state,
+    'offers' : offers,
+    'premiumOffers' : premiumOffers
   };
 }

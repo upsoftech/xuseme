@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:xuseme/api_services/preference_services.dart';
+import 'package:xuseme/services/preference_services.dart';
 
-import '../../api_services/api_services.dart';
+import '../../services/api_services.dart';
 import '../../constant/color.dart';
 
 class BySelf extends StatefulWidget {
@@ -42,7 +42,7 @@ class _BySelfState extends State<BySelf> {
                     upload!.path, "${100 * selectedMonth}")
                 .then((value) {
               Fluttertoast.showToast(
-                  msg: "${value["message"]}", backgroundColor: btnColor);
+                  msg: "${value["message"]}", backgroundColor: primaryColor);
             });
             Navigator.pop(context);
           } else {

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:xuseme/model/category_model.dart';
 
-import '../api_services/api_services.dart';
+import '../services/api_services.dart';
 
 class CategoryProvider extends ChangeNotifier {
 
@@ -12,10 +12,10 @@ class CategoryProvider extends ChangeNotifier {
   List<CategoryModel> get categoryList => _categoryList;
   bool get isLoading => _isLoading;
 
-  Future<void> getCategoryData() async {
+  Future<void> getCategoryData({required String query, bool? isPremium}) async {
     _isLoading = true;
     _categoryList.clear();
-    await _apiServices.getCategory().then((value) {
+    await _apiServices.getCategory(query,isPremium).then((value) {
       _categoryList = value;
       _isLoading = false;
       notifyListeners();

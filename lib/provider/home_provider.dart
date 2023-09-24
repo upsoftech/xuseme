@@ -2,21 +2,26 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 
-import '../api_services/api_services.dart';
+import '../services/api_services.dart';
 
-class HomeProvider extends ChangeNotifier{
+class HomeProvider extends ChangeNotifier {
   final ApiServices _apiServices = ApiServices();
 
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
 
-   List _bannerList=[];
+  List _bannerList = [];
 
-List get bannerList=>_bannerList;
+  List get bannerList => _bannerList;
+
+  List _singleBannerList = [];
+
+  List get singleBannerList => _singleBannerList;
 
   int _currentIndex = 0;
-  int get currentIndex =>_currentIndex;
+
+  int get currentIndex => _currentIndex;
 
   Future<dynamic> getBanner() async {
     _isLoading = true;
@@ -28,7 +33,17 @@ List get bannerList=>_bannerList;
     });
   }
 
-  setCurrentIndex(int i){
+  Future<dynamic> getSingleBanner() async {
+    _isLoading = true;
+
+    await _apiServices.getSingleBanner().then((value) {
+      _singleBannerList = value;
+      _isLoading = false;
+      notifyListeners();
+    });
+  }
+
+  setCurrentIndex(int i) {
     _currentIndex = i;
     notifyListeners();
   }

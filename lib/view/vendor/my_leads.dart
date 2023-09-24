@@ -28,7 +28,7 @@ class _MyLeadState extends State<MyLead> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: btnColor,
+        backgroundColor: primaryColor,
         centerTitle: true,
         title: Text(
           "My Leads",

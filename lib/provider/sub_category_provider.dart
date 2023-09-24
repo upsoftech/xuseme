@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:xuseme/api_services/api_services.dart';
+import 'package:xuseme/services/api_services.dart';
 
 import '../model/sub_category_model.dart';
 
@@ -22,5 +22,6 @@ class SubShopsProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     });
+
   }
 }

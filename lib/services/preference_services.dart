@@ -12,43 +12,50 @@ class PrefService {
   }
 
   setRegId(String regId) {
-    return setString(AppConstants.regIdKey, regId);
+    return setString(AppConstant.regIdKey, regId);
   }
 
   setSelectType(String types) {
-    return setString(AppConstants.selectType, types);
+    return setString(AppConstant.selectType, types);
   }
 
   setSelectToken(String tokens) {
-    return setString(AppConstants.saveToken, tokens);
+    return setString(AppConstant.saveToken, tokens);
+  }
+
+  setFcmToken(String tokens) {
+    return setString(AppConstant.fcmToken, tokens);
   }
 
   getSelectType() {
-    return getString(AppConstants.selectType);
+    return getString(AppConstant.selectType);
   }
 
   getRegId() {
-    return getString(AppConstants.regIdKey);
+    return getString(AppConstant.regIdKey);
   }
 
   getToken() {
-    return getString(AppConstants.saveToken);
+    return getString(AppConstant.saveToken);
+  }
+  getFcmToken() {
+    return getString(AppConstant.fcmToken);
   }
 
   setMobile(String mobile) {
-    return setString(AppConstants.mobileNoKey, mobile);
+    return setString(AppConstant.mobileNoKey, mobile);
   }
 
   getMobile() {
-    return getString(AppConstants.mobileNoKey);
+    return getString(AppConstant.mobileNoKey);
   }
 
   setUserSession(bool value) {
-    return setBool(AppConstants.userSessionKey, value);
+    return setBool(AppConstant.userSessionKey, value);
   }
 
   getUserSession() {
-    return getBool(AppConstants.userSessionKey);
+    return getBool(AppConstant.userSessionKey);
   }
 
   //sets

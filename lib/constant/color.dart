@@ -11,7 +11,7 @@ const Color boxColor=Color(0xFFF5F5F5);
 const Color background=Color(0xFFD9D9D9);
 const Color bkColor=Color(0xFFDCDCDC);
 const Color brownBackground=Color(0xFF371D10);
-const Color btnColor=Color(0xFFb0275f);
+const Color primaryColor=Color(0xFFb0275f);
 
 
 

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:xuseme/api_services/preference_services.dart';
+import 'package:xuseme/services/preference_services.dart';
 import 'package:http/http.dart' as http;
 import 'package:xuseme/model/banner_model.dart';
 import 'package:xuseme/model/inquiry_model.dart';
@@ -16,18 +16,22 @@ class ApiServices {
   /// Login With Mobile Number ///
 
   Future<dynamic> logInMobile(String mobile, type) async {
-    log("message$mobile" + type);
+
     var data = await networkCalls
         .post(ApiConstant.loginMobile, {"mobile": mobile, "type": type});
+
+    log("LOGIN_SCREEN : $data");
     return jsonDecode(data);
   }
 
   /// very the otp from the server ///
 
   Future<dynamic> verifyOtp(String mobile, type, otp) async {
-    log("message$mobile" + type);
+
     var data = await networkCalls.post(
         ApiConstant.verifyOtp, {"mobile": mobile, "type": type, "otp": otp});
+
+    log("LOGIN_SCREEN _Verify_Otp : $mobile");
     return jsonDecode(data);
   }
 
@@ -78,12 +82,61 @@ class ApiServices {
       return e;
     }
   }
+  Future<dynamic> updatePartner(String? path,name,mobile,
+      landline,email,shopName,shopType,address,landmark,
+      pincode,latitude,longitude,state,services) async {
+    try {
+      var tokenIds = PrefService().getToken();
+      var id = PrefService().getRegId();
+
+
+      final Uri apiUrl = Uri.parse("${ApiConstant.baseUrl}/api/user/partner/v1/$id");
+      final Map<String, String> headers = {'Authorization': 'Bearer $tokenIds'};
+
+      var request = http.MultipartRequest('PATCH', apiUrl)
+        ..headers.addAll(headers)
+        ..fields['name'] = name
+        ..fields['landline'] = landline
+        ..fields['email'] = email
+        ..fields['shopName'] = shopName
+        ..fields['shopType'] = shopType
+        ..fields['address'] = address
+        ..fields['landmark'] = landmark
+        ..fields['pincode'] =pincode
+        ..fields['state'] = state
+        ..fields['latitude'] = latitude.toString()
+        ..fields['longitude'] = longitude.toString()
+        ..fields['services'] = services;
+
+      if(path!=null){
+        request.files.add(await http.MultipartFile.fromPath('shopLogo', path));
+      }
+
+
+      var response = await request.send();
+      var data = await  http.Response.fromStream(response);
+
+      return jsonDecode(data.body);
+
+
+    } catch (e) {
+
+      return e;
+    }
+  }
 
 
   /// Get  Banner from the server ///
 
   Future<dynamic> getBanner() async {
-    var data = await networkCalls.get(ApiConstant.banner);
+    var data = await networkCalls.get("${ApiConstant.banner}?isApproved=true");
+
+    return jsonDecode(data);
+  }
+ /// Get Single Banner form the server ///
+
+  Future<dynamic> getSingleBanner() async {
+    var data = await networkCalls.get("${ApiConstant.singleBanner}?isApproved=true");
 
     return jsonDecode(data);
   }
@@ -151,6 +204,23 @@ class ApiServices {
       await  http.post(Uri.parse(ApiConstant.addUserAddress), body: mapData);
     
    
+
+    return jsonDecode(response.body);
+  }
+/// Add Address from the server //
+  Future<dynamic> addHelpSupport(Map<String, dynamic> mapData) async {
+
+    var tokenIds = PrefService().getToken();
+
+
+    var response =
+      await  http.post(Uri.parse(ApiConstant.helpEndPoint), body: mapData,
+          headers: {
+            'Authorization': 'Bearer $tokenIds',
+          }
+      );
+
+
 
     return jsonDecode(response.body);
   }
@@ -236,6 +306,13 @@ class ApiServices {
     for (var i in jsonDecode(response.body)) {
       myList.add(ShopSubCategoryModel.fromJson(i));
     }
+    // log("Partners ${jsonDecode(response.body)}");
+    // if(jsonDecode(response.body)["error"].toString().contains("An error")){
+    //   log("Partners ${jsonDecode(response.body)["error"]}");
+    // }else{
+    //
+    //
+    // }
     return myList;
   }
 
@@ -282,7 +359,6 @@ class ApiServices {
       var request = http.MultipartRequest('POST', uri);
       request.headers['Authorization'] = 'Bearer $tokenIds';
 
-
       request.fields["partnerId"] = partnerId;
       request.fields["validity"] = validity;
       request.fields["price"] = price;
@@ -291,7 +367,6 @@ class ApiServices {
     var data = await  http.Response.fromStream(response);
 
     return jsonDecode(data.body);
-
 
   }
 
@@ -317,6 +392,7 @@ class ApiServices {
     request.fields["offer"] = offer;
 
 
+    log("message11111${request.fields}");
     var response = await request.send();
     var data = await  http.Response.fromStream(response);
 
@@ -327,9 +403,9 @@ class ApiServices {
 
   ///  get category data from the server ///
 
-  Future<List<CategoryModel>> getCategory() async {
+  Future<List<CategoryModel>> getCategory(String query,bool? isPremium) async {
     List<CategoryModel> myList = [];
-    var data = await networkCalls.get(ApiConstant.grtCategoryEndpoint);
+    var data = await networkCalls.get("${ApiConstant.grtCategoryEndpoint}?search=$query&isPremium=${isPremium??""}");
     for (var i in jsonDecode(data)) {
       myList.add(CategoryModel.fromJson(i));
     }
@@ -354,4 +430,24 @@ class ApiServices {
     var data = await networkCalls.get("${ApiConstant.vendorGetProfile}$p");
     return jsonDecode(data);
   }
+
+
+  /// GET Publish Offer Ad History
+  Future<dynamic> getOfferAdHistory(String id ) async {
+
+    var data = await networkCalls.get("${ApiConstant.offerEndpoint}/$id");
+    return jsonDecode(data);
+  }
+
+  /// delete user Address from the server ///
+
+  Future<dynamic> deleteOffer(String offerId) async {
+    var data =
+    await networkCalls.delete("${ApiConstant.offerEndpoint}/$offerId");
+
+    return jsonDecode(data);
+  }
+
+
+
 }

@@ -1,16 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/view/home/home_page.dart';
-import '../../model/inquiry_model.dart';
-import '../category/category_details.dart';
-import '../category/category_list.dart';
-import '../user_account/inquiry_page.dart';
 
+import '../../constant/app_constants.dart';
+import '../category/category_list.dart';
+import '../drawer/account/inquiry_page.dart';
 
 class NavigationPage extends StatefulWidget {
   const NavigationPage({
@@ -30,8 +27,7 @@ class _NavigationPageState extends State<NavigationPage> {
   static final List _widgetOptions = <dynamic>[
     const HomePage(),
     const InquiryPage(),
-    //   const SettingPage(),
-     const CategoryList(     )
+    CategoryList(type: AppConstant.premiumShop, isPremium: true)
   ];
 
   void _onItemTapped(index) {
@@ -89,7 +85,7 @@ class _NavigationPageState extends State<NavigationPage> {
           child: _widgetOptions.elementAt(_selectedIndex),
         ),
         bottomNavigationBar: BottomNavigationBar(
-            backgroundColor: btnColor,
+            backgroundColor: primaryColor,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),
@@ -99,10 +95,6 @@ class _NavigationPageState extends State<NavigationPage> {
                 icon: Icon(Icons.search),
                 label: 'Inquiry',
               ),
-              // BottomNavigationBarItem(
-              //   icon: Icon(Icons.settings),
-              //   label: 'Setting',
-              // ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.workspace_premium_outlined),
                 label: 'Premium',

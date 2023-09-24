@@ -6,12 +6,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:xuseme/constant/app_constants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../../api_services/api_services.dart';
-import '../../api_services/preference_services.dart';
-import '../../constant/color.dart';
-import '../../model/address_model.dart';
-import '../../provider/location_provider.dart';
-import '../../provider/profile_provider.dart';
+import '../../../services/api_services.dart';
+import '../../../services/preference_services.dart';
+import '../../../constant/color.dart';
+import '../../../model/address_model.dart';
+import '../../../provider/location_provider.dart';
+import '../../../provider/profile_provider.dart';
 
 class AddAddress extends StatefulWidget {
   const AddAddress({Key? key, this.data, required this.isEdit})
@@ -104,7 +104,7 @@ class _AddAddressState extends State<AddAddress> {
       ),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: btnColor,
+        backgroundColor: primaryColor,
         elevation: 0,
         title: Text(
           "${widget.isEdit ? "Edit" : "Add"} Address",
@@ -199,7 +199,7 @@ class _AddAddressState extends State<AddAddress> {
           ),
           ListTile(
             leading: Radio<String>(
-              activeColor: btnColor,
+              activeColor: primaryColor,
               value: 'Work',
               groupValue: address,
               onChanged: (value) {
@@ -209,7 +209,7 @@ class _AddAddressState extends State<AddAddress> {
               },
             ),
             trailing: SizedBox(
-              width: AppConstants.width(context) * 0.35,
+              width: AppConstant.width(context) * 0.35,
             ),
             title: Container(
               alignment: Alignment.center,
@@ -222,7 +222,7 @@ class _AddAddressState extends State<AddAddress> {
                 children: [
                   const Icon(
                     Icons.work,
-                    color: btnColor,
+                    color: primaryColor,
                   ),
                   Text(
                     "Work",
@@ -237,7 +237,7 @@ class _AddAddressState extends State<AddAddress> {
           ),
           ListTile(
             leading: Radio<String>(
-              activeColor: btnColor,
+              activeColor: primaryColor,
               value: 'Home',
               groupValue: address,
               onChanged: (value) {
@@ -247,7 +247,7 @@ class _AddAddressState extends State<AddAddress> {
               },
             ),
             trailing: SizedBox(
-              width: AppConstants.width(context) * 0.35,
+              width: AppConstant.width(context) * 0.35,
             ),
             title: Container(
               alignment: Alignment.center,
@@ -260,7 +260,7 @@ class _AddAddressState extends State<AddAddress> {
                 children: [
                   const Icon(
                     Icons.home,
-                    color: btnColor,
+                    color: primaryColor,
                   ),
                   Text(
                     "Home",

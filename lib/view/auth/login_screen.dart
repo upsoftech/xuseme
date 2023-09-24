@@ -7,8 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/view/auth/otp_screen.dart';
-import '../../api_services/api_services.dart';
-import '../../api_services/preference_services.dart';
+import '../../services/api_services.dart';
+import '../../services/preference_services.dart';
 import '../../constant/color.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [btnColor, textWhite],
+          colors: [primaryColor, textWhite],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               Container(
                 padding: const EdgeInsets.fromLTRB(15, 20, 15, 0),
-                child: IntlPhoneField(
+                child: TextFormField(
                   controller: mobileNumber,
                   decoration: InputDecoration(
                     focusColor: Colors.white,
@@ -133,9 +133,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   onChanged: (phone) {
                     // print(phone.completeNumber);
                   },
-                  onCountryChanged: (country) {
-                    // print('Country changed to: ' + country.name);
-                  },
+                  // onCountryChanged: (country) {
+                  //   // print('Country changed to: ' + country.name);
+                  // },
                 ),
               ),
               const SizedBox(
@@ -143,6 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               InkWell(
                   onTap: () {
+
                     if (mobileNumber.text.trim() != "" &&
                         mobileNumber.text.trim().length == 10 &&
                         dropdownValue!.toLowerCase()=="customer"
@@ -150,15 +151,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       _apiService
                           .logInMobile(mobileNumber.text.trim(),
                               dropdownValue!.toLowerCase())
-                          .then((value) {
-                        log("message${value}");
-                        Fluttertoast.showToast(msg: "OTP Is ${value["otp"]}");
-
-                        log("$dropdownValue");
-                        Get.to( OtpScreen(
-                          dropdownValue: 'Customer',
-                          mobile: mobileNumber.text.trim(),
-                        ));
+                          .then((value) {  
+                            
+                            log("LOGIN_SCREEN : ${value}");
+                            log("LOGIN_SCREEN $dropdownValue");
+                            
+                            if(value["status"]!="0" && value["otp"] !=null){ 
+                              Fluttertoast.showToast(msg: "OTP Is ${value["otp"]}");
+                              Get.to(()=> OtpScreen(
+                                dropdownValue: 'Customer',
+                                mobile: mobileNumber.text.trim(),
+                              ));
+                            }else if (value["message"].toString().contains("Number already exists")){
+                              Fluttertoast.showToast(msg: "OTP Is ${value["message"]}");
+                            }else{
+                              Fluttertoast.showToast(msg: "OTP Is ${value}");
+                            }
+                     
+                     
                       });
                     } else if (mobileNumber.text.trim() != "" &&
                         mobileNumber.text.trim().length == 10 &&
@@ -169,19 +179,24 @@ class _LoginScreenState extends State<LoginScreen> {
                               dropdownValue!.toLowerCase())
                           .then((value) {
 
-                            log(value.toString());
+                        if(value["status"]!="0" && value["otp"] !=null){
+                          Fluttertoast.showToast(msg: "OTP Is ${value["otp"]}");
+                          Get.to(()=> OtpScreen(
+                            dropdownValue: 'Partner',
+                            mobile: mobileNumber.text.trim(),
 
-                            Fluttertoast.showToast(msg: "OTP Is ${value["otp"]}");
-                        Get.to( OtpScreen(
-                          dropdownValue: 'Partner',
-                          mobile: mobileNumber.text.trim(),
+                          ));
+                        }else if (value["message"].toString().contains("Number already exists")){
+                          Fluttertoast.showToast(msg: "OTP Is ${value["message"]}");
+                        }else{
+                          Fluttertoast.showToast(msg: "OTP Is ${value}");
+                        }
 
-                        ));
                       });
                     } else {
                       Fluttertoast.showToast(
                         msg: 'Please Select Required',
-                        backgroundColor: btnColor,
+                        backgroundColor: primaryColor,
                       );
                     }
                   },
@@ -209,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Checkbox(
                       checkColor: textWhite,
-                      activeColor: btnColor,
+                      activeColor: primaryColor,
                       value: valuefirst,
                       onChanged: (bool? value) {
                         setState(() {
@@ -229,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   decoration: TextDecoration.underline,
-                                  color: btnColor),
+                                  color: primaryColor),
                             ),
                             TextSpan(
                                 text: ' and ',
@@ -240,7 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   decoration: TextDecoration.underline,
-                                  color: btnColor),
+                                  color: primaryColor),
                             )
                           ])),
                     ),

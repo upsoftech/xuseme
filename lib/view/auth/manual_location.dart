@@ -8,7 +8,7 @@ import 'package:location/location.dart' as locate;
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../constant/color.dart';
-import 'navigation_page.dart';
+import '../navigation/navigation_page.dart';
 
 class ManualLocation extends StatefulWidget {
   const ManualLocation({Key? key}) : super(key: key);
@@ -62,7 +62,7 @@ class _ManualLocationState extends State<ManualLocation> {
       bottomNavigationBar: GestureDetector(
         onTap: () {
           if (formKey.currentState!.validate()) {
-            Get.to(const NavigationPage());
+          Get.to(()=>const NavigationPage());
           }
         },
         child: Container(
@@ -81,7 +81,7 @@ class _ManualLocationState extends State<ManualLocation> {
       ),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: btnColor,
+        backgroundColor: primaryColor,
         iconTheme: const IconThemeData(color: textWhite),
         elevation: 0,
         title: Text(

@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:xuseme/constant/image.dart';
 
+import '../../constant/api_constant.dart';
 import '../../constant/color.dart';
+import '../../provider/inquiry_provider.dart';
 
 class MyAdds extends StatefulWidget {
   const MyAdds({Key? key}) : super(key: key);
@@ -12,11 +17,26 @@ class MyAdds extends StatefulWidget {
 }
 
 class _MyAddsState extends State<MyAdds> {
+  late InquiryProvider inquiryProvider;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    inquiryProvider = Provider.of<InquiryProvider>(context, listen: false);
+    inquiryProvider.bannerHistory();
+    // log("message${inquiryProvider.bannerHistoryList.first.bannerImage}");
+  }
+
   @override
   Widget build(BuildContext context) {
+    final inquiryProvider = Provider.of<InquiryProvider>(
+      context,
+    );
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: btnColor,
+        backgroundColor: primaryColor,
         elevation: 0,
         centerTitle: true,
         title: Text(
@@ -26,7 +46,7 @@ class _MyAddsState extends State<MyAdds> {
         ),
       ),
       body: ListView.builder(
-        itemCount: 5,
+        itemCount: inquiryProvider.bannerHistoryList.length,
         itemBuilder: (BuildContext context, int index) {
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -42,13 +62,29 @@ class _MyAddsState extends State<MyAdds> {
                   children: [
                     Row(
                       children: [
-                        const CircleAvatar(
-                          radius: 25,
-                          backgroundImage: AssetImage(window),
+                        CircleAvatar(
+                          backgroundImage: NetworkImage(inquiryProvider
+                                          .bannerHistoryList[index]
+                                          .bannerImage !=
+                                      "" &&
+                                  inquiryProvider.bannerHistoryList[index]
+                                          .bannerImage !=
+                                      null
+                              ? ApiConstant.baseUrl +
+                                  "uploads/banners/" +
+                                  inquiryProvider
+                                      .bannerHistoryList[index].bannerImage
+                                      .toString()
+                              : noImage),
+                          radius: 30,
                         ),
-                        const SizedBox(width: 10,),
+                        const SizedBox(
+                          width: 10,
+                        ),
                         Text(
-                          "Mithiles kumar",
+                          "${inquiryProvider
+                              .bannerHistoryList[index]
+                              .validity} Month",
                           style: GoogleFonts.alice(
                               color: textBlack,
                               fontWeight: FontWeight.bold,
@@ -56,7 +92,6 @@ class _MyAddsState extends State<MyAdds> {
                         ),
                       ],
                     ),
-
                     const Icon(
                       Icons.delete,
                       color: red,
@@ -132,7 +167,7 @@ class _MyAddsState extends State<MyAdds> {
                 Row(
                   children: [
                     Text(
-                      "Services :",
+                      "Validity :",
                       style: GoogleFonts.alice(
                           color: textBlack,
                           fontWeight: FontWeight.bold,
@@ -144,7 +179,9 @@ class _MyAddsState extends State<MyAdds> {
                     SizedBox(
                         width: MediaQuery.of(context).size.width * .7,
                         child: Text(
-                          "Chicken ,boneless Chicken,Mutton ",
+                          "${inquiryProvider
+                              .bannerHistoryList[index]
+                              .validity} Month ",
                           style:
                               GoogleFonts.alice(color: textBlack, fontSize: 16),
                         ))

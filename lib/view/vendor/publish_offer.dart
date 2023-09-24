@@ -5,8 +5,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../api_services/api_services.dart';
-import '../../api_services/preference_services.dart';
+import '../../services/api_services.dart';
+import '../../services/preference_services.dart';
 import '../../constant/color.dart';
 
 
@@ -36,7 +36,7 @@ class _PublishedOfferState extends State<PublishedOffer> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: btnColor,
+        backgroundColor: primaryColor,
         elevation: 0,
         title: Text(
           "Published Offer",
@@ -52,7 +52,7 @@ class _PublishedOfferState extends State<PublishedOffer> {
                     offerController.text.trim())
                 .then((value) {
               Fluttertoast.showToast(
-                  msg: "${value["message"]}", backgroundColor: btnColor);
+                  msg: "${value["message"]}", backgroundColor: primaryColor);
             });
             Navigator.pop(context);
           } else {
@@ -131,6 +131,7 @@ class _PublishedOfferState extends State<PublishedOffer> {
             Container(
               padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
               child: TextFormField(
+                controller: offerController,
                 cursorColor: Colors.black,
                 decoration: InputDecoration(
                   focusedBorder: OutlineInputBorder(

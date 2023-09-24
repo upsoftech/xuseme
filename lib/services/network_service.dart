@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
-import 'package:xuseme/api_services/preference_services.dart';
+import 'package:xuseme/services/preference_services.dart';
 
 class NetworkCalls {
   /// post api call ///

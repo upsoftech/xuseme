@@ -3,11 +3,11 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:xuseme/api_services/api_services.dart';
+import 'package:xuseme/services/api_services.dart';
 
-import '../../api_services/preference_services.dart';
-import '../../constant/color.dart';
-import '../../provider/profile_provider.dart';
+import '../../../services/preference_services.dart';
+import '../../../constant/color.dart';
+import '../../../provider/profile_provider.dart';
 import 'add_address.dart';
 
 class AddressPage extends StatefulWidget {
@@ -37,7 +37,7 @@ class _AddressPageState extends State<AddressPage> {
     return Scaffold(
       bottomNavigationBar: GestureDetector(
         onTap: () {
-          Get.to(const AddAddress(
+        Get.to(()=>const AddAddress(
             isEdit: false,
           ));
         },
@@ -57,7 +57,7 @@ class _AddressPageState extends State<AddressPage> {
       ),
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: btnColor,
+        backgroundColor: primaryColor,
         elevation: 0,
         title: Text(
           "Address",
@@ -112,7 +112,7 @@ class _AddressPageState extends State<AddressPage> {
                     children: [
                       IconButton(
                           onPressed: () {
-                            Get.to(AddAddress(
+                          Get.to(()=>AddAddress(
                               isEdit: true,
                               data: e,
                             ));

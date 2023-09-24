@@ -5,18 +5,20 @@ import 'package:provider/provider.dart';
 import 'package:rating_dialog/rating_dialog.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xuseme/constant/api_constant.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/view/auth/login_screen.dart';
-
 import '../../provider/profile_provider.dart';
 
-import '../user_account/user_account.dart';
+import '../../services/preference_services.dart';
+import '../navigation/help_screen.dart';
 import '../vendor/add_histroy.dart';
 import '../vendor/my_adds.dart';
 import '../vendor/my_leads.dart';
 import '../vendor/post_add.dart';
 import '../vendor/publish_offer.dart';
+import 'account/user_account.dart';
 
 class DrawerPage extends StatefulWidget {
   const DrawerPage({Key? key, this.page}) : super(key: key);
@@ -48,13 +50,19 @@ class _DrawerPageState extends State<DrawerPage> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-                decoration: const BoxDecoration(color: btnColor),
+                decoration: const BoxDecoration(color: primaryColor),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(/*data["profileLogo"]??*/
+                    PrefService().getSelectType() == "customer"?  CircleAvatar(
+                      backgroundImage: NetworkImage(data["profileLogo"]!="" &&data["profileLogo"]!=null ?
+                          ApiConstant.baseUrl+"uploads/"+data["profileLogo"]:
                           noImage),
+                      radius: 50,
+                    ):CircleAvatar(
+                      backgroundImage: NetworkImage(data["shopLogo"]!="" &&data["shopLogo"]!=null ?
+                      ApiConstant.baseUrl+"uploads/"+data["shopLogo"]:
+                      noImage),
                       radius: 50,
                     ),
                     Text(
@@ -69,11 +77,11 @@ class _DrawerPageState extends State<DrawerPage> {
                 )),
             ListTile(
               onTap: () {
-                Get.to(const UserAccount());
+              Get.to(()=>const UserAccount());
               },
               leading: const Icon(
                 Icons.person,
-                color: btnColor,
+                color: primaryColor,
               ),
               title: Text(
                 "Profile",
@@ -86,11 +94,11 @@ class _DrawerPageState extends State<DrawerPage> {
             data["type"] == "partner"
                 ? ListTile(
                     onTap: () {
-                      Get.to(const MyLead());
+                    Get.to(()=>const MyLead());
                     },
                     leading: const Icon(
                       Icons.leaderboard_outlined,
-                      color: btnColor,
+                      color: primaryColor,
                     ),
                     title: Text(
                       "My leads",
@@ -104,14 +112,14 @@ class _DrawerPageState extends State<DrawerPage> {
             data["type"] == "partner"
                 ? ListTile(
                     onTap: () {
-                      Get.to(const PostAdd());
+                    Get.to(()=>const PostAdd());
                     },
                     leading: const Icon(
                       Icons.post_add,
-                      color: btnColor,
+                      color: primaryColor,
                     ),
                     title: Text(
-                      "Post Add",
+                      "Post Premium Add",
                       style: GoogleFonts.alice(
                           color: textBlack,
                           fontWeight: FontWeight.w500,
@@ -122,14 +130,14 @@ class _DrawerPageState extends State<DrawerPage> {
             data["type"] == "partner"
                 ? ListTile(
                     onTap: () {
-                      Get.to(const MyAdds());
+                    Get.to(()=>const MyAdds());
                     },
                     leading: const Icon(
                       Icons.add_chart,
-                      color: btnColor,
+                      color: primaryColor,
                     ),
                     title: Text(
-                      "My Adds",
+                      "Add History",
                       style: GoogleFonts.alice(
                           color: textBlack,
                           fontWeight: FontWeight.w500,
@@ -140,11 +148,11 @@ class _DrawerPageState extends State<DrawerPage> {
             data["type"] == "partner"
                 ? ListTile(
                     onTap: () {
-                      Get.to(const PublishedOffer());
+                    Get.to(()=>const PublishedOffer());
                     },
                     leading: const Icon(
                       Icons.local_offer_outlined,
-                      color: btnColor,
+                      color: primaryColor,
                     ),
                     title: Text(
                       "Published Offer",
@@ -158,14 +166,14 @@ class _DrawerPageState extends State<DrawerPage> {
             data["type"] == "partner"
                 ? ListTile(
                     onTap: () {
-                      Get.to(const AddHistory());
+                    Get.to(()=>const OfferHistory());
                     },
                     leading: const Icon(
                       Icons.history,
-                      color: btnColor,
+                      color: primaryColor,
                     ),
                     title: Text(
-                      "Add History",
+                      "Offer History",
                       style: GoogleFonts.alice(
                           color: textBlack,
                           fontWeight: FontWeight.w500,
@@ -174,10 +182,12 @@ class _DrawerPageState extends State<DrawerPage> {
                   )
                 : SizedBox(),
             ListTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>HelpScreen()));
+              },
               leading: const Icon(
                 Icons.help,
-                color: btnColor,
+                color: primaryColor,
               ),
               title: Text(
                 "Help & Support",
@@ -210,7 +220,7 @@ class _DrawerPageState extends State<DrawerPage> {
                     height: 100,
                   ),
                   submitButtonText: 'Submit',
-                  submitButtonTextStyle: const TextStyle(color: btnColor),
+                  submitButtonTextStyle: const TextStyle(color: primaryColor),
                   commentHint: 'Write Comment',
                   onCancelled: () => print('cancelled'),
                   onSubmitted: (response) {
@@ -232,7 +242,7 @@ class _DrawerPageState extends State<DrawerPage> {
               },
               leading: const Icon(
                 Icons.reviews_outlined,
-                color: btnColor,
+                color: primaryColor,
               ),
               title: Text(
                 "Review & Rating",
@@ -249,7 +259,7 @@ class _DrawerPageState extends State<DrawerPage> {
               },
               leading: const Icon(
                 Icons.share,
-                color: btnColor,
+                color: primaryColor,
               ),
               title: Text(
                 "App Share",
@@ -264,12 +274,12 @@ class _DrawerPageState extends State<DrawerPage> {
                 SharedPreferences pref = await SharedPreferences.getInstance();
                 await pref.clear().then((value) {
                   Navigator.popUntil(context, (route) => route.isFirst);
-                  Get.to(const LoginScreen());
+                Get.to(()=>const LoginScreen());
                 });
               },
               leading: const Icon(
                 Icons.logout,
-                color: btnColor,
+                color: primaryColor,
               ),
               title: Text(
                 "Log Out",

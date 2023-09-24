@@ -1,7 +1,7 @@
 // ignore_for_file: constant_identifier_names
 import 'package:flutter/material.dart';
 
-class AppConstants {
+class AppConstant {
   static const String APP_NAME = 'XuseMe';
 
 
@@ -22,6 +22,11 @@ class AppConstants {
   static String token="";
   static bool userSession = false;
 
+  static String normalShop= "normal";
+  static String onTheWay= "onTheWay";
+  static String premiumShop = "premium";
+
+
   /// Shared Preference Keys ///
 
   static String regIdKey="regIdKey";
@@ -29,6 +34,7 @@ class AppConstants {
   static String userSessionKey="userSessionKey";
   static String selectType="selectType";
   static String saveToken="saveToken";
+  static String fcmToken="fcmToken";
 }
 
 

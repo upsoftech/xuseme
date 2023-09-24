@@ -29,7 +29,7 @@ class _SearchProductState extends State<SearchProduct> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<CategoryProvider>(context, listen: false).getCategoryData();
+    Provider.of<CategoryProvider>(context, listen: false).getCategoryData( query: '');
   }
 
   final formKey = GlobalKey<FormState>();
@@ -42,7 +42,7 @@ class _SearchProductState extends State<SearchProduct> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: btnColor,
+        backgroundColor: primaryColor,
         elevation: 0,
         title: Text(
           "Remote Search",
@@ -93,7 +93,7 @@ class _SearchProductState extends State<SearchProduct> {
                       pinCodeController.text = "";
                       Fluttertoast.showToast(
                           msg: "Only Required 6 digit",
-                          backgroundColor: btnColor);
+                          backgroundColor: primaryColor);
                     }
                   },
                   cursorColor: Colors.black,
@@ -313,7 +313,7 @@ class _SearchProductState extends State<SearchProduct> {
                           "$selectState ,"
                     ).then((value) {
                       log("message : ${locationProvider.locationData!}");
-                      Get.to( CategoryDetailsList(filter: {
+                    Get.to(()=> CategoryDetailsList(filter: {
                         "address":cityController.text.trim(),
                         "pincode":pinCodeController.text.trim(),
                         "state":selectState,
