@@ -13,7 +13,7 @@ import '../../provider/profile_provider.dart';
 
 import '../../services/preference_services.dart';
 import '../navigation/help_screen.dart';
-import '../vendor/add_histroy.dart';
+import '../vendor/offer_histroy.dart';
 import '../vendor/my_adds.dart';
 import '../vendor/my_leads.dart';
 import '../vendor/post_add.dart';

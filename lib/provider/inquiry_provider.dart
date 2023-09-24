@@ -61,4 +61,9 @@ class InquiryProvider extends ChangeNotifier {
     _offerAdHistoryList.removeAt(i);
     notifyListeners();
   }
+
+  Future<void> removePremiumAdItem(int i) async {
+    _bannerHistoryList.removeAt(i);
+    notifyListeners();
+  }
 }

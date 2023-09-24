@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:xuseme/constant/image.dart';
@@ -8,6 +9,7 @@ import 'package:xuseme/constant/image.dart';
 import '../../constant/api_constant.dart';
 import '../../constant/color.dart';
 import '../../provider/inquiry_provider.dart';
+import '../../services/api_services.dart';
 
 class MyAdds extends StatefulWidget {
   const MyAdds({Key? key}) : super(key: key);
@@ -81,86 +83,33 @@ class _MyAddsState extends State<MyAdds> {
                         const SizedBox(
                           width: 10,
                         ),
-                        Text(
-                          "${inquiryProvider
-                              .bannerHistoryList[index]
-                              .validity} Month",
-                          style: GoogleFonts.alice(
-                              color: textBlack,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16),
-                        ),
+
                       ],
                     ),
-                    const Icon(
-                      Icons.delete,
-                      color: red,
+                    InkWell(
+                      onTap: (){
+                        ApiServices()
+                            .deletePremiumAd( inquiryProvider
+                            .bannerHistoryList[index].id.toString())
+                            .then((value) {
+                          inquiryProvider.removePremiumAdItem(index);
+                          Fluttertoast.showToast(
+                              msg: "${value["message"]}");
+                        });
+                      },
+                      child: const Icon(
+                        Icons.delete,
+                        color: red,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(
                   height: 5,
                 ),
-                Row(
-                  children: [
-                    Text(
-                      "Mobile No :",
-                      style: GoogleFonts.alice(
-                          color: textBlack,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      "1234567895 ",
-                      style: GoogleFonts.alice(color: textBlack, fontSize: 16),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "Shop Name :",
-                      style: GoogleFonts.alice(
-                          color: textBlack,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      "Chicken Meat Shop",
-                      style: GoogleFonts.alice(color: textBlack, fontSize: 16),
-                    )
-                  ],
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: [
-                    Text(
-                      "Shop Type :",
-                      style: GoogleFonts.alice(
-                          color: textBlack,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      "Chicken shop ",
-                      style: GoogleFonts.alice(color: textBlack, fontSize: 16),
-                    )
-                  ],
-                ),
+
+
+
                 const SizedBox(
                   height: 5,
                 ),

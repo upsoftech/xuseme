@@ -20,6 +20,6 @@ class ApiConstant {
   static const String companyBannerEndpoint = "$baseUrl/api/ads/banner/company";
   static const String offerEndpoint = "$baseUrl/api/ads/offer";
   static const String grtCategoryEndpoint = "$baseUrl/api/category";
-  static const String getBannerEndPoint = "$baseUrl/api/ads/banner/";
+  static const String bannerEndPoint = "$baseUrl/api/ads/banner/";
   static const String helpEndPoint = "$baseUrl/api/enquiry/help/";
 }

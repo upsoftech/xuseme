@@ -415,7 +415,7 @@ class ApiServices {
 
   Future<List<BannerModel>> getBannerHistory() async {
     List<BannerModel> myList = [];
-    var data = await networkCalls.get(ApiConstant.getBannerEndPoint);
+    var data = await networkCalls.get(ApiConstant.bannerEndPoint);
     for (var i in jsonDecode(data)) {
       myList.add(BannerModel.fromJson(i));
     }
@@ -444,6 +444,14 @@ class ApiServices {
   Future<dynamic> deleteOffer(String offerId) async {
     var data =
     await networkCalls.delete("${ApiConstant.offerEndpoint}/$offerId");
+
+    return jsonDecode(data);
+  }
+  /// delete user Address from the server ///
+
+  Future<dynamic> deletePremiumAd(String offerId) async {
+    var data =
+    await networkCalls.delete("${ApiConstant.bannerEndPoint}/$offerId");
 
     return jsonDecode(data);
   }
