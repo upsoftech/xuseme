@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "344280049106",
+    "project_id": "xusemeapp",
+    "storage_bucket": "xusemeapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:344280049106:android:b816c251955ef2d668d40b",
+        "android_client_info": {
+          "package_name": "com.xuseme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "344280049106-gvorjob6rukh0luf68iva0alfb19uju0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkv42R2T73tUAJAgs_hqWqx_jN-KY6Sm0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "344280049106-gvorjob6rukh0luf68iva0alfb19uju0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "344280049106-a8ed0b6g892jekmbqcrp6fqb5i3rll6a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.swiggyClone"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
