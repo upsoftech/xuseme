@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:xuseme/constant/api_constant.dart';
 import 'package:xuseme/constant/color.dart';
 
 import '../../constant/app_constants.dart';
@@ -215,21 +216,17 @@ class _CategoryListState extends State<CategoryList> {
                                   decoration: BoxDecoration(
                                       border: Border.all(color: grey),
                                       borderRadius: BorderRadius.circular(10)),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
-                                        categoryProvider
-                                                .categoryList[position].image ??
-                                            "",
-                                        height: 20,
-                                        width: 20,
-                                        fit: BoxFit.fill,
-                                      ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.network(
+                                      categoryProvider
+                                              .categoryList[position].image!=null ?
+                                     ApiConstant.baseUrl +categoryProvider
+                                          .categoryList[position].image.toString()
+                                         : "",
+                                      height: 20,
+                                      width: 20,
+                                      fit: BoxFit.fill,
                                     ),
                                   ),
                                 ),

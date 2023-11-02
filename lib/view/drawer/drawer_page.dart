@@ -101,7 +101,7 @@ class _DrawerPageState extends State<DrawerPage> {
                       color: primaryColor,
                     ),
                     title: Text(
-                      "My leads",
+                      "My Leads",
                       style: GoogleFonts.alice(
                           color: textBlack,
                           fontWeight: FontWeight.w500,
@@ -155,7 +155,7 @@ class _DrawerPageState extends State<DrawerPage> {
                       color: primaryColor,
                     ),
                     title: Text(
-                      "Published Offer",
+                      "Publish Your Offer",
                       style: GoogleFonts.alice(
                           color: textBlack,
                           fontWeight: FontWeight.w500,

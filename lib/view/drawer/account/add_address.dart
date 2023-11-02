@@ -28,6 +28,7 @@ class _AddAddressState extends State<AddAddress> {
   final apartController = TextEditingController();
   final stateController = TextEditingController();
   final pinController = TextEditingController();
+  String? selectState;
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _AddAddressState extends State<AddAddress> {
     if (widget.isEdit) {
       houseController.text = widget.data!.address.toString();
       apartController.text = widget.data!.landmark.toString();
-      stateController.text = widget.data!.state.toString();
+      selectState = widget.data!.state.toString();
       pinController.text = widget.data!.pincode.toString();
     }
   }
@@ -60,7 +61,7 @@ class _AddAddressState extends State<AddAddress> {
               "userId": regIds,
               "address": houseController.text.trim(),
               "landmark": apartController.text.trim(),
-              "state": stateController.text.trim(),
+              "state": selectState,
               "pincode": pinController.text.trim(),
              "longitude": locationProvider.locationData!.latitude.toString(),
               "latitude":locationProvider.locationData!.longitude.toString(),
@@ -76,7 +77,7 @@ class _AddAddressState extends State<AddAddress> {
               "address": houseController.text.trim(),
               "landmark": apartController.text.trim(),
               "pincode": pinController.text.trim(),
-              "state": stateController.text.trim(),
+              "state": selectState,
               "longitude": locationProvider.locationData!.latitude.toString(),
               "latitude":locationProvider.locationData!.longitude.toString(),
               "type":address
@@ -153,24 +154,166 @@ class _AddAddressState extends State<AddAddress> {
               ),
             ),
           ),
+          // Container(
+          //   padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+          //   child: TextFormField(
+          //     controller: stateController,
+          //     cursorColor: Colors.black,
+          //     decoration: InputDecoration(
+          //       focusedBorder: OutlineInputBorder(
+          //           borderSide: const BorderSide(width: 1, color: textBlack),
+          //           borderRadius: BorderRadius.circular(10)),
+          //       enabledBorder: OutlineInputBorder(
+          //           borderSide: const BorderSide(width: 1, color: textBlack),
+          //           borderRadius: BorderRadius.circular(10)),
+          //       border:
+          //           OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          //       hintText: ('State'),
+          //       hintStyle: GoogleFonts.alice(),
+          //       contentPadding: const EdgeInsets.only(top: 10, left: 20),
+          //     ),
+          //   ),
+          // ),
           Container(
-            padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
-            child: TextFormField(
-              controller: stateController,
-              cursorColor: Colors.black,
+            padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+            child: DropdownButtonFormField<String>(
+
               decoration: InputDecoration(
-                focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1, color: textBlack),
-                    borderRadius: BorderRadius.circular(10)),
                 enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1, color: textBlack),
+                    borderSide:
+                    const BorderSide(width: 1, color: textBlack),
                     borderRadius: BorderRadius.circular(10)),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                hintText: ('State'),
-                hintStyle: GoogleFonts.alice(),
-                contentPadding: const EdgeInsets.only(top: 10, left: 20),
+                focusedBorder: OutlineInputBorder(
+                    borderSide:
+                    const BorderSide(width: 1, color: textBlack),
+                    borderRadius: BorderRadius.circular(10)),
+                labelText: 'Select State ',
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                labelStyle: GoogleFonts.alice(),
               ),
+              value: selectState,
+              items: const [
+                DropdownMenuItem<String>(
+                  value: "Andhra Pradesh",
+                  child: Text("Andhra Pradesh"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Arunachal Pradesh",
+                  child: Text("Arunachal Pradesh"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Assam",
+                  child: Text("Assam"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Bihar",
+                  child: Text("Bihar"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Chhattisgarh",
+                  child: Text("Chhattisgarh"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Goa",
+                  child: Text("Goa"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Gujarat",
+                  child: Text("Gujarat"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Haryana",
+                  child: Text("Haryana"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Himachal Pradesh",
+                  child: Text("Himachal Pradesh"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Jharkhand",
+                  child: Text("Jharkhand"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Karnataka",
+                  child: Text("Karnataka"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Kerala",
+                  child: Text("Kerala"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Madhya Pradesh",
+                  child: Text("Madhya Pradesh"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Maharashtra",
+                  child: Text("Maharashtra"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Manipur",
+                  child: Text("Manipur"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Meghalaya",
+                  child: Text("Meghalaya"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Mizoram",
+                  child: Text("Mizoram"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "New Delhi",
+                  child: Text("New Delhi"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Nagaland",
+                  child: Text("Nagaland"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Odisha",
+                  child: Text("Odisha"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Punjab",
+                  child: Text("Punjab"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Rajasthan",
+                  child: Text("Rajasthan"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Sikkim",
+                  child: Text("Sikkim"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Tamil Nadu",
+                  child: Text("Tamil Nadu"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Telangana",
+                  child: Text("Telangana"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Tripura",
+                  child: Text("Tripura"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Uttar Pradesh",
+                  child: Text("Uttar Pradesh"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "Uttarakhand",
+                  child: Text("Uttarakhand"),
+                ),
+                DropdownMenuItem<String>(
+                  value: "West Bengal",
+                  child: Text("West Bengal"),
+                ),
+              ],
+
+              onChanged: (String? newStateId) {
+                selectState = newStateId;
+              },
             ),
           ),
           Container(

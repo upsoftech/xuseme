@@ -1,15 +1,17 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:http/http.dart' as http;
+
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:xuseme/services/api_services.dart';
-import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/provider/location_provider.dart';
+import 'package:xuseme/services/api_services.dart';
+import 'package:xuseme/services/preference_services.dart';
+
 import '../../../constant/color.dart';
 import '../../../provider/profile_provider.dart';
 
@@ -54,14 +56,16 @@ class _EditProfileState extends State<EditProfile> {
     return Scaffold(
       bottomNavigationBar: GestureDetector(
         onTap: () async {
+          var notificationId = await FirebaseMessaging.instance.getToken();
+
           ApiServices()
               .updateUserProfile(
-            nameController.text.trim(),
-            emailController.text.trim(),
-            photo?.path,
-            locationProvider.locationData!.latitude,
-            locationProvider.locationData!.longitude,
-          )
+                  nameController.text.trim(),
+                  emailController.text.trim(),
+                  photo?.path,
+                  locationProvider.locationData!.latitude,
+                  locationProvider.locationData!.longitude,
+                  notificationId)
               .then((value) {
             Fluttertoast.showToast(msg: "${value["message"]}");
             Get.back();
@@ -110,7 +114,6 @@ class _EditProfileState extends State<EditProfile> {
                     : CircleAvatar(
                         radius: 50,
                         backgroundColor: Colors.grey.withOpacity(.2),
-                        backgroundImage: const AssetImage(window),
                       ),
                 Positioned(
                   bottom: -10,

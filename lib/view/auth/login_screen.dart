@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -113,6 +114,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.fromLTRB(15, 20, 15, 0),
                 child: TextFormField(
                   controller: mobileNumber,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10)
+                  ],
                   decoration: InputDecoration(
                     focusColor: Colors.white,
                     focusedBorder: const OutlineInputBorder(
@@ -120,6 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(width: 1, color: textBlack)),
                     labelText: ('Phone Number'),
+                    
                     labelStyle: GoogleFonts.alice(
                         color: textBlack,
                         fontWeight: FontWeight.bold,
@@ -163,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 mobile: mobileNumber.text.trim(),
                               ));
                             }else if (value["message"].toString().contains("Number already exists")){
-                              Fluttertoast.showToast(msg: "OTP Is ${value["message"]}");
+                              Fluttertoast.showToast(msg: "${value["message"]}");
                             }else{
                               Fluttertoast.showToast(msg: "OTP Is ${value}");
                             }
@@ -187,15 +194,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           ));
                         }else if (value["message"].toString().contains("Number already exists")){
-                          Fluttertoast.showToast(msg: "OTP Is ${value["message"]}");
+                          Fluttertoast.showToast(msg: "${value["message"]}");
                         }else{
                           Fluttertoast.showToast(msg: "OTP Is ${value}");
                         }
 
                       });
-                    } else {
+                    }else if(mobileNumber.text.trim().length < 10){
                       Fluttertoast.showToast(
-                        msg: 'Please Select Required',
+                        msg: 'Enter valid mobile number',
+                        backgroundColor: primaryColor,
+                      );
+                    }
+
+                    else {
+                      Fluttertoast.showToast(
+                        msg: 'Please Select Required ',
                         backgroundColor: primaryColor,
                       );
                     }

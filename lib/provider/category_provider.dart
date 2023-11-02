@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:xuseme/model/category_model.dart';
 
@@ -16,6 +18,7 @@ class CategoryProvider extends ChangeNotifier {
     _isLoading = true;
     _categoryList.clear();
     await _apiServices.getCategory(query,isPremium).then((value) {
+      log("Value $value");
       _categoryList = value;
       _isLoading = false;
       notifyListeners();

@@ -23,9 +23,6 @@ class PrefService {
     return setString(AppConstant.saveToken, tokens);
   }
 
-  setFcmToken(String tokens) {
-    return setString(AppConstant.fcmToken, tokens);
-  }
 
   getSelectType() {
     return getString(AppConstant.selectType);
@@ -38,9 +35,7 @@ class PrefService {
   getToken() {
     return getString(AppConstant.saveToken);
   }
-  getFcmToken() {
-    return getString(AppConstant.fcmToken);
-  }
+
 
   setMobile(String mobile) {
     return setString(AppConstant.mobileNoKey, mobile);

@@ -9,7 +9,7 @@ import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/provider/profile_provider.dart';
 import '../../../services/preference_services.dart';
 import '../../../constant/color.dart';
-import '../../vendor/edit_vndor_profile.dart';
+import '../../vendor/edit_vendor_profile.dart';
 import '../../widgets/custom_image_view.dart';
 import 'address_page.dart';
 import 'edit_profile.dart';
@@ -394,50 +394,55 @@ class _UserAccountState extends State<UserAccount> {
                         SizedBox(
                           height: MediaQuery.of(context).size.height * .01,
                         ),
-                        Row(
-                          children: [
-                            Text(
-                              "Shop Type :",
-                              style: GoogleFonts.alice(
-                                  fontSize: 14,
-                                  color: grey,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .11,
-                            ),
-                            Text(
-                              "${value.vendorProfileData["shopType"] ?? ""}",
-                              style: GoogleFonts.alice(
-                                  fontSize: 14,
-                                  color: grey,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ],
+                        FittedBox(
+                          child: Row(
+                            children: [
+                              Text(
+                                "Shop Type :",
+                                maxLines: 3,
+                                style: GoogleFonts.alice(
+                                    fontSize: 14,
+                                    color: grey,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * .11,
+                              ),
+                              Text(
+                                "${value.vendorProfileData["shopType"] ?? ""}",
+                                style: GoogleFonts.alice(
+                                    fontSize: 14,
+                                    color: grey,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
                         ),
                         SizedBox(
                           height: MediaQuery.of(context).size.height * .01,
                         ),
-                        Row(
-                          children: [
-                            Text(
-                              "Services :",
-                              style: GoogleFonts.alice(
-                                  fontSize: 14,
-                                  color: grey,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * .14,
-                            ),
-                            Text(
-                              "${value.vendorProfileData["services"] ?? ""}",
-                              style: GoogleFonts.alice(
-                                  fontSize: 14,
-                                  color: grey,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ],
+                        FittedBox(
+                          child: Row(
+                            children: [
+                              Text(
+                                "Services :",
+                                style: GoogleFonts.alice(
+                                    fontSize: 14,
+                                    color: grey,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * .14,
+                              ),
+                              Text(
+                                "${value.vendorProfileData["services"] ?? ""}",
+                                style: GoogleFonts.alice(
+                                    fontSize: 14,
+                                    color: grey,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
                         ),
                         SizedBox(
                           width: MediaQuery.of(context).size.width * .14,

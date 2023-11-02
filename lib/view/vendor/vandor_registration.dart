@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -48,6 +49,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
   final shopTypeController = TextEditingController();
   final addressController = TextEditingController();
   final landmarkController = TextEditingController();
+  final cityController = TextEditingController();
   final addServicesController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
@@ -85,25 +87,31 @@ class _VendorRegistrationState extends State<VendorRegistration> {
               "${pinController.text.trim()},"
               "${state}",
             )
-                .then((value) {
+                .then((value) async {
+              var notificationId = await FirebaseMessaging.instance.getToken();
+
+              log("notificationId : $notificationId");
+
               if (locationProvider.geocodingLocation != null) {
                 ApiServices()
                     .registerProfile(
-                        images?.path,
-                        nameController.text.trim(),
-                        mobileController.text.trim(),
-                        landlineController.text.trim(),
-                        emailController.text.trim(),
-                        shopNameController.text.trim(),
-                        shopType,
-                        addressController.text.trim(),
-                        landmarkController.text.trim(),
-                        pinController.text.trim(),
-                        locationProvider.geocodingLocation!.latitude.toString(),
-                        locationProvider.geocodingLocation!.longitude
-                            .toString(),
-                        state,
-                        addServicesController.text.trim())
+                  images?.path,
+                  nameController.text.trim(),
+                  mobileController.text.trim(),
+                  landlineController.text.trim(),
+                  emailController.text.trim(),
+                  shopNameController.text.trim(),
+                  shopType,
+                  addressController.text.trim(),
+                  landmarkController.text.trim(),
+                  cityController.text.trim(),
+                  pinController.text.trim(),
+                  locationProvider.geocodingLocation!.latitude.toString(),
+                  locationProvider.geocodingLocation!.longitude.toString(),
+                  state,
+                  addServicesController.text.trim(),
+                  notificationId,
+                )
                     .then((value) {
                   log("message$value");
                   if (value.toString().contains("PathNotFoundException")) {
@@ -314,6 +322,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
               Container(
                 padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                 child: DropdownButtonFormField<String>(
+                  isExpanded: true,
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                         borderSide:
@@ -401,6 +410,34 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Landmark is required';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+                child: TextFormField(
+                  controller: cityController,
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(width: 1, color: textBlack),
+                        borderRadius: BorderRadius.circular(10)),
+                    enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(width: 1, color: textBlack),
+                        borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    labelText: ('City'),
+                    labelStyle: GoogleFonts.alice(),
+                    contentPadding: const EdgeInsets.only(top: 10, left: 20),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'City is required';
                     }
                     return null;
                   },
@@ -609,6 +646,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                 padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                 child: TextFormField(
                   controller: addServicesController,
+                  textCapitalization: TextCapitalization.words,
                   cursorColor: Colors.black,
                   decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(

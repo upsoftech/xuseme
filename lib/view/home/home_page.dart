@@ -10,11 +10,13 @@ import 'package:xuseme/constant/app_constants.dart';
 import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/provider/home_provider.dart';
 import 'package:xuseme/provider/location_provider.dart';
-import 'package:xuseme/services/preference_services.dart';
+import 'package:xuseme/utils/utility.dart';
 import 'package:xuseme/view/home/remote_search.dart';
+import 'package:xuseme/view/home/vendor_banner_datails.dart';
 
 import '../../constant/color.dart';
 import '../../provider/profile_provider.dart';
+import '../../services/preference_services.dart';
 import '../category/category_list.dart';
 import '../category/offers_screen.dart';
 import '../drawer/account/user_account.dart';
@@ -39,22 +41,31 @@ class _HomePageState extends State<HomePage> {
 
   loadData() {
     locationProvider = Provider.of<LocationProvider>(context, listen: false);
-
+    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
     profileProvider.getProfile();
     profileProvider.vendorProfile();
     locationProvider.getLocation().then((value) {
-      locationProvider.getCoordinatesFromAddress(
+      locationProvider
+          .getCoordinatesFromAddress(
         '${locationProvider.placeMark?.first.subLocality},'
         ' ${locationProvider.placeMark?.first.locality}, '
         ' ${locationProvider.placeMark?.first.postalCode}'
         ' ${locationProvider.placeMark?.first.subAdministrativeArea}',
-      );
+      )
+          .then((value) {
+        homeProvider.getTopBanner(
+            locationProvider.locationData!.latitude.toString(),
+            locationProvider.locationData!.longitude.toString());
+        homeProvider.getBottomBanner(
+            locationProvider.locationData!.latitude.toString(),
+            locationProvider.locationData!.longitude.toString());
+        homeProvider.getSingleBanner(
+            locationProvider.locationData!.latitude.toString(),
+            locationProvider.locationData!.longitude.toString());
+      });
     });
-    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
-    homeProvider.getBanner();
-    homeProvider.getSingleBanner();
   }
 
   @override
@@ -67,47 +78,63 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       drawer: const DrawerPage(),
       appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: primaryColor,
-          elevation: 0,
-          title: ListTile(
-            trailing: GestureDetector(
-              onTap: () {
-                Get.to(() => const UserAccount());
+        backgroundColor: primaryColor,
+        elevation: 0,
+        title: Text(
+          '${locationProvider.placeMark?.first.subLocality ?? ""}, ${locationProvider.placeMark?.first.locality ?? ""}',
+          style: GoogleFonts.salsa(fontSize: 16, color: textWhite),
+        ),
+        actions: [
+         /* IconButton(
+              onPressed: () {
+               //NotificationService.showLocalNotification();
+               // NotificationService.sendNotification();
+                var fat = PrefService().getFcmToken();
+                log("kkkkkkkkkkkkkkk : $fat");
               },
-              child: PrefService().getSelectType() == "customer"
-                  ? Consumer<ProfileProvider>(builder: (context, value, _) {
-                      log("message${value.profileData["shopLogo"]}");
-                      return Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Image.network(
-                            value.profileData["profileLogo"] != null &&
-                                    value.profileData["profileLogo"] != ""
-                                // ignore: prefer_interpolation_to_compose_strings
-                                ? "${ApiConstant.baseUrl}uploads/" +
-                                    value.profileData["profileLogo"]
-                                : noImage),
-                      );
-                    })
-                  : Consumer<ProfileProvider>(builder: (context, value, _) {
-                      log("message${value.profileData["shopLogo"]}");
-                      return Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Image.network(
-                            value.vendorProfileData["shopLogo"] != null &&
-                                    value.vendorProfileData["shopLogo"] != ""
-                                // ignore: prefer_interpolation_to_compose_strings
-                                ? "${ApiConstant.baseUrl}uploads/" +
-                                    value.vendorProfileData["shopLogo"]
-                                : noImage),
-                      );
-                    }),
-            ),
-            title: Text(
-              '${locationProvider.placeMark?.first.subLocality ?? ""}, ${locationProvider.placeMark?.first.locality ?? ""}',
-              style: GoogleFonts.salsa(fontSize: 16, color: textWhite),
-            ),
-          )),
+              icon: Icon(Icons.notifications_none)),*/
+          GestureDetector(
+            onTap: () {
+              Get.to(() => const UserAccount());
+            },
+            child: PrefService().getSelectType() == "customer"
+                ? Consumer<ProfileProvider>(builder: (context, value, _) {
+                    log("message${value.profileData["shopLogo"]}");
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: CircleAvatar(
+                        radius: 31,
+                        backgroundImage: NetworkImage(value
+                                        .profileData["profileLogo"] !=
+                                    null &&
+                                value.profileData["profileLogo"] != ""
+                            // ignore: prefer_interpolation_to_compose_strings
+                            ? "${ApiConstant.baseUrl}uploads/" +
+                                value.profileData["profileLogo"]
+                            : noImage),
+                      ),
+                    );
+                  })
+                : Consumer<ProfileProvider>(builder: (context, value, _) {
+                    log("message${value.profileData["shopLogo"]}");
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: CircleAvatar(
+                        radius: 31,
+                        backgroundImage: NetworkImage(value
+                                        .vendorProfileData["shopLogo"] !=
+                                    null &&
+                                value.vendorProfileData["shopLogo"] != ""
+                            // ignore: prefer_interpolation_to_compose_strings
+                            ? "${ApiConstant.baseUrl}uploads/" +
+                                value.vendorProfileData["shopLogo"]
+                            : noImage),
+                      ),
+                    );
+                  }),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,7 +183,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: homeProvider.bannerList.isNotEmpty
+                child: homeProvider.topBannerList.isNotEmpty
                     ? ImageSlideshow(
                         width: double.infinity,
                         height: 200,
@@ -166,15 +193,26 @@ class _HomePageState extends State<HomePage> {
                         onPageChanged: (value) {
                           //  print('Page changed: $value');
                         },
-                        autoPlayInterval: 3000,
+                        autoPlayInterval: 10000,
                         isLoop: true,
-                        children: homeProvider.bannerList.map((e) {
+                        children: homeProvider.topBannerList.map((e) {
                           return e["bannerImage"].toString() != ""
-                              ? Image.network(
-                                  // ignore: prefer_interpolation_to_compose_strings
-                                  "${ApiConstant.baseUrl}/uploads/banners/" +
-                                      e["bannerImage"],
-                                  fit: BoxFit.cover,
+                              ? GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                VendorBannerDetails(
+                                                  id: e["partnerId"],
+                                                )));
+                                  },
+                                  child: Image.network(
+                                    // ignore: prefer_interpolation_to_compose_strings
+                                    "${ApiConstant.baseUrl}/uploads/banners/" +
+                                        e["bannerImage"],
+                                    fit: BoxFit.cover,
+                                  ),
                                 )
                               : Image.network(
                                   noImage,
@@ -214,7 +252,9 @@ class _HomePageState extends State<HomePage> {
                       )),
                   GestureDetector(
                       onTap: () {
-                        Get.to(() =>  CategoryList(type: AppConstant.onTheWay,));
+                        Get.to(() => CategoryList(
+                              type: AppConstant.onTheWay,
+                            ));
                       },
                       child: Column(
                         children: [
@@ -283,13 +323,13 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Image.asset(
                             searchLocation,
-                            height: 30,
+                            height: 34,
                           ),
                           const SizedBox(
                             height: 5,
                           ),
                           Text(
-                            'Remote Search',
+                            'Global Search',
                             style: GoogleFonts.salsa(
                               fontSize: 14,
                             ),
@@ -355,27 +395,34 @@ class _HomePageState extends State<HomePage> {
                 color: grey,
               ),
             ),
-            Container(
-              margin: const EdgeInsets.only(left: 15, right: 15),
-              width: double.infinity,
-              height: AppConstant.height(context) * 0.15,
-              decoration: BoxDecoration(
-                  color: grey.withOpacity(.1),
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: homeProvider.singleBannerList.isNotEmpty
-                          ? NetworkImage(
-                              homeProvider.singleBannerList.first["offerImage"])
-                          : const NetworkImage(
-                              "https://img.freepik.com/premium-vector/mega-sale-discount-banner-set-promotion-with-yellow-background_497837-702.jpg"))),
+            GestureDetector(
+              onTap: () {
+                Utility.myLaunchUrl(
+                    homeProvider.singleBannerList.first["redirectUrl"] ??
+                        "https://www.google.com/");
+              },
+              child: Container(
+                margin: const EdgeInsets.only(left: 15, right: 15),
+                width: double.infinity,
+                height: AppConstant.height(context) * 0.15,
+                decoration: BoxDecoration(
+                    color: grey.withOpacity(.1),
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: homeProvider.singleBannerList.isNotEmpty
+                            ? NetworkImage(ApiConstant.baseUrl +
+                                homeProvider
+                                    .singleBannerList.first["offerImage"])
+                            : const NetworkImage(noImage))),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.only(
                   left: 15, right: 15, top: 10, bottom: 10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: homeProvider.bannerList.isNotEmpty
+                child: homeProvider.bottomBannerList.isNotEmpty
                     ? ImageSlideshow(
                         width: double.infinity,
                         height: 200,
@@ -385,14 +432,27 @@ class _HomePageState extends State<HomePage> {
                         onPageChanged: (value) {
                           //  print('Page changed: $value');
                         },
-                        autoPlayInterval: 3000,
+                        autoPlayInterval: 10000,
                         isLoop: true,
-                        children: homeProvider.bannerList.map((e) {
+                        children: homeProvider.bottomBannerList.map((e) {
                           return e["bannerImage"].toString() != ""
-                              ? Image.network(
-                                  "${ApiConstant.baseUrl}/uploads/banners/" +
-                                      e["bannerImage"],
-                                  fit: BoxFit.cover,
+                              ? GestureDetector(
+                                  onTap: () {
+                                    log("partner Id : ${e["partnerId"]}");
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                VendorBannerDetails(
+                                                  id: e["partnerId"],
+                                                )));
+                                  },
+                                  child: Image.network(
+                                    // ignore: prefer_interpolation_to_compose_strings
+                                    "${ApiConstant.baseUrl}/uploads/banners/" +
+                                        e["bannerImage"],
+                                    fit: BoxFit.cover,
+                                  ),
                                 )
                               : Image.network(
                                   noImage,

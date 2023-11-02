@@ -11,10 +11,13 @@ class SubShopsProvider extends ChangeNotifier {
   List<ShopSubCategoryModel> _subShopList = [];
 
   List<ShopSubCategoryModel> get subShopList => _subShopList;
+  ShopSubCategoryModel? _vendorData;
+
+  ShopSubCategoryModel? get vendorData => _vendorData;
 
   bool get isLoading => _isLoading;
 
-  Future<void> getShopData(Map<String,dynamic> filter) async {
+  Future<void> getShopData(Map<String, dynamic> filter) async {
     _isLoading = true;
     _subShopList.clear();
     await _apiServices.getShopData(filter).then((value) {
@@ -22,6 +25,15 @@ class SubShopsProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     });
+  }
 
+  Future<void> getVendorById(String id) async {
+    _isLoading = true;
+    _subShopList.clear();
+    await _apiServices.getVendorDetailsById(id).then((value) {
+      _vendorData = value;
+      _isLoading = false;
+      notifyListeners();
+    });
   }
 }

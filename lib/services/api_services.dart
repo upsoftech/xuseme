@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
-import 'package:xuseme/services/preference_services.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:xuseme/model/banner_model.dart';
 import 'package:xuseme/model/inquiry_model.dart';
+import 'package:xuseme/services/preference_services.dart';
+
 import '../constant/api_constant.dart';
 import '../model/address_model.dart';
 import '../model/category_model.dart';
@@ -16,7 +18,6 @@ class ApiServices {
   /// Login With Mobile Number ///
 
   Future<dynamic> logInMobile(String mobile, type) async {
-
     var data = await networkCalls
         .post(ApiConstant.loginMobile, {"mobile": mobile, "type": type});
 
@@ -27,7 +28,6 @@ class ApiServices {
   /// very the otp from the server ///
 
   Future<dynamic> verifyOtp(String mobile, type, otp) async {
-
     var data = await networkCalls.post(
         ApiConstant.verifyOtp, {"mobile": mobile, "type": type, "otp": otp});
 
@@ -35,18 +35,30 @@ class ApiServices {
     return jsonDecode(data);
   }
 
-
-
   /// Vendor Registration ///
 
-  Future<dynamic> registerProfile(String? path,name,mobile,
-      landline,email,shopName,shopType,address,landmark,
-      pincode,latitude,longitude,state,services) async {
+  Future<dynamic> registerProfile(
+      String? path,
+      name,
+      mobile,
+      landline,
+      email,
+      shopName,
+      shopType,
+      address,
+      landmark,
+      city,
+      pincode,
+      latitude,
+      longitude,
+      state,
+      services,
+      notificationId) async {
     try {
       var tokenIds = PrefService().getToken();
 
-
-      final Uri apiUrl = Uri.parse("${ApiConstant.baseUrl}/api/user/partner/v1");
+      final Uri apiUrl =
+          Uri.parse("${ApiConstant.baseUrl}/api/user/partner/v1");
       final Map<String, String> headers = {'Authorization': 'Bearer $tokenIds'};
 
       var request = http.MultipartRequest('POST', apiUrl)
@@ -60,37 +72,49 @@ class ApiServices {
         ..fields['shopType'] = shopType
         ..fields['address'] = address
         ..fields['landmark'] = landmark
-        ..fields['pincode'] =pincode
+        ..fields['pincode'] = pincode
         ..fields['state'] = state
+        ..fields['city'] = city
         ..fields['latitude'] = latitude.toString()
         ..fields['longitude'] = longitude.toString()
-        ..fields['services'] = services;
+        ..fields['services'] = services
+        ..fields['notificationId'] = notificationId ?? "";
 
-      if(path!=null){
+      if (path != null) {
         request.files.add(await http.MultipartFile.fromPath('shopLogo', path));
       }
 
-
       var response = await request.send();
-      var data = await  http.Response.fromStream(response);
+      var data = await http.Response.fromStream(response);
 
       return jsonDecode(data.body);
-
-
     } catch (e) {
-
       return e;
     }
   }
-  Future<dynamic> updatePartner(String? path,name,mobile,
-      landline,email,shopName,shopType,address,landmark,
-      pincode,latitude,longitude,state,services) async {
+
+  Future<dynamic> updatePartner(
+      String? path,
+      name,
+      mobile,
+      landline,
+      email,
+      shopName,
+      shopType,
+      address,
+      landmark,
+      pincode,
+      latitude,
+      longitude,
+      state,
+      services,
+      notificationId) async {
     try {
       var tokenIds = PrefService().getToken();
       var id = PrefService().getRegId();
 
-
-      final Uri apiUrl = Uri.parse("${ApiConstant.baseUrl}/api/user/partner/v1/$id");
+      final Uri apiUrl =
+          Uri.parse("${ApiConstant.baseUrl}/api/user/partner/v1/$id");
       final Map<String, String> headers = {'Authorization': 'Bearer $tokenIds'};
 
       var request = http.MultipartRequest('PATCH', apiUrl)
@@ -102,49 +126,50 @@ class ApiServices {
         ..fields['shopType'] = shopType
         ..fields['address'] = address
         ..fields['landmark'] = landmark
-        ..fields['pincode'] =pincode
+        ..fields['pincode'] = pincode
         ..fields['state'] = state
         ..fields['latitude'] = latitude.toString()
         ..fields['longitude'] = longitude.toString()
-        ..fields['services'] = services;
+        ..fields['services'] = services
+        ..fields['notificationId'] = notificationId ?? "";
 
-      if(path!=null){
+      if (path != null) {
         request.files.add(await http.MultipartFile.fromPath('shopLogo', path));
       }
 
-
       var response = await request.send();
-      var data = await  http.Response.fromStream(response);
-
+      var data = await http.Response.fromStream(response);
+      log("UpdateResponse :$data");
       return jsonDecode(data.body);
-
-
     } catch (e) {
-
       return e;
     }
   }
 
-
   /// Get  Banner from the server ///
 
-  Future<dynamic> getBanner() async {
-    var data = await networkCalls.get("${ApiConstant.banner}?isApproved=true");
-
-    return jsonDecode(data);
-  }
- /// Get Single Banner form the server ///
-
-  Future<dynamic> getSingleBanner() async {
-    var data = await networkCalls.get("${ApiConstant.singleBanner}?isApproved=true");
+  Future<dynamic> getBanner(
+      {bool? isTop, required latitude, required longitude}) async {
+    var data = await networkCalls.get(
+        "${ApiConstant.banner}?isApproved=true&isTop=${isTop ?? false}&latitude=$latitude&longitude=$longitude");
 
     return jsonDecode(data);
   }
 
+  /// Get Single Banner form the server ///
+
+  Future<dynamic> getSingleBanner(
+      {required latitude, required longitude}) async {
+    var data = await networkCalls.get(
+        "${ApiConstant.singleBanner}?isApproved=true&latitude=$latitude&longitude=$longitude");
+
+    return jsonDecode(data);
+  }
 
   ///update profile from the server ///
 
-  Future<dynamic> updateUserProfile(name,email, path,latitude,longitude) async {
+  Future<dynamic> updateUserProfile(
+      name, email, path, latitude, longitude, notificationId) async {
     var tokenIds = PrefService().getToken();
 
     var regId = PrefService().getRegId();
@@ -158,11 +183,10 @@ class ApiServices {
       request.headers['Authorization'] = 'Bearer $tokenIds';
 
       if (path != null) {
-        // http.MultipartFile multipartFile = await
-        // http.MultipartFile.fromPath('profileLogo',
-        //     path);
+        http.MultipartFile multipartFile =
+            await http.MultipartFile.fromPath('profileLogo', path);
 
-        //request.files.add(multipartFile);
+        request.files.add(multipartFile);
       }
 
       // Add additional string parameter
@@ -170,7 +194,7 @@ class ApiServices {
       request.fields['email'] = email;
       request.fields['latitude'] = latitude.toString();
       request.fields['longitude'] = longitude.toString();
-
+      request.fields['notificationId'] = notificationId.toString();
 
       // Send the request and get the response
       response = await request.send();
@@ -184,11 +208,9 @@ class ApiServices {
       print('Error during image upload: $e');
     }
 
-
-    var data = await  http.Response.fromStream(response);
+    var data = await http.Response.fromStream(response);
 
     return jsonDecode(data.body);
-
   }
 
   /// get profile from the server ///
@@ -200,27 +222,20 @@ class ApiServices {
 
   /// Add Address from the server //
   Future<dynamic> addAddress(Map<String, dynamic> mapData) async {
-    var response = 
-      await  http.post(Uri.parse(ApiConstant.addUserAddress), body: mapData);
-    
-   
+    var response =
+        await http.post(Uri.parse(ApiConstant.addUserAddress), body: mapData);
 
     return jsonDecode(response.body);
   }
-/// Add Address from the server //
-  Future<dynamic> addHelpSupport(Map<String, dynamic> mapData) async {
 
+  /// Add Address from the server //
+  Future<dynamic> addHelpSupport(Map<String, dynamic> mapData) async {
     var tokenIds = PrefService().getToken();
 
-
-    var response =
-      await  http.post(Uri.parse(ApiConstant.helpEndPoint), body: mapData,
-          headers: {
-            'Authorization': 'Bearer $tokenIds',
-          }
-      );
-
-
+    var response = await http
+        .post(Uri.parse(ApiConstant.helpEndPoint), body: mapData, headers: {
+      'Authorization': 'Bearer $tokenIds',
+    });
 
     return jsonDecode(response.body);
   }
@@ -241,12 +256,13 @@ class ApiServices {
   Future<dynamic> updateAddress(String id, Map<String, dynamic> mapData) async {
     var tokenIds = PrefService().getToken();
 
-    var response = await http.patch(Uri.parse(ApiConstant.updateUsersAddress + id),
+    var response = await http.patch(
+        Uri.parse(ApiConstant.updateUsersAddress + id),
         body: mapData,
         headers: {
           'Authorization': 'Bearer $tokenIds',
         });
-    
+
     return jsonDecode(response.body);
   }
 
@@ -264,13 +280,13 @@ class ApiServices {
   Future<List<InquiryModel>> userInquiry(String type) async {
     var p = PrefService().getRegId();
     List<InquiryModel> myList = [];
-    var data = await networkCalls.get("${ApiConstant.inquiryEndpoint}$p?search=$type");
+    var data =
+        await networkCalls.get("${ApiConstant.inquiryEndpoint}$p?search=$type");
     for (var i in jsonDecode(data)) {
       myList.add(InquiryModel.fromJson(i));
     }
     return myList;
   }
-
 
   /// Call Inquiry from the server //
   Future<dynamic> callInquiry(Map<String, dynamic> mapData) async {
@@ -285,11 +301,10 @@ class ApiServices {
     return jsonDecode(response.body)["message"];
   }
 
-
-
   /// subShop data get from the server ///
 
-  Future<List<ShopSubCategoryModel>> getShopData(Map<String,dynamic> filter) async {
+  Future<List<ShopSubCategoryModel>> getShopData(
+      Map<String, dynamic> filter) async {
     List<ShopSubCategoryModel> myList = [];
 
     const baseUrl = ApiConstant.subShopEndpoint;
@@ -302,78 +317,78 @@ class ApiServices {
       'Authorization': 'Bearer $tokenIds',
     });
 
-
     for (var i in jsonDecode(response.body)) {
       myList.add(ShopSubCategoryModel.fromJson(i));
     }
-    // log("Partners ${jsonDecode(response.body)}");
-    // if(jsonDecode(response.body)["error"].toString().contains("An error")){
-    //   log("Partners ${jsonDecode(response.body)["error"]}");
-    // }else{
-    //
-    //
-    // }
     return myList;
   }
 
+  /// Get vendor details by Id
+
+  Future<ShopSubCategoryModel> getVendorDetailsById(String id) async {
+    const baseUrl = ApiConstant.subShopEndpoint;
+
+    var tokenIds = PrefService().getToken();
+    final uri = Uri.parse(baseUrl + id);
+
+    final response = await http.get(uri, headers: {
+      'Authorization': 'Bearer $tokenIds',
+    });
+
+    return ShopSubCategoryModel.fromJson(jsonDecode(response.body));
+  }
 
   /// Add New Banner on the Server ///
 
-  Future<dynamic> addBannerBySelf(partnerId, validity, bannerImage,price) async {
+  Future<dynamic> addBannerBySelf(
+      partnerId, validity, bannerImage, price) async {
     var tokenIds = PrefService().getToken();
-
 
     var uri = Uri.parse(ApiConstant.selfBannerEndpoint);
     log("message$uri");
 
-      var request = http.MultipartRequest('POST', uri);
-      request.headers['Authorization'] = 'Bearer $tokenIds';
-      //bannerImage
-      if (bannerImage != null) {
-        http.MultipartFile multipartFile =
-            await http.MultipartFile.fromPath('bannerImage', bannerImage);
+    var request = http.MultipartRequest('POST', uri);
+    request.headers['Authorization'] = 'Bearer $tokenIds';
+    //bannerImage
+    if (bannerImage != null) {
+      http.MultipartFile multipartFile =
+          await http.MultipartFile.fromPath('bannerImage', bannerImage);
 
-        request.files.add(multipartFile);
-      }
+      request.files.add(multipartFile);
+    }
 
-      request.fields["partnerId"] = partnerId;
-      request.fields["validity"] = validity;
-      request.fields["price"] = price;
+    request.fields["partnerId"] = partnerId;
+    request.fields["validity"] = validity;
+    request.fields["price"] = price;
 
     var response = await request.send();
-    var data = await  http.Response.fromStream(response);
+    var data = await http.Response.fromStream(response);
 
     return jsonDecode(data.body);
-
-
   }
-
 
   Future<dynamic> addBannerByCompany(partnerId, validity, price) async {
     var tokenIds = PrefService().getToken();
 
-
     var uri = Uri.parse(ApiConstant.companyBannerEndpoint);
     log("message$uri");
 
-      var request = http.MultipartRequest('POST', uri);
-      request.headers['Authorization'] = 'Bearer $tokenIds';
+    var request = http.MultipartRequest('POST', uri);
+    request.headers['Authorization'] = 'Bearer $tokenIds';
 
-      request.fields["partnerId"] = partnerId;
-      request.fields["validity"] = validity;
-      request.fields["price"] = price;
+    request.fields["partnerId"] = partnerId;
+    request.fields["validity"] = validity;
+    request.fields["price"] = price;
 
     var response = await request.send();
-    var data = await  http.Response.fromStream(response);
+    var data = await http.Response.fromStream(response);
 
     return jsonDecode(data.body);
-
   }
 
   /// PUBLISH OFFER
-  Future<dynamic> publishOffer(partnerId,  offerImage,offer) async {
+  Future<dynamic> publishOffer(partnerId, offerImage, offer) async {
     var tokenIds = PrefService().getToken();
-
 
     var uri = Uri.parse(ApiConstant.offerEndpoint);
     log("message$uri");
@@ -383,7 +398,7 @@ class ApiServices {
     //bannerImage
     if (offerImage != null) {
       http.MultipartFile multipartFile =
-      await http.MultipartFile.fromPath('offerImage', offerImage);
+          await http.MultipartFile.fromPath('offerImage', offerImage);
 
       request.files.add(multipartFile);
     }
@@ -391,26 +406,29 @@ class ApiServices {
     request.fields["partnerId"] = partnerId;
     request.fields["offer"] = offer;
 
-
     log("message11111${request.fields}");
     var response = await request.send();
-    var data = await  http.Response.fromStream(response);
+    var data = await http.Response.fromStream(response);
 
     return jsonDecode(data.body);
-
-
   }
 
   ///  get category data from the server ///
 
-  Future<List<CategoryModel>> getCategory(String query,bool? isPremium) async {
+  Future<List<CategoryModel>> getCategory(String query, bool? isPremium) async {
     List<CategoryModel> myList = [];
-    var data = await networkCalls.get("${ApiConstant.grtCategoryEndpoint}?search=$query&isPremium=${isPremium??""}");
+    var data = await networkCalls.get(
+        "${ApiConstant.grtCategoryEndpoint}?search=$query&isPremium=${isPremium ?? ""}");
+
+    log("Value ${jsonDecode(data).runtimeType}");
+    // if(data)
+
     for (var i in jsonDecode(data)) {
       myList.add(CategoryModel.fromJson(i));
     }
     return myList;
   }
+
   ///  get category data from the server ///
 
   Future<List<BannerModel>> getBannerHistory() async {
@@ -422,8 +440,6 @@ class ApiServices {
     return myList;
   }
 
-
-
   /// get profile from the server ///
   Future<dynamic> getVendorProfile() async {
     var p = PrefService().getRegId();
@@ -431,10 +447,8 @@ class ApiServices {
     return jsonDecode(data);
   }
 
-
   /// GET Publish Offer Ad History
-  Future<dynamic> getOfferAdHistory(String id ) async {
-
+  Future<dynamic> getOfferAdHistory(String id) async {
     var data = await networkCalls.get("${ApiConstant.offerEndpoint}/$id");
     return jsonDecode(data);
   }
@@ -443,19 +457,17 @@ class ApiServices {
 
   Future<dynamic> deleteOffer(String offerId) async {
     var data =
-    await networkCalls.delete("${ApiConstant.offerEndpoint}/$offerId");
+        await networkCalls.delete("${ApiConstant.offerEndpoint}/$offerId");
 
     return jsonDecode(data);
   }
+
   /// delete user Address from the server ///
 
   Future<dynamic> deletePremiumAd(String offerId) async {
     var data =
-    await networkCalls.delete("${ApiConstant.bannerEndPoint}/$offerId");
+        await networkCalls.delete("${ApiConstant.bannerEndPoint}/$offerId");
 
     return jsonDecode(data);
   }
-
-
-
 }

@@ -29,7 +29,8 @@ class _SearchProductState extends State<SearchProduct> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Provider.of<CategoryProvider>(context, listen: false).getCategoryData( query: '');
+    Provider.of<CategoryProvider>(context, listen: false)
+        .getCategoryData(query: '');
   }
 
   final formKey = GlobalKey<FormState>();
@@ -45,7 +46,7 @@ class _SearchProductState extends State<SearchProduct> {
         backgroundColor: primaryColor,
         elevation: 0,
         title: Text(
-          "Remote Search",
+          "Global Search",
           style: GoogleFonts.alice(
               color: textWhite, fontSize: 16, fontWeight: FontWeight.bold),
         ),
@@ -118,7 +119,6 @@ class _SearchProductState extends State<SearchProduct> {
               Container(
                 padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                 child: DropdownButtonFormField<String>(
-
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                         borderSide:
@@ -251,7 +251,6 @@ class _SearchProductState extends State<SearchProduct> {
                       child: Text("West Bengal"),
                     ),
                   ],
-
                   onChanged: (String? newStateId) {
                     selectState = newStateId;
                   },
@@ -261,6 +260,7 @@ class _SearchProductState extends State<SearchProduct> {
                 padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
                 child: DropdownButtonFormField<String>(
                   key: UniqueKey(),
+                  isExpanded: true,
                   decoration: InputDecoration(
                     enabledBorder: OutlineInputBorder(
                         borderSide:
@@ -302,30 +302,30 @@ class _SearchProductState extends State<SearchProduct> {
               ),
               GestureDetector(
                 onTap: () {
-
-
                   if (formKey.currentState!.validate()) {
-
-                    Provider.of<LocationProvider>(context,listen: false)
-                    .getCoordinatesFromAddress(
-                      "${cityController.text.trim()}, "
-                          "${pinCodeController.text.trim()}, "
-                          "$selectState ,"
-                    ).then((value) {
+                    Provider.of<LocationProvider>(context, listen: false)
+                        .getCoordinatesFromAddress(
+                            "${cityController.text.trim()}, "
+                            "${pinCodeController.text.trim()}, "
+                            "$selectState ,")
+                        .then((value) {
                       log("message : ${locationProvider.locationData!}");
-                    Get.to(()=> CategoryDetailsList(filter: {
-                        "address":cityController.text.trim(),
-                        "pincode":pinCodeController.text.trim(),
-                        "state":selectState,
-                        "shopType":shopTypes,
-                        "latitude":locationProvider.locationData!.latitude.toString(),
-                        "longitude":locationProvider.locationData!.longitude.toString()
-                      },));
+                      Get.to(() => CategoryDetailsList(
+                            filter: {
+                              "address": cityController.text.trim(),
+                              "pincode": pinCodeController.text.trim(),
+                              "state": selectState,
+                              "shopType": shopTypes,
+                              /*"latitude": locationProvider
+                                  .locationData!.latitude
+                                  .toString(),
+                              "longitude": locationProvider
+                                  .locationData!.longitude
+                                  .toString()*/
+                            },
+                          ));
                     });
-
-
-
-                  }else{
+                  } else {
                     Fluttertoast.showToast(msg: "Please fill correct address");
                   }
                 },

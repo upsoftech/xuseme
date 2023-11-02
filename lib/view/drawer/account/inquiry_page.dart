@@ -1,14 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:xuseme/services/api_services.dart';
 import 'package:xuseme/constant/api_constant.dart';
 import 'package:xuseme/constant/app_constants.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
+import 'package:xuseme/services/api_services.dart';
+import 'package:xuseme/utils/utility.dart';
 
 import '../../../provider/inquiry_provider.dart';
 import '../../widgets/custom_image_view.dart';
@@ -91,34 +90,36 @@ class _InquiryPageState extends State<InquiryPage> {
                                   child: GestureDetector(
                                     onTap: () async {
                                       await showDialog(
-                                      context: context,
-                                      builder: (_) => ImageDialog(
-                                        url:inquiryProvider.inquiryList[index]
-                                            .partnerInfo?.shopLogo !=
-                                            null && inquiryProvider.inquiryList[index]
-                                            .partnerInfo?.shopLogo !=
-                                            ""
-                                            ? ApiConstant.baseUrl +
-                                            "uploads/" +
-                                            inquiryProvider.inquiryList[index]
-                                                .partnerInfo!.shopLogo.toString()
-                                            : noImage,
-                                      ));
+                                          context: context,
+                                          builder: (_) => ImageDialog(
+                                                url: inquiryProvider
+                                                                .inquiryList[
+                                                                    index]
+                                                                .partnerInfo
+                                                                ?.shopLogo !=
+                                                            null &&
+                                                        inquiryProvider
+                                                                .inquiryList[
+                                                                    index]
+                                                                .partnerInfo
+                                                                ?.shopLogo !=
+                                                            ""
+                                                    ? "${ApiConstant.baseUrl}uploads/${inquiryProvider.inquiryList[index].partnerInfo!.shopLogo}"
+                                                    : noImage,
+                                              ));
                                     },
                                     child: Image.network(
                                       inquiryProvider.inquiryList[index]
-                                                  .partnerInfo?.shopLogo !=
-                                              null && inquiryProvider.inquiryList[index]
-                                                  .partnerInfo?.shopLogo !=
-                                              ""
-                                          ? ApiConstant.baseUrl +
-                                              "uploads/" +
+                                                      .partnerInfo?.shopLogo !=
+                                                  null &&
                                               inquiryProvider.inquiryList[index]
-                                                  .partnerInfo!.shopLogo.toString()
+                                                      .partnerInfo?.shopLogo !=
+                                                  ""
+                                          ? "${ApiConstant.baseUrl}uploads/${inquiryProvider.inquiryList[index].partnerInfo!.shopLogo}"
                                           : noImage,
-                                      width: AppConstant.width(context)*0.2,
+                                      width: AppConstant.width(context) * 0.2,
                                       fit: BoxFit.cover,
-                                      height: AppConstant.height(context)*0.1,
+                                      height: AppConstant.height(context) * 0.1,
                                     ),
                                   )),
                               const SizedBox(
@@ -148,13 +149,15 @@ class _InquiryPageState extends State<InquiryPage> {
                                       width: 5,
                                     ),
                                     Text(
-                                        "${inquiryProvider.inquiryList[index].partnerInfo?.address ?? ""} ${inquiryProvider.inquiryList[index].partnerInfo?.landmark ?? ""} ${inquiryProvider.inquiryList[index].partnerInfo?.pincode ?? ""} ${inquiryProvider.inquiryList[index].partnerInfo?.state ?? ""}"),
+                                        "${inquiryProvider.inquiryList[index].partnerInfo?.address ?? ""} "
+                                        "${inquiryProvider.inquiryList[index].partnerInfo?.landmark ?? ""} "
+                                        "${inquiryProvider.inquiryList[index].partnerInfo?.pincode ?? ""} "
+                                        "${inquiryProvider.inquiryList[index].partnerInfo?.state ?? ""}"),
                                     const SizedBox(
                                       width: 5,
                                     ),
-                                    Text(inquiryProvider.inquiryList[index]
-                                            .partnerInfo?.createdAt ??
-                                        "")
+                                    Text(Utility.formatMongoDateAndTime(inquiryProvider.inquiryList[index]
+                                        .partnerInfo!.createdAt.toString()))
                                   ],
                                 ),
                               ),

@@ -11,9 +11,13 @@ class HomeProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-  List _bannerList = [];
+  List _topBannerList = [];
 
-  List get bannerList => _bannerList;
+  List get topBannerList => _topBannerList;
+
+  List _bottomBannerList = [];
+
+  List get bottomBannerList => _bottomBannerList;
 
   List _singleBannerList = [];
 
@@ -23,20 +27,34 @@ class HomeProvider extends ChangeNotifier {
 
   int get currentIndex => _currentIndex;
 
-  Future<dynamic> getBanner() async {
+  Future<dynamic> getTopBanner(latitude, longitude) async {
     _isLoading = true;
-    log("message$getBanner");
-    await _apiServices.getBanner().then((value) {
-      _bannerList = value;
+
+    _topBannerList.clear();
+    await _apiServices.getBanner(isTop: true,latitude: latitude,longitude: longitude).then((value) {
+      log("messageTopBanner : $value");
+      _topBannerList = value;
       _isLoading = false;
       notifyListeners();
     });
   }
 
-  Future<dynamic> getSingleBanner() async {
+  Future<dynamic> getBottomBanner(latitude,longitude) async {
     _isLoading = true;
 
-    await _apiServices.getSingleBanner().then((value) {
+    bottomBannerList.clear();
+    await _apiServices.getBanner(latitude: latitude,longitude: longitude).then((value) {
+      log("messageBottomBanner :$value");
+      _bottomBannerList = value;
+      _isLoading = false;
+      notifyListeners();
+    });
+  }
+
+  Future<dynamic> getSingleBanner(latitude,longitude) async {
+    _isLoading = true;
+
+    await _apiServices.getSingleBanner(latitude: latitude,longitude: longitude).then((value) {
       _singleBannerList = value;
       _isLoading = false;
       notifyListeners();

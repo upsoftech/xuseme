@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:xuseme/constant/color.dart';
 import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/services/preference_services.dart';
@@ -15,6 +16,7 @@ import 'package:xuseme/utils/utility.dart';
 import '../../constant/api_constant.dart';
 import '../../constant/app_constants.dart';
 import '../../provider/inquiry_provider.dart';
+import '../../provider/location_provider.dart';
 import '../../provider/sub_category_provider.dart';
 import '../../services/api_services.dart';
 import '../widgets/custom_image_view.dart';
@@ -85,7 +87,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
   Widget build(BuildContext context) {
     subShopProvider = Provider.of<SubShopsProvider>(context);
     inquiryProvider = Provider.of<InquiryProvider>(context);
-    //
+    final locationProvider = Provider.of< LocationProvider>(context);
     // log("${widget.filter["latitude"]}");
     // log("${widget.filter["longitude"]}");
 
@@ -175,7 +177,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                       return Container(
                           padding: const EdgeInsets.all(5),
                           margin: const EdgeInsets.symmetric(
-                              horizontal: 5, vertical: 10),
+                              horizontal: 5, vertical: 5),
                           width: double.infinity,
                           decoration: BoxDecoration(
                               color: primary.withOpacity(.1),
@@ -209,29 +211,34 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                   const SizedBox(
                                     width: 10,
                                   ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        subShopProvider
-                                                .subShopList[index].shopName ??
-                                            "",
-                                        style: GoogleFonts.alice(
-                                            color: textBlack,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16),
-                                      ),
-                                      Text(
-                                        "Owner Name : ${subShopProvider.subShopList[index].name ?? ""}",
-                                        style: GoogleFonts.alice(
-                                            color: primaryColor,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14),
-                                      )
-                                    ],
-                                  )
+                                  Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          subShopProvider
+                                                  .subShopList[index].shopName ??
+                                              "",
+                                          style: GoogleFonts.alice(
+                                              color: textBlack,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
+                                        ),
+                                        Text(
+                                          "Owner Name : ${subShopProvider.subShopList[index].name ?? ""}",
+                                          style: GoogleFonts.alice(
+                                              color: primaryColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
                                 ],
                               ),
                               const SizedBox(
@@ -271,7 +278,11 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "${Utility.calculateDistance(double.parse(widget.filter["latitude"]), double.parse(widget.filter["longitude"]), subShopProvider.subShopList[index].latitude ?? 0, subShopProvider.subShopList[index].longitude ?? 0)} KM Away",
+                                    "${Utility.calculateDistance(double.parse(locationProvider
+                                        .locationData!.latitude
+                                        .toString()), double.parse(locationProvider
+                                        .locationData!.longitude
+                                        .toString()), subShopProvider.subShopList[index].latitude ?? 0, subShopProvider.subShopList[index].longitude ?? 0)} KM Away",
                                     style: GoogleFonts.alice(
                                         color: primary,
                                         fontSize: 16,
@@ -285,9 +296,9 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                               "+91${subShopProvider.subShopList[index].mobile}");
                                           final message =
                                               Uri.encodeComponent("Hi");
-                                          final whatsappUrl = Uri.parse(
-                                              "https://wa.me/$phoneNumber/?text=$message");
-                                          launchUrl(whatsappUrl);
+
+                                          final whatsappUrl = 'whatsapp://send?phone=$phoneNumber&text=${Uri.encodeComponent(message)}';
+                                          launchUrlString(whatsappUrl);
                                         },
                                         child: Image.asset(
                                           whatsapp,
@@ -301,7 +312,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                         onTap: () {
                                           log("message111${subShopProvider.subShopList[index].mobile}");
                                           launchUrl(Uri.parse(
-                                              "tel://${subShopProvider.subShopList[index].mobile}"));
+                                              "tel:${subShopProvider.subShopList[index].mobile}"));
                                           ApiServices().callInquiry({
                                             "customerId":
                                                 PrefService().getRegId(),
@@ -331,7 +342,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                         onTap: () {
                                           log("message111${subShopProvider.subShopList[index].landline}");
                                           launchUrl(Uri.parse(
-                                              "tel://${subShopProvider.subShopList[index].landline}"));
+                                              "tel:${subShopProvider.subShopList[index].landline}"));
                                           ApiServices().callInquiry({
                                             "customerId":
                                                 PrefService().getRegId(),

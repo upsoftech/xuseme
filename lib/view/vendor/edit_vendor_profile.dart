@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -7,12 +8,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:xuseme/constant/image.dart';
+
 import '../../constant/api_constant.dart';
-import '../../services/api_services.dart';
-import '../../services/preference_services.dart';
 import '../../constant/color.dart';
 import '../../provider/category_provider.dart';
 import '../../provider/location_provider.dart';
+import '../../services/api_services.dart';
+import '../../services/preference_services.dart';
+
 class EditVendorProfile extends StatefulWidget {
   const EditVendorProfile({Key? key, this.data}) : super(key: key);
   final Map<String, dynamic>? data;
@@ -22,7 +25,6 @@ class EditVendorProfile extends StatefulWidget {
 }
 
 class _EditVendorProfileState extends State<EditVendorProfile> {
-
   final formKey = GlobalKey<FormState>();
 
   XFile? images;
@@ -49,24 +51,27 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
   final shopTypeController = TextEditingController();
   final addressController = TextEditingController();
   final landmarkController = TextEditingController();
+  final cityController = TextEditingController();
   final addServicesController = TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-   nameController.text = widget.data!["name"];
-   mobileController.text = widget.data!["mobile"];
-   landlineController.text = widget.data!["landline"];
-   emailController.text = widget.data!["email"];
-   shopNameController.text = widget.data!["shopName"];
-   shopType = widget.data!["shopType"];
-   addressController.text = widget.data!["address"];
-   landmarkController.text = widget.data!["landmark"];
-   pinController.text = widget.data!["pincode"];
-   state = widget.data!["state"];
-   addServicesController.text = widget.data!["services"];
-    Provider.of<CategoryProvider>(context, listen: false).getCategoryData( query: '');
+    nameController.text = widget.data!["name"];
+    mobileController.text = widget.data!["mobile"];
+    landlineController.text = widget.data!["landline"];
+    emailController.text = widget.data!["email"];
+    shopNameController.text = widget.data!["shopName"];
+    shopType = widget.data!["shopType"];
+    addressController.text = widget.data!["address"];
+    landmarkController.text = widget.data!["landmark"];
+    pinController.text = widget.data!["pincode"];
+    cityController.text = widget.data!["city"];
+    state = widget.data!["state"];
+    addServicesController.text = widget.data!["services"];
+    Provider.of<CategoryProvider>(context, listen: false)
+        .getCategoryData(query: '');
   }
 
   @override
@@ -74,93 +79,100 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
     final locationProvider = Provider.of<LocationProvider>(context);
     final catProvider = Provider.of<CategoryProvider>(context);
 
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
         backgroundColor: primaryColor,
-        title: Text("Edit Profile",style: GoogleFonts.alice(color: textWhite,fontSize: 16,fontWeight: FontWeight.bold),),
+        title: Text(
+          "Edit Profile",
+          style: GoogleFonts.alice(
+              color: textWhite, fontSize: 16, fontWeight: FontWeight.bold),
+        ),
       ),
       bottomNavigationBar: GestureDetector(
-        onTap:(){
+        onTap: () {
+          if (formKey.currentState!.validate()) {
+            Provider.of<LocationProvider>(context, listen: false)
+                .getCoordinatesFromAddress(
+              "${addressController.text.trim()}, ${landmarkController.text.trim()}, "
+              "${pinController.text.trim()},"
+              "${state}",
+            )
+                .then((value) async {
+              var notificationId = await FirebaseMessaging.instance.getToken();
 
-            if (formKey.currentState!.validate()) {
-              Provider.of<LocationProvider>(context, listen: false)
-                  .getCoordinatesFromAddress(
-                "${addressController.text.trim()}, ${landmarkController.text
-                    .trim()}, "
-                    "${pinController.text.trim()},"
-                    "${state}",
-              )
-                  .then((value) {
-                if (locationProvider.geocodingLocation != null) {
-                  ApiServices()
-                      .updatePartner(
-                      images?.path,
-                      nameController.text.trim(),
-                      mobileController.text.trim(),
-                      landlineController.text.trim(),
-                      emailController.text.trim(),
-                      shopNameController.text.trim(),
-                      shopType,
-                      addressController.text.trim(),
-                      landmarkController.text.trim(),
-                      pinController.text.trim(),
-                      locationProvider.geocodingLocation!.latitude.toString(),
-                      locationProvider.geocodingLocation!.longitude
-                          .toString(),
-                      state,
-                      addServicesController.text.trim())
-                      .then((value) {
-                    log("message$value");
-                    if (value.toString().contains("PathNotFoundException")) {
-                      Fluttertoast.showToast(
-                          msg: "Please Select Image",
-                          backgroundColor: primaryColor);
-                    } else if (value.toString().contains(
-                        "All parameters are required")) {
-                      Fluttertoast.showToast(
-                          msg: "${value["message"]}",
-                          backgroundColor: primaryColor);
-                    }
-                    else {
-                      Fluttertoast.showToast(
-                          msg: "${value["message"]}",
-                          backgroundColor: primaryColor);
-                      PrefService().setRegId(value["data"]["_id"]);
-                      PrefService().setSelectType(value["data"]["type"]);
-                      Get.back();
-                    }
-                  });
-                } else {
-                  // No location found for the given address
-                  log("No location found for the given address");
-                }
-              }).catchError((error) {
-                // Handle the error from geocoding operation
-                log("Error during geocoding: $error");
-                Fluttertoast.showToast(
-                    msg: "Please Provide Correct Address",
-                    backgroundColor: primaryColor);
-              });
-            }
+              log("notificationId : $notificationId");
 
+              if (locationProvider.geocodingLocation != null) {
+                ApiServices()
+                    .updatePartner(
+                        images?.path,
+                        nameController.text.trim(),
+                        mobileController.text.trim(),
+                        landlineController.text.trim(),
+                        emailController.text.trim(),
+                        shopNameController.text.trim(),
+                        shopType,
+                        addressController.text.trim(),
+                        landmarkController.text.trim(),
+                        pinController.text.trim(),
+                        locationProvider.geocodingLocation!.latitude.toString(),
+                        locationProvider.geocodingLocation!.longitude
+                            .toString(),
+                        state,
+                        addServicesController.text.trim(),
+                        notificationId)
+                    .then((value) {
+                  log("UpdateResponse :$value");
+                  if (value.toString().contains("PathNotFoundException")) {
+                    Fluttertoast.showToast(
+                        msg: "Please Select Image",
+                        backgroundColor: primaryColor);
+                  } else if (value
+                      .toString()
+                      .contains("All parameters are required")) {
+                    Fluttertoast.showToast(
+                        msg: "${value["message"]}",
+                        backgroundColor: primaryColor);
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: "${value["message"]}",
+                        backgroundColor: primaryColor);
+                    PrefService().setRegId(value["data"]["_id"]);
+                    PrefService().setSelectType(value["data"]["type"]);
+                    Get.back();
+                  }
+                });
+              } else {
+                // No location found for the given address
+                log("No location found for the given address");
+              }
+            }).catchError((error) {
+              // Handle the error from geocoding operation
+              log("Error during geocoding: $error");
+              Fluttertoast.showToast(
+                  msg: "Please Provide Correct Address",
+                  backgroundColor: primaryColor);
+            });
+          }
         },
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
           alignment: Alignment.center,
           height: 45,
           width: double.infinity,
           decoration: BoxDecoration(
-              color: textBlack,
-              borderRadius: BorderRadius.circular(15)
+              color: textBlack, borderRadius: BorderRadius.circular(15)),
+          child: Text(
+            "Update",
+            style: GoogleFonts.alice(
+                color: textWhite, fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          child: Text("Update",style: GoogleFonts.alice(color: textWhite,fontSize: 16,fontWeight: FontWeight.bold),),
         ),
       ),
-      body:SafeArea(
-        child:SingleChildScrollView(
+      body: SafeArea(
+        child: SingleChildScrollView(
           child: Form(
             key: formKey,
             child: Column(
@@ -174,11 +186,11 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       enabledBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -204,11 +216,11 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       enabledBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -236,11 +248,11 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       enabledBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -267,11 +279,11 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       enabledBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -298,11 +310,11 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       enabledBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -321,18 +333,19 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                 Container(
                   padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                   child: DropdownButtonFormField<String>(
-
+                    isExpanded: true,
                     decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       focusedBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       labelText: 'Shop Type ',
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 20),
                       labelStyle: GoogleFonts.alice(),
                     ),
                     validator: (value) {
@@ -351,7 +364,6 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                         ),
                       );
                     }).toList(),
-
                     onChanged: (String? newStateId) {
                       setState(() {
                         shopType = newStateId!;
@@ -367,11 +379,11 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       enabledBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -395,11 +407,11 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       enabledBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -410,6 +422,34 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Landmark is required';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+                  child: TextFormField(
+                    controller: cityController,
+                    cursorColor: Colors.black,
+                    decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(width: 1, color: textBlack),
+                          borderRadius: BorderRadius.circular(10)),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(width: 1, color: textBlack),
+                          borderRadius: BorderRadius.circular(10)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      labelText: ('City'),
+                      labelStyle: GoogleFonts.alice(),
+                      contentPadding: const EdgeInsets.only(top: 10, left: 20),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'City is required';
                       }
                       return null;
                     },
@@ -435,19 +475,19 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             focusedBorder: OutlineInputBorder(
-                                borderSide:
-                                const BorderSide(width: 1, color: textBlack),
+                                borderSide: const BorderSide(
+                                    width: 1, color: textBlack),
                                 borderRadius: BorderRadius.circular(10)),
                             enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                const BorderSide(width: 1, color: textBlack),
+                                borderSide: const BorderSide(
+                                    width: 1, color: textBlack),
                                 borderRadius: BorderRadius.circular(10)),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10)),
                             labelText: ('Pin Code'),
                             labelStyle: GoogleFonts.alice(),
                             contentPadding:
-                            const EdgeInsets.only(top: 10, left: 20),
+                                const EdgeInsets.only(top: 10, left: 20),
                           ),
                           // validator: (value) {
                           //   if (value!.isEmpty ||
@@ -466,6 +506,7 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           key: UniqueKey(),
+                          isExpanded: true,
                           decoration: InputDecoration(
                               enabledBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(
@@ -477,7 +518,7 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                                   borderRadius: BorderRadius.circular(10)),
                               labelText: 'State',
                               contentPadding:
-                              const EdgeInsets.symmetric(horizontal: 10),
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               labelStyle: GoogleFonts.alice()),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -618,15 +659,16 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                   padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                   child: TextFormField(
                     controller: addServicesController,
+                    textCapitalization: TextCapitalization.words,
                     cursorColor: Colors.black,
                     decoration: InputDecoration(
                       focusedBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       enabledBorder: OutlineInputBorder(
                           borderSide:
-                          const BorderSide(width: 1, color: textBlack),
+                              const BorderSide(width: 1, color: textBlack),
                           borderRadius: BorderRadius.circular(10)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -644,7 +686,7 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                 ),
                 Container(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   child: Text(
                     "Upload Shop Logo",
                     style: GoogleFonts.alice(

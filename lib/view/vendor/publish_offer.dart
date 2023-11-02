@@ -39,7 +39,7 @@ class _PublishedOfferState extends State<PublishedOffer> {
         backgroundColor: primaryColor,
         elevation: 0,
         title: Text(
-          "Published Offer",
+          "Publish your Offer",
           style: GoogleFonts.alice(
               color: textWhite, fontWeight: FontWeight.bold, fontSize: 16),
         ),

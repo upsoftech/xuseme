@@ -1,15 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:xuseme/constant/color.dart';
-import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/view/category/vendor_details.dart';
 
 import '../../constant/api_constant.dart';
@@ -171,43 +168,39 @@ class _OfferScreenState extends State<OfferScreen> {
                         return subShopProvider
                                 .subShopList[index].offers!.isNotEmpty
                             ? GestureDetector(
-                          onTap: (){
-                            Get.to(()=>VendorDetails(shopSubCategoryModel: subShopProvider
-                                .subShopList[index],));
-                          },
-                              child: Container(
-                                  margin: EdgeInsets.all(7),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(11),
-                                    child: ImageSlideshow(
-                                        width: double.infinity,
-                                        initialPage: 0,
-                                        indicatorColor: primaryColor,
-                                        indicatorBackgroundColor: grey,
-                                        autoPlayInterval: 3000,
-                                        isLoop: true,
-                                        children: subShopProvider
-                                            .subShopList[index].offers!
-                                            .map((e) {
-                                          return e["offerImage"].toString() != ""
-                                              ? Image.network(
-                                                  // ignore: prefer_interpolation_to_compose_strings
-                                                  "${ApiConstant.baseUrl}/uploads/banners/" +
-                                                      e["offerImage"],
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Image.network(
-                                                  noImage,
-                                                  fit: BoxFit.cover,
-                                                );
-                                        }).toList()),
-                                  ),
+                                onTap: () {
+                                  Get.to(() => VendorDetails(
+                                        shopSubCategoryModel:
+                                            subShopProvider.subShopList[index],
+                                      ));
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.all(7),
+                                  child: Column(
+                                      children: subShopProvider
+                                          .subShopList[index].offers!
+                                          .map((e) {
+                                    return e["offerImage"].toString() != ""
+                                        ? Container(
+                                            margin: const EdgeInsets.all(5),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(11),
+                                              child: Image.network(
+                                                // ignore: prefer_interpolation_to_compose_strings
+                                                "${ApiConstant.baseUrl}/uploads/banners/" +
+                                                    e["offerImage"],
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          )
+                                        : const SizedBox();
+                                  }).toList()),
                                 ),
-                            )
-                            : SizedBox();
+                              )
+                            : const SizedBox();
                       }
-                      return SizedBox();
+                      return const SizedBox();
                     }));
   }
 }
-

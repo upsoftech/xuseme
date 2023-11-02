@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -9,31 +12,49 @@ import '../../constant/api_constant.dart';
 import '../../constant/color.dart';
 import '../../constant/image.dart';
 import '../../model/sub_category_model.dart';
+import '../../provider/sub_category_provider.dart';
 import '../../services/api_services.dart';
 import '../../services/preference_services.dart';
 import '../../utils/utility.dart';
 import '../widgets/custom_image_view.dart';
 
-class VendorDetails extends StatefulWidget {
-  const VendorDetails({super.key, required this.shopSubCategoryModel});
+class VendorBannerDetails extends StatefulWidget {
+  const VendorBannerDetails({super.key, required this.id,});
 
-  final ShopSubCategoryModel shopSubCategoryModel;
-
+  final String id;
   @override
-  State<VendorDetails> createState() => _VendorDetailsState();
+  State<VendorBannerDetails> createState() => _VendorBannerDetailsState();
 }
 
-class _VendorDetailsState extends State<VendorDetails> {
+class _VendorBannerDetailsState extends State<VendorBannerDetails> {
+
+  late SubShopsProvider subShopProvider;
+
+
+  @override
+  void initState() {
+    super.initState();
+    subShopProvider = Provider.of<SubShopsProvider>(context, listen: false);
+
+    subShopProvider.getVendorById(widget.id);
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    var data = widget.shopSubCategoryModel;
+    subShopProvider = Provider.of<SubShopsProvider>(context);
+
+
+    log("${subShopProvider.vendorData?.offers}");
+    log("${subShopProvider.vendorData?.premiumOffers}");
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
         elevation: 0,
       ),
-      body: Container(
+      body:subShopProvider.vendorData!=null? Container(
           padding: const EdgeInsets.all(5),
           margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
           width: double.infinity,
@@ -44,53 +65,52 @@ class _VendorDetailsState extends State<VendorDetails> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              data.offers!.isNotEmpty
+              subShopProvider.vendorData!.offers!.isNotEmpty
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(11),
-                      child: ImageSlideshow(
-                          width: double.infinity,
-                          initialPage: 0,
-                          indicatorColor: primaryColor,
-                          indicatorBackgroundColor: grey,
-                          autoPlayInterval: 3000,
-                          isLoop: true,
-                          children: data.offers!.map((e) {
-                            return e["offerImage"].toString() != ""
-                                ? Image.network(
-                                    // ignore: prefer_interpolation_to_compose_strings
-                                    "${ApiConstant.baseUrl}/uploads/banners/" +
-                                        e["offerImage"],
-                                    fit: BoxFit.cover,
-                                  )
-                                : Image.network(
-                                    noImage,
-                                    fit: BoxFit.cover,
-                                  );
-                          }).toList()),
-                    )
+                borderRadius: BorderRadius.circular(11),
+                child: ImageSlideshow(
+                    width: double.infinity,
+                    initialPage: 0,
+                    indicatorColor: primaryColor,
+                    indicatorBackgroundColor: grey,
+                    autoPlayInterval: 3000,
+                    isLoop: true,
+                    children: subShopProvider.vendorData!.offers!.map((e) {
+                      return e["offerImage"].toString() != ""
+                          ? Image.network(
+                        // ignore: prefer_interpolation_to_compose_strings
+                        "${ApiConstant.baseUrl}/uploads/banners/" +
+                            e["offerImage"],
+                        fit: BoxFit.cover,
+                      )
+                          : Image.network(
+                        noImage,
+                        fit: BoxFit.cover,
+                      );
+                    }).toList()),
+              )
                   : SizedBox(),
-              const SizedBox(
+              SizedBox(
                 height: 20,
               ),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   GestureDetector(
                     onTap: () async {
                       await showDialog(
                           context: context,
                           builder: (_) => ImageDialog(
-                                url: data.shopLogo != ""
-                                    ? "${ApiConstant.baseUrl}uploads/${data.shopLogo}"
-                                    : noImage,
-                              ));
+                            url: subShopProvider.vendorData!.shopLogo != ""
+                                ? "${ApiConstant.baseUrl}uploads/${subShopProvider.vendorData!.shopLogo}"
+                                : noImage,
+                          ));
                     },
                     child: CircleAvatar(
                         radius: 30,
-                        backgroundImage: data.shopLogo != ""
+                        backgroundImage: subShopProvider.vendorData!.shopLogo != ""
                             ? NetworkImage(
-                                "${ApiConstant.baseUrl}uploads/${data.shopLogo}")
+                            "${ApiConstant.baseUrl}uploads/${subShopProvider.vendorData!.shopLogo}")
                             : NetworkImage(noImage)),
                   ),
                   const SizedBox(
@@ -101,14 +121,14 @@ class _VendorDetailsState extends State<VendorDetails> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        data.shopName ?? "",
+                        subShopProvider.vendorData!.shopName ?? "",
                         style: GoogleFonts.alice(
                             color: textBlack,
                             fontWeight: FontWeight.bold,
                             fontSize: 21),
                       ),
                       Text(
-                        "Owner Name : ${data.name ?? ""}",
+                        "Owner Name : ${subShopProvider.vendorData!.name ?? ""}",
                         style: GoogleFonts.alice(
                             color: primaryColor,
                             fontWeight: FontWeight.bold,
@@ -132,14 +152,15 @@ class _VendorDetailsState extends State<VendorDetails> {
                 height: 5,
               ),
               Text(
-                "${data.address ?? ""} ${data.landmark ?? ""} ${data.pincode ?? ""} ${data.state ?? ""}",
+                "${subShopProvider.vendorData!.address ?? ""} ${subShopProvider.vendorData!.landmark ?? ""} "
+                    "${subShopProvider.vendorData!.pincode ?? ""} ${subShopProvider.vendorData!.state ?? ""}",
                 style: GoogleFonts.alice(fontSize: 16),
               ),
               const SizedBox(
                 height: 5,
               ),
               Text(
-                "My Services: ${data.services}",
+                "My Services: ${subShopProvider.vendorData!.services}",
                 style: GoogleFonts.alice(
                     fontSize: 16,
                     color: primaryColor,
@@ -156,7 +177,8 @@ class _VendorDetailsState extends State<VendorDetails> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "${Utility.calculateDistance(double.parse("0"), double.parse("0"), data.latitude ?? 0, data.longitude ?? 0)} KM Away",
+                      "${Utility.calculateDistance(double.parse("0"), double.parse("0"),
+                          subShopProvider.vendorData!.latitude ?? 0, subShopProvider.vendorData!.longitude ?? 0)} KM Away",
                       style: GoogleFonts.alice(
                           color: primary,
                           fontSize: 16,
@@ -167,8 +189,8 @@ class _VendorDetailsState extends State<VendorDetails> {
                         GestureDetector(
                           onTap: () async {
                             try {
-                              var phoneNumber = data
-                                  .mobile; // Replace with the recipient's phone number
+                              var phoneNumber = subShopProvider.vendorData
+                                  !.mobile; // Replace with the recipient's phone number
                               const message =
                                   'Hey! I\'m inquiring about the apartment listing';
 
@@ -192,10 +214,10 @@ class _VendorDetailsState extends State<VendorDetails> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            launchUrl(Uri.parse("tel://${data.mobile}"));
+                            launchUrl(Uri.parse("tel://${subShopProvider.vendorData!.mobile}"));
                             ApiServices().callInquiry({
                               "customerId": PrefService().getRegId(),
-                              "partnerId": data.id ?? "",
+                              "partnerId": subShopProvider.vendorData!.id ?? "",
                               "type": "cold"
                             }).then((value) {
                               Fluttertoast.showToast(
@@ -216,10 +238,10 @@ class _VendorDetailsState extends State<VendorDetails> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            launchUrl(Uri.parse("tel://${data.landline}"));
+                            launchUrl(Uri.parse("tel://${subShopProvider.vendorData!.landline}"));
                             ApiServices().callInquiry({
                               "customerId": PrefService().getRegId(),
-                              "partnerId": data.id ?? "",
+                              "partnerId": subShopProvider.vendorData!.id ?? "",
                               "type": "cold"
                             }).then((value) {
                               Fluttertoast.showToast(
@@ -241,7 +263,10 @@ class _VendorDetailsState extends State<VendorDetails> {
                 ),
               )
             ],
-          )),
+          ))
+      :Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }
