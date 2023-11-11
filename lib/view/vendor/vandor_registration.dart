@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -85,7 +86,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                 .getCoordinatesFromAddress(
               "${addressController.text.trim()}, ${landmarkController.text.trim()}, "
               "${pinController.text.trim()},"
-              "${state}",
+              "$state",
             )
                 .then((value) async {
               var notificationId = await FirebaseMessaging.instance.getToken();
@@ -171,6 +172,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                 padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
                 child: TextFormField(
                   controller: nameController,
+                  textCapitalization: TextCapitalization.words,
                   cursorColor: Colors.black,
                   decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(
@@ -217,6 +219,10 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                     labelStyle: GoogleFonts.alice(),
                     contentPadding: const EdgeInsets.only(top: 10, left: 20),
                   ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10)
+                  ],
                   validator: (value) {
                     if (value!.isEmpty ||
                         !RegExp(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$')
@@ -249,6 +255,11 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                     labelStyle: GoogleFonts.alice(),
                     contentPadding: const EdgeInsets.only(top: 10, left: 20),
                   ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(10)
+                  ],
+
                   validator: (value) {
                     if (value!.isEmpty ||
                         !RegExp(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$')
@@ -311,6 +322,7 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                     labelStyle: GoogleFonts.alice(),
                     contentPadding: const EdgeInsets.only(top: 10, left: 20),
                   ),
+                  textCapitalization: TextCapitalization.words,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Shop name is required';
@@ -687,13 +699,16 @@ class _VendorRegistrationState extends State<VendorRegistration> {
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundColor: Colors.grey.withOpacity(.2),
-                      child: images != null
-                          ? Image.file(fit: BoxFit.cover, File(images!.path))
-                          : SizedBox(),
-                    ),
+                    images != null
+                        ? CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Colors.grey.withOpacity(.2),
+                            backgroundImage: FileImage(File(images!.path)),
+                          )
+                        : CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Colors.grey.withOpacity(.2),
+                          ),
                     Positioned(
                       bottom: -10,
                       child: IconButton(

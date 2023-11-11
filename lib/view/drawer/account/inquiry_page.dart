@@ -31,7 +31,7 @@ class _InquiryPageState extends State<InquiryPage> {
   void initState() {
     super.initState();
     inquiryProvider = Provider.of<InquiryProvider>(context, listen: false);
-    inquiryProvider.inquiryData("cold");
+    inquiryProvider.inquiryData();
   }
 
   @override

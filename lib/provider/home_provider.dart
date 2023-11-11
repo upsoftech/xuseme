@@ -30,7 +30,7 @@ class HomeProvider extends ChangeNotifier {
   Future<dynamic> getTopBanner(latitude, longitude) async {
     _isLoading = true;
 
-    _topBannerList.clear();
+
     await _apiServices.getBanner(isTop: true,latitude: latitude,longitude: longitude).then((value) {
       log("messageTopBanner : $value");
       _topBannerList = value;
@@ -42,7 +42,7 @@ class HomeProvider extends ChangeNotifier {
   Future<dynamic> getBottomBanner(latitude,longitude) async {
     _isLoading = true;
 
-    bottomBannerList.clear();
+
     await _apiServices.getBanner(latitude: latitude,longitude: longitude).then((value) {
       log("messageBottomBanner :$value");
       _bottomBannerList = value;

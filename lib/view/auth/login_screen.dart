@@ -1,16 +1,16 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:xuseme/constant/image.dart';
 import 'package:xuseme/view/auth/otp_screen.dart';
-import '../../services/api_services.dart';
-import '../../services/preference_services.dart';
+
 import '../../constant/color.dart';
+import '../../services/api_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -20,13 +20,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   final mobileNumber = TextEditingController();
-   String? dropdownValue;
+  String? dropdownValue;
   final ApiServices _apiService = ApiServices();
 
-
   bool valuefirst = false;
+
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -126,7 +127,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     enabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(width: 1, color: textBlack)),
                     labelText: ('Phone Number'),
-                    
                     labelStyle: GoogleFonts.alice(
                         color: textBlack,
                         fontWeight: FontWeight.bold,
@@ -148,66 +148,112 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(
                 height: 35,
               ),
+              isLoading
+                  ? const CircularProgressIndicator(color: Colors.white,):
               InkWell(
-                  onTap: () {
-
+                  onTap: () async {
                     if (mobileNumber.text.trim() != "" &&
                         mobileNumber.text.trim().length == 10 &&
-                        dropdownValue!.toLowerCase()=="customer"
-                    && valuefirst ==true) {
+                        dropdownValue!.toLowerCase() == "customer" &&
+                        valuefirst == true) {
+                      isLoading = true;
+                      setState(() {});
+
                       _apiService
                           .logInMobile(mobileNumber.text.trim(),
-                              dropdownValue!.toLowerCase())
-                          .then((value) {  
-                            
-                            log("LOGIN_SCREEN : ${value}");
-                            log("LOGIN_SCREEN $dropdownValue");
-                            
-                            if(value["status"]!="0" && value["otp"] !=null){ 
-                              Fluttertoast.showToast(msg: "OTP Is ${value["otp"]}");
-                              Get.to(()=> OtpScreen(
+                          dropdownValue!.toLowerCase())
+                          .then((value) async {
+                        log("LOGIN_SCREEN : ${value}");
+                        log("LOGIN_SCREEN $dropdownValue");
+                        if (value["status"] != "0" &&
+                            value["otp"] != null) {
+                          // Fluttertoast.showToast(
+                          //     msg: "OTP Is ${value["otp"]}");
+
+                          await FirebaseAuth.instance.verifyPhoneNumber(
+                            phoneNumber: '+91${mobileNumber.text.trim()}',
+                            verificationCompleted:
+                                (PhoneAuthCredential credential) {},
+                            verificationFailed: (FirebaseAuthException e) {},
+                            codeSent: (String verificationId, int? resendToken) {
+                              Get.to(() => OtpScreen(
                                 dropdownValue: 'Customer',
                                 mobile: mobileNumber.text.trim(),
+                                verificationId: verificationId,
+                                otp: value["otp"].toString(),
                               ));
-                            }else if (value["message"].toString().contains("Number already exists")){
-                              Fluttertoast.showToast(msg: "${value["message"]}");
-                            }else{
-                              Fluttertoast.showToast(msg: "OTP Is ${value}");
-                            }
-                     
-                     
+                            },
+                            codeAutoRetrievalTimeout: (String verificationId) {},
+                          );
+
+                        } else if (value["message"]
+                            .toString()
+                            .contains("Number already exists")) {
+                          isLoading = false;
+                          setState(() {});
+                          Fluttertoast.showToast(
+                              msg: "Number already register as partner");
+                        } else {
+                          // Fluttertoast.showToast(msg: "");
+                          isLoading = false;
+                          setState(() {});
+                        }
                       });
+
+
+
                     } else if (mobileNumber.text.trim() != "" &&
                         mobileNumber.text.trim().length == 10 &&
-                        dropdownValue!.toLowerCase()=="partner"
-                        && valuefirst ==true) {
+                        dropdownValue!.toLowerCase() == "partner" &&
+                        valuefirst == true) {
+                      isLoading = true;
+                      setState(() {});
+
+
                       _apiService
                           .logInMobile(mobileNumber.text.trim(),
-                              dropdownValue!.toLowerCase())
-                          .then((value) {
-
-                        if(value["status"]!="0" && value["otp"] !=null){
-                          Fluttertoast.showToast(msg: "OTP Is ${value["otp"]}");
-                          Get.to(()=> OtpScreen(
-                            dropdownValue: 'Partner',
-                            mobile: mobileNumber.text.trim(),
-
-                          ));
-                        }else if (value["message"].toString().contains("Number already exists")){
-                          Fluttertoast.showToast(msg: "${value["message"]}");
-                        }else{
-                          Fluttertoast.showToast(msg: "OTP Is ${value}");
+                          dropdownValue!.toLowerCase())
+                          .then((value) async {
+                        if (value["status"] != "0" &&
+                            value["otp"] != null) {
+                          // Fluttertoast.showToast(
+                          //     msg: "OTP Is ${value["otp"]}");
+                          await FirebaseAuth.instance.verifyPhoneNumber(
+                            phoneNumber: '+91${mobileNumber.text.trim()}',
+                            verificationCompleted:
+                                (PhoneAuthCredential credential) {},
+                            verificationFailed: (FirebaseAuthException e) {},
+                            codeSent: (String verificationId, int? resendToken) {
+                              Get.to(() => OtpScreen(
+                                dropdownValue: 'Partner',
+                                mobile: mobileNumber.text.trim(),
+                                verificationId: verificationId,
+                                otp: value["otp"].toString(),
+                              ));
+                            },
+                            codeAutoRetrievalTimeout: (String verificationId) {},
+                          );
+                        } else if (value["message"]
+                            .toString()
+                            .contains("Number already exists")) {
+                          Fluttertoast.showToast(
+                              msg: "Number already register as user");
+                          isLoading = false;
+                          setState(() {});
+                        } else {
+                          // Fluttertoast.showToast(msg: "${value}");
+                          isLoading = false;
+                          setState(() {});
                         }
-
                       });
-                    }else if(mobileNumber.text.trim().length < 10){
+
+
+                    } else if (mobileNumber.text.trim().length < 10) {
                       Fluttertoast.showToast(
                         msg: 'Enter valid mobile number',
                         backgroundColor: primaryColor,
                       );
-                    }
-
-                    else {
+                    } else {
                       Fluttertoast.showToast(
                         msg: 'Please Select Required ',
                         backgroundColor: primaryColor,
@@ -222,15 +268,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: BoxDecoration(
                         color: textBlack,
                         borderRadius: BorderRadius.circular(10)),
-                    child: FittedBox(
-                      child: Text(
-                        'Login With OTP',
-                        style: GoogleFonts.alice(
-                            color: textWhite,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16),
-                      ),
-                    ),
+                    child: Text(
+                            'Login With OTP',
+                            style: GoogleFonts.alice(
+                                color: textWhite,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16),
+                          ),
                   )),
               Container(
                 padding: const EdgeInsets.only(left: 5, right: 5, top: 15),

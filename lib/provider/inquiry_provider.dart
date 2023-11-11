@@ -23,11 +23,11 @@ class InquiryProvider extends ChangeNotifier {
 
   List<BannerModel> get bannerHistoryList => _bannerHistoryList;
 
-  Future<void> inquiryData(String type) async {
+  Future<void> inquiryData({String? type}) async {
     log("message");
     _isLoading = true;
     _inquiryList.clear();
-    await _apiServices.userInquiry(type).then((value) {
+    await _apiServices.userInquiry(type??"v1").then((value) {
       _inquiryList = value;
       _isLoading = false;
       notifyListeners();

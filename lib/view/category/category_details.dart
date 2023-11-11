@@ -87,7 +87,7 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
   Widget build(BuildContext context) {
     subShopProvider = Provider.of<SubShopsProvider>(context);
     inquiryProvider = Provider.of<InquiryProvider>(context);
-    final locationProvider = Provider.of< LocationProvider>(context);
+    final locationProvider = Provider.of<LocationProvider>(context);
     // log("${widget.filter["latitude"]}");
     // log("${widget.filter["longitude"]}");
 
@@ -187,7 +187,8 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                               mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   GestureDetector(
                                     onTap: () async {
@@ -200,38 +201,42 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                     },
                                     child: CircleAvatar(
                                         radius: 30,
+                                        backgroundColor: Colors.white,
                                         backgroundImage: subShopProvider
                                                     .subShopList[index]
                                                     .shopLogo !=
                                                 ""
                                             ? NetworkImage(
                                                 "${ApiConstant.baseUrl}uploads/${subShopProvider.subShopList[index].shopLogo}")
-                                            : NetworkImage(noImage)),
+                                            : const NetworkImage(noImage)),
                                   ),
                                   const SizedBox(
                                     width: 10,
                                   ),
                                   Container(
+                                    padding: const EdgeInsets.all(5),
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: [
                                         Text(
-                                          subShopProvider
-                                                  .subShopList[index].shopName ??
-                                              "",
+                                         ( subShopProvider.subShopList[index]
+                                                  .shopName ??
+                                              "").toUpperCase(),
+
                                           style: GoogleFonts.alice(
                                               color: textBlack,
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 16),
+                                              fontSize: 14),
                                         ),
                                         Text(
-                                          "Owner Name : ${subShopProvider.subShopList[index].name ?? ""}",
+                                          ("Owner Name : ${subShopProvider.subShopList[index].name ?? ""}").toUpperCase(),
                                           style: GoogleFonts.alice(
                                               color: primaryColor,
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 14),
+                                              fontSize: 12),
                                         )
                                       ],
                                     ),
@@ -245,9 +250,9 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                 height: 5,
                               ),
                               Text(
-                                "My business Address:",
+                                "My business Address:".toUpperCase(),
                                 style: GoogleFonts.alice(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     color: primaryColor,
                                     fontWeight: FontWeight.w400),
                               ),
@@ -255,37 +260,33 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                 height: 5,
                               ),
                               Text(
-                                "${subShopProvider.subShopList[index].address ?? ""} ${subShopProvider.subShopList[index].landmark ?? ""} ${subShopProvider.subShopList[index].pincode ?? ""} ${subShopProvider.subShopList[index].state ?? ""}",
-                                style: GoogleFonts.alice(fontSize: 16),
+                                ("${subShopProvider.subShopList[index].address ?? ""} ${subShopProvider.subShopList[index].landmark ?? ""} ${subShopProvider.subShopList[index].pincode ?? ""} ${subShopProvider.subShopList[index].state ?? ""}").toUpperCase(),
+                                style: GoogleFonts.alice(fontSize: 14),
                               ),
                               const SizedBox(
                                 height: 5,
                               ),
                               Text(
-                                "My Services:",
+                                "My Services:".toUpperCase(),
                                 style: GoogleFonts.alice(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     color: primaryColor,
                                     fontWeight: FontWeight.w400),
                               ),
                               Text(
-                                subShopProvider.subShopList[index].services ??
-                                    "",
-                                style: GoogleFonts.alice(fontSize: 16),
+                            (    subShopProvider.subShopList[index].services ??
+                                    "").toUpperCase(),
+                                style: GoogleFonts.alice(fontSize: 14),
                               ),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "${Utility.calculateDistance(double.parse(locationProvider
-                                        .locationData!.latitude
-                                        .toString()), double.parse(locationProvider
-                                        .locationData!.longitude
-                                        .toString()), subShopProvider.subShopList[index].latitude ?? 0, subShopProvider.subShopList[index].longitude ?? 0)} KM Away",
+                                    "${Utility.calculateDistance(double.parse(locationProvider.locationData!.latitude.toString()), double.parse(locationProvider.locationData!.longitude.toString()), subShopProvider.subShopList[index].latitude ?? 0, subShopProvider.subShopList[index].longitude ?? 0)} KM Away",
                                     style: GoogleFonts.alice(
                                         color: primary,
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Row(
@@ -297,7 +298,8 @@ class _CategoryDetailsListState extends State<CategoryDetailsList> {
                                           final message =
                                               Uri.encodeComponent("Hi");
 
-                                          final whatsappUrl = 'whatsapp://send?phone=$phoneNumber&text=${Uri.encodeComponent(message)}';
+                                          final whatsappUrl =
+                                              'whatsapp://send?phone=$phoneNumber&text=${Uri.encodeComponent(message)}';
                                           launchUrlString(whatsappUrl);
                                         },
                                         child: Image.asset(

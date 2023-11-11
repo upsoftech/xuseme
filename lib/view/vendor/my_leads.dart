@@ -20,7 +20,7 @@ class _MyLeadState extends State<MyLead> {
   void initState() {
     super.initState();
     inquiryProvider = Provider.of<InquiryProvider>(context, listen: false);
-    inquiryProvider.inquiryData("warm"); //hot
+    inquiryProvider.inquiryData(type: "v2"); //hot
   }
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class _MyLeadState extends State<MyLead> {
         backgroundColor: primaryColor,
         centerTitle: true,
         title: Text(
-          "My Leads",
+          "My Leads ( ${inquiryProvider.inquiryList.length}  )",
           style: GoogleFonts.alice(
               color: textWhite, fontWeight: FontWeight.bold, fontSize: 16),
         ),

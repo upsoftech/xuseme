@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -198,6 +199,7 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                       labelStyle: GoogleFonts.alice(),
                       contentPadding: const EdgeInsets.only(top: 10, left: 20),
                     ),
+                    textCapitalization: TextCapitalization.words,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'name is required';
@@ -228,6 +230,10 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                       labelStyle: GoogleFonts.alice(),
                       contentPadding: const EdgeInsets.only(top: 10, left: 20),
                     ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10)
+                    ],
                     validator: (value) {
                       if (value!.isEmpty ||
                           !RegExp(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$')
@@ -260,6 +266,10 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                       labelStyle: GoogleFonts.alice(),
                       contentPadding: const EdgeInsets.only(top: 10, left: 20),
                     ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10)
+                    ],
                     validator: (value) {
                       if (value!.isEmpty ||
                           !RegExp(r'^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$')
@@ -321,7 +331,7 @@ class _EditVendorProfileState extends State<EditVendorProfile> {
                       labelText: ('Shop name'),
                       labelStyle: GoogleFonts.alice(),
                       contentPadding: const EdgeInsets.only(top: 10, left: 20),
-                    ),
+                    ),       textCapitalization: TextCapitalization.words,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Shop name is required';

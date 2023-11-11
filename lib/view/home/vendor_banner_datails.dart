@@ -12,6 +12,7 @@ import '../../constant/api_constant.dart';
 import '../../constant/color.dart';
 import '../../constant/image.dart';
 import '../../model/sub_category_model.dart';
+import '../../provider/location_provider.dart';
 import '../../provider/sub_category_provider.dart';
 import '../../services/api_services.dart';
 import '../../services/preference_services.dart';
@@ -45,7 +46,7 @@ class _VendorBannerDetailsState extends State<VendorBannerDetails> {
   Widget build(BuildContext context) {
     subShopProvider = Provider.of<SubShopsProvider>(context);
 
-
+    final locationProvider = Provider.of<LocationProvider>(context);
     log("${subShopProvider.vendorData?.offers}");
     log("${subShopProvider.vendorData?.premiumOffers}");
 
@@ -89,12 +90,11 @@ class _VendorBannerDetailsState extends State<VendorBannerDetails> {
                       );
                     }).toList()),
               )
-                  : SizedBox(),
-              SizedBox(
-                height: 20,
-              ),
+                  : const SizedBox(),
+
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GestureDetector(
                     onTap: () async {
@@ -108,43 +108,50 @@ class _VendorBannerDetailsState extends State<VendorBannerDetails> {
                     },
                     child: CircleAvatar(
                         radius: 30,
+                        backgroundColor: Colors.white,
                         backgroundImage: subShopProvider.vendorData!.shopLogo != ""
                             ? NetworkImage(
                             "${ApiConstant.baseUrl}uploads/${subShopProvider.vendorData!.shopLogo}")
-                            : NetworkImage(noImage)),
+                            : const NetworkImage(noImage)),
                   ),
                   const SizedBox(
                     width: 10,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        subShopProvider.vendorData!.shopName ?? "",
-                        style: GoogleFonts.alice(
-                            color: textBlack,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 21),
-                      ),
-                      Text(
-                        "Owner Name : ${subShopProvider.vendorData!.name ?? ""}",
-                        style: GoogleFonts.alice(
-                            color: primaryColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14),
-                      )
-                    ],
-                  )
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          (subShopProvider.vendorData!.shopName ?? "").toUpperCase(),
+                          style: GoogleFonts.alice(
+                              color: textBlack,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14),
+                        ),
+                        Text(
+                          "Owner Name : ${subShopProvider.vendorData!.name ?? ""}".toUpperCase(),
+                          style: GoogleFonts.alice(
+                              color: primaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
                 ],
               ),
               const SizedBox(
                 height: 5,
               ),
               Text(
-                "My business Address:",
+                "My business Address:".toUpperCase(),
                 style: GoogleFonts.alice(
-                    fontSize: 16,
+                    fontSize: 14,
                     color: primaryColor,
                     fontWeight: FontWeight.w400),
               ),
@@ -152,18 +159,25 @@ class _VendorBannerDetailsState extends State<VendorBannerDetails> {
                 height: 5,
               ),
               Text(
-                "${subShopProvider.vendorData!.address ?? ""} ${subShopProvider.vendorData!.landmark ?? ""} "
-                    "${subShopProvider.vendorData!.pincode ?? ""} ${subShopProvider.vendorData!.state ?? ""}",
-                style: GoogleFonts.alice(fontSize: 16),
+                ("${subShopProvider.vendorData!.address ?? ""} ${subShopProvider.vendorData!.landmark ?? ""} "
+                    "${subShopProvider.vendorData!.pincode ?? ""} ${subShopProvider.vendorData!.state ?? ""}").toUpperCase(),
+                style: GoogleFonts.alice(fontSize: 14),
               ),
               const SizedBox(
                 height: 5,
               ),
               Text(
-                "My Services: ${subShopProvider.vendorData!.services}",
+                ("My Services: ${subShopProvider.vendorData!.services}").toUpperCase(),
                 style: GoogleFonts.alice(
-                    fontSize: 16,
+                    fontSize: 14,
                     color: primaryColor,
+                    fontWeight: FontWeight.w400),
+              ),
+              Text(
+                "${subShopProvider.vendorData!.services}".toUpperCase(),
+                style: GoogleFonts.alice(
+                    fontSize: 14,
+                    color: Colors.black,
                     fontWeight: FontWeight.w400),
               ),
               Container(
@@ -177,11 +191,10 @@ class _VendorBannerDetailsState extends State<VendorBannerDetails> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "${Utility.calculateDistance(double.parse("0"), double.parse("0"),
-                          subShopProvider.vendorData!.latitude ?? 0, subShopProvider.vendorData!.longitude ?? 0)} KM Away",
+                      "${Utility.calculateDistance(double.parse(locationProvider.locationData!.latitude.toString()), double.parse(locationProvider.locationData!.longitude.toString()), subShopProvider.vendorData?.latitude ?? 0, subShopProvider.vendorData?.longitude ?? 0)} KM Away",
                       style: GoogleFonts.alice(
                           color: primary,
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold),
                     ),
                     Row(
@@ -264,7 +277,7 @@ class _VendorBannerDetailsState extends State<VendorBannerDetails> {
               )
             ],
           ))
-      :Center(
+      :const Center(
         child: CircularProgressIndicator(),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -9,6 +10,7 @@ import '../../constant/api_constant.dart';
 import '../../constant/color.dart';
 import '../../constant/image.dart';
 import '../../model/sub_category_model.dart';
+import '../../provider/location_provider.dart';
 import '../../services/api_services.dart';
 import '../../services/preference_services.dart';
 import '../../utils/utility.dart';
@@ -27,6 +29,8 @@ class _VendorDetailsState extends State<VendorDetails> {
   @override
   Widget build(BuildContext context) {
     var data = widget.shopSubCategoryModel;
+
+    final locationProvider = Provider.of<LocationProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -68,13 +72,11 @@ class _VendorDetailsState extends State<VendorDetails> {
                                   );
                           }).toList()),
                     )
-                  : SizedBox(),
-              const SizedBox(
-                height: 20,
-              ),
+                  : const SizedBox(),
+              const SizedBox(height: 10),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GestureDetector(
                     onTap: () async {
@@ -87,44 +89,51 @@ class _VendorDetailsState extends State<VendorDetails> {
                               ));
                     },
                     child: CircleAvatar(
+                        backgroundColor: Colors.white,
                         radius: 30,
                         backgroundImage: data.shopLogo != ""
                             ? NetworkImage(
                                 "${ApiConstant.baseUrl}uploads/${data.shopLogo}")
-                            : NetworkImage(noImage)),
+                            : const NetworkImage(noImage)),
                   ),
                   const SizedBox(
                     width: 10,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        data.shopName ?? "",
-                        style: GoogleFonts.alice(
-                            color: textBlack,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 21),
-                      ),
-                      Text(
-                        "Owner Name : ${data.name ?? ""}",
-                        style: GoogleFonts.alice(
-                            color: primaryColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14),
-                      )
-                    ],
-                  )
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          (data.shopName ?? "").toUpperCase(),
+                          style: GoogleFonts.alice(
+                              color: textBlack,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14),
+                        ),
+                        Text(
+                          ("Owner Name : ${data.name ?? ""}").toUpperCase(),
+                          style: GoogleFonts.alice(
+                              color: primaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
                 ],
               ),
               const SizedBox(
                 height: 5,
               ),
               Text(
-                "My business Address:",
+                "My business Address:".toUpperCase(),
                 style: GoogleFonts.alice(
-                    fontSize: 16,
+                    fontSize: 14,
                     color: primaryColor,
                     fontWeight: FontWeight.w400),
               ),
@@ -132,17 +141,25 @@ class _VendorDetailsState extends State<VendorDetails> {
                 height: 5,
               ),
               Text(
-                "${data.address ?? ""} ${data.landmark ?? ""} ${data.pincode ?? ""} ${data.state ?? ""}",
-                style: GoogleFonts.alice(fontSize: 16),
+                ("${data.address ?? ""} ${data.landmark ?? ""} ${data.pincode ?? ""} ${data.state ?? ""}")
+                    .toUpperCase(),
+                style: GoogleFonts.alice(fontSize: 14),
               ),
               const SizedBox(
                 height: 5,
               ),
               Text(
-                "My Services: ${data.services}",
+                "My Services : ".toUpperCase(),
                 style: GoogleFonts.alice(
-                    fontSize: 16,
+                    fontSize: 14,
                     color: primaryColor,
+                    fontWeight: FontWeight.w400),
+              ),
+              Text(
+                "${data.services}".toUpperCase(),
+                style: GoogleFonts.alice(
+                    fontSize: 14,
+                    color: Colors.black,
                     fontWeight: FontWeight.w400),
               ),
               Container(
@@ -156,11 +173,12 @@ class _VendorDetailsState extends State<VendorDetails> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "${Utility.calculateDistance(double.parse("0"), double.parse("0"), data.latitude ?? 0, data.longitude ?? 0)} KM Away",
+                      "${Utility.calculateDistance(double.parse(locationProvider.locationData!.latitude.toString()), double.parse(locationProvider.locationData!.longitude.toString()), data?.latitude ?? 0, data?.longitude ?? 0)} KM Away",
                       style: GoogleFonts.alice(
                           color: primary,
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold),
+
                     ),
                     Row(
                       children: [

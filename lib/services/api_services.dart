@@ -281,7 +281,7 @@ class ApiServices {
     var p = PrefService().getRegId();
     List<InquiryModel> myList = [];
     var data =
-        await networkCalls.get("${ApiConstant.inquiryEndpoint}$p?search=$type");
+        await networkCalls.get("${ApiConstant.inquiryEndpoint}/$type/$p?search=$type");
     for (var i in jsonDecode(data)) {
       myList.add(InquiryModel.fromJson(i));
     }
@@ -432,8 +432,9 @@ class ApiServices {
   ///  get category data from the server ///
 
   Future<List<BannerModel>> getBannerHistory() async {
+    var p = PrefService().getRegId();
     List<BannerModel> myList = [];
-    var data = await networkCalls.get(ApiConstant.bannerEndPoint);
+    var data = await networkCalls.get("${ApiConstant.bannerEndPoint}$p");
     for (var i in jsonDecode(data)) {
       myList.add(BannerModel.fromJson(i));
     }

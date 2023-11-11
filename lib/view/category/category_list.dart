@@ -12,6 +12,7 @@ import 'package:xuseme/constant/color.dart';
 import '../../constant/app_constants.dart';
 import '../../provider/category_provider.dart';
 import '../../provider/location_provider.dart';
+import '../../provider/profile_provider.dart';
 import 'category_details.dart';
 
 class CategoryList extends StatefulWidget {
@@ -32,8 +33,7 @@ class _CategoryListState extends State<CategoryList> {
     // TODO: implement initState
     super.initState();
     categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
-    categoryProvider.getCategoryData(
-        query: '', isPremium: widget.isPremium );
+    categoryProvider.getCategoryData(query: '', isPremium: widget.isPremium);
     _initSpeech();
   }
 
@@ -76,6 +76,7 @@ class _CategoryListState extends State<CategoryList> {
   Widget build(BuildContext context) {
     categoryProvider = Provider.of<CategoryProvider>(context);
     final locationProvider = Provider.of<LocationProvider>(context);
+    final profileProvider = Provider.of<ProfileProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -89,7 +90,7 @@ class _CategoryListState extends State<CategoryList> {
             style: const TextStyle(color: textWhite),
             onChanged: (v) {
               categoryProvider.getCategoryData(
-                  query: v, isPremium: widget.isPremium );
+                  query: v, isPremium: widget.isPremium);
             },
             decoration: InputDecoration(
                 focusedBorder: OutlineInputBorder(
@@ -111,7 +112,7 @@ class _CategoryListState extends State<CategoryList> {
                           onPressed: () {
                             categoryProvider.getCategoryData(
                                 query: searchTextController.text,
-                                isPremium: widget.isPremium );
+                                isPremium: widget.isPremium);
                           },
                           icon: const Icon(
                             Icons.search,
@@ -156,54 +157,49 @@ class _CategoryListState extends State<CategoryList> {
                             log("message${locationProvider.locationData!.latitude}");
                             log("message${locationProvider.locationData!.longitude}");
 
-                            if(widget.type==AppConstant.onTheWay){
+                            if (widget.type == AppConstant.onTheWay) {
                               locationProvider.getLocation().then((value) {
                                 Get.to(() => CategoryDetailsList(
-                                  filter: {
-                                    "shopType": categoryProvider
-                                        .categoryList[position].title,
-                                    "latitude": locationProvider
-                                        .locationData!.latitude
-                                        .toString(),
-                                    "longitude": locationProvider
-                                        .locationData!.longitude
-                                        .toString()
-                                  },
-                                ));
+                                      filter: {
+                                        "shopType": categoryProvider
+                                            .categoryList[position].title,
+                                        "latitude": locationProvider
+                                            .locationData!.latitude
+                                            .toString(),
+                                        "longitude": locationProvider
+                                            .locationData!.longitude
+                                            .toString()
+                                      },
+                                    ));
                               });
-                            } else if(widget.type==AppConstant.premiumShop){
+                            } else if (widget.type == AppConstant.premiumShop) {
                               locationProvider.getLocation().then((value) {
                                 Get.to(() => CategoryDetailsList(
-                                  filter: {
-                                    "shopType": categoryProvider
-                                        .categoryList[position].title,
-                                    "latitude": locationProvider
-                                        .locationData!.latitude
-                                        .toString(),
-                                    "longitude": locationProvider
-                                        .locationData!.longitude
-                                        .toString(),
-                                    "isPremium":"true"
-                                  },
-                                ));
+                                      filter: {
+                                        "shopType": categoryProvider
+                                            .categoryList[position].title,
+                                        "latitude": locationProvider
+                                            .locationData!.latitude
+                                            .toString(),
+                                        "longitude": locationProvider
+                                            .locationData!.longitude
+                                            .toString(),
+                                        "isPremium": "true"
+                                      },
+                                    ));
                               });
-                            }
-
-                            else{
+                            } else {
+                              log("profileData : ${profileProvider.profileData["latitude"]}");
+                              log("profileData : ${profileProvider.profileData["longitude"]}");
                               Get.to(() => CategoryDetailsList(
-                                filter: {
-                                  "shopType": categoryProvider
-                                      .categoryList[position].title,
-                                  "latitude": locationProvider
-                                      .locationData!.latitude
-                                      .toString(),
-                                  "longitude": locationProvider
-                                      .locationData!.longitude
-                                      .toString(),
-                                },
-                              ));
+                                    filter: {
+                                      "shopType": categoryProvider
+                                          .categoryList[position].title,
+                                      "latitude": profileProvider.profileData["latitude"].toString(),
+                                      "longitude": profileProvider.profileData["longitude"].toString(),
+                                    },
+                                  ));
                             }
-
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -219,11 +215,14 @@ class _CategoryListState extends State<CategoryList> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
                                     child: Image.network(
-                                      categoryProvider
-                                              .categoryList[position].image!=null ?
-                                     ApiConstant.baseUrl +categoryProvider
-                                          .categoryList[position].image.toString()
-                                         : "",
+                                      categoryProvider.categoryList[position]
+                                                  .image !=
+                                              null
+                                          ? ApiConstant.baseUrl +
+                                              categoryProvider
+                                                  .categoryList[position].image
+                                                  .toString()
+                                          : "",
                                       height: 20,
                                       width: 20,
                                       fit: BoxFit.fill,

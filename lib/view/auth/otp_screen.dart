@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -8,17 +9,24 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 import 'package:xuseme/view/auth/location.dart';
 
+import '../../constant/color.dart';
 import '../../services/api_services.dart';
 import '../../services/preference_services.dart';
-import '../../constant/color.dart';
 import '../navigation/navigation_page.dart';
 import '../vendor/vandor_registration.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({Key? key, required this.dropdownValue, required this.mobile})
+  const OtpScreen(
+      {Key? key,
+      required this.dropdownValue,
+      required this.mobile,
+      required this.verificationId,
+      required this.otp})
       : super(key: key);
   final String dropdownValue;
   final String mobile;
+  final String verificationId;
+  final String otp;
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -61,8 +69,12 @@ class _OtpScreenState extends State<OtpScreen> {
 
   final ApiServices _apiService = ApiServices();
 
+  FirebaseAuth auth = FirebaseAuth.instance;
+
   final otpController = TextEditingController();
   final PrefService _prefService = PrefService();
+
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -90,8 +102,10 @@ class _OtpScreenState extends State<OtpScreen> {
             const SizedBox(
               height: 10,
             ),
-            Center(
+            Container(
+              padding: const EdgeInsets.only(left: 15, top: 10,right: 15),
               child: Pinput(
+                length: 6,
                 controller: otpController,
                 pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
                 showCursor: true,
@@ -101,55 +115,87 @@ class _OtpScreenState extends State<OtpScreen> {
             const SizedBox(
               height: 35,
             ),
-            InkWell(
+            isLoading
+                ? const CircularProgressIndicator(color: Colors.white,): InkWell(
                 onTap: () {
                   if (widget.dropdownValue == "Customer") {
-                    _apiService
-                        .verifyOtp(
-                      widget.mobile,
-                      widget.dropdownValue.toLowerCase(),
-                      otpController.text.trim(),
-                    )
-                        .then((value) {
-                      log("Otp : ${value}");
+                    isLoading = true;
+                    setState(() {});
+                    // Create a PhoneAuthCredential with the code
+                    PhoneAuthCredential credential =
+                        PhoneAuthProvider.credential(
+                            verificationId: widget.verificationId,
+                            smsCode: otpController.text.trim());
 
-                      _prefService.setSelectToken(value["token"]);
-                      _prefService.setRegId(value["data"]["_id"]);
-                      _prefService.setSelectType(value["data"]["type"]);
+                    // Sign the user in (or link) with the credential
+                    auth.signInWithCredential(credential).then((value) {
+                      if (value.user?.uid != null) {
+                        _apiService
+                            .verifyOtp(
+                          widget.mobile,
+                          widget.dropdownValue.toLowerCase(),
+                          widget.otp,
+                        )
+                            .then((value) {
+                          log("Otp : ${value}");
 
-                      if (value["message"].toString() == "Login Successfully") {
-                        Get.to(() => const NavigationPage());
-                      } else if (value["message"].toString() == "Registered Successfully") {
-                        Get.to(() => const LocationPage());
-                      }  else{
-                        log("11111 : $value");
-                        Fluttertoast.showToast(msg: value.toString());
-                      }
-                    });
-                  }
-                  else if (widget.dropdownValue == 'Partner') {
-                    _apiService
-                        .verifyOtp(
-                      widget.mobile,
-                      widget.dropdownValue.toLowerCase(),
-                      otpController.text.trim(),
-                    )
-                        .then((value) {
-                      log("message$value");
+                          _prefService.setSelectToken(value["token"]);
+                          _prefService.setRegId(value["data"]["_id"]);
+                          _prefService.setSelectType(value["data"]["type"]);
 
-                      _prefService.setSelectToken(value["token"]);
-                      if (value["data"]["shopType"] != null && value["data"]["shopType"] != "") {
-                        _prefService.setRegId(value["data"]["_id"]);
-                        _prefService.setSelectType(value["data"]["type"]);
-                        Get.to(() => const NavigationPage());
+                          if (value["message"].toString() ==
+                              "Login Successfully") {
+                            Get.to(() => const NavigationPage());
+                          } else if (value["message"].toString() ==
+                              "Registered Successfully") {
+                            Get.to(() => const LocationPage());
+                          } else {
+                            log("11111 : $value");
+                            Fluttertoast.showToast(msg: value.toString());
+                          }
+                        });
                       } else {
-                        Get.to(() => VendorRegistration(
-                              data: {"mobile": widget.mobile},
-                            ));
+                        Fluttertoast.showToast(msg: "Incorrect Otp");
                       }
                     });
-                  }
-                  else{
+                  } else if (widget.dropdownValue == 'Partner') {
+                    isLoading = true;
+                    setState(() {});
+                    // Create a PhoneAuthCredential with the code
+                    PhoneAuthCredential credential =
+                        PhoneAuthProvider.credential(
+                            verificationId: widget.verificationId,
+                            smsCode: otpController.text.trim());
+
+                    // Sign the user in (or link) with the credential
+                    auth.signInWithCredential(credential).then((value) {
+                      if (value.user?.uid != null) {
+                        _apiService
+                            .verifyOtp(
+                          widget.mobile,
+                          widget.dropdownValue.toLowerCase(),
+                          widget.otp,
+                        )
+                            .then((value) {
+                          log("message$value");
+
+                          _prefService.setSelectToken(value["token"]);
+                          if (value["data"]["shopType"] != null &&
+                              value["data"]["shopType"] != "") {
+                            _prefService.setRegId(value["data"]["_id"]);
+                            _prefService.setSelectType(value["data"]["type"]);
+                            Get.to(() => const NavigationPage());
+                          } else {
+                            Get.to(() => VendorRegistration(
+                                  data: {"mobile": widget.mobile},
+                                ));
+                          }
+                        });
+                      } else {
+                        Fluttertoast.showToast(msg: "Incorrect Otp");
+                      }
+                    });
+                  } else {
                     Fluttertoast.showToast(msg: "Something went wrong");
                   }
                 },

@@ -1,11 +1,13 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/preference_services.dart';
 import '../../constant/image.dart';
+import '../../provider/location_provider.dart';
 import '../../provider/preference_provider.dart';
+import '../../services/preference_services.dart';
 import '../auth/login_screen.dart';
 import '../navigation/navigation_page.dart';
 
@@ -27,7 +29,8 @@ class _SplashScreenState extends State<SplashScreen> {
     var regId = p.getRegId();
     log(token.toString());
     log(regId.toString());
-    if (token != "" && token !=null && regId !=null) {
+
+    if (token != "" && token != null && regId != null) {
       _navigethome();
     } else {
       _navigeteLogin();
@@ -37,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
   _navigethome() async {
     await Future.delayed(const Duration(seconds: 4), () {});
     // ignore: use_build_context_synchronously
-  Get.to(()=>const NavigationPage());
+    Get.to(() => const NavigationPage());
   }
 
   _navigeteLogin() async {
