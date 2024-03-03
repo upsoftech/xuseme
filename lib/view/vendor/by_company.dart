@@ -3,10 +3,15 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xuseme/constant/app_constants.dart';
+import 'package:xuseme/provider/profile_provider.dart';
+import 'package:xuseme/view/widgets/custom_web_view.dart';
 
+import '../../constant/color.dart';
 import '../../services/api_services.dart';
 import '../../services/preference_services.dart';
-import '../../constant/color.dart';
 
 class ByCompany extends StatefulWidget {
   const ByCompany({Key? key}) : super(key: key);
@@ -21,17 +26,49 @@ class _ByCompanyState extends State<ByCompany> {
 
   @override
   Widget build(BuildContext context) {
+
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    int postCosting = profileProvider.postCosting["byCompanyPrice"]??0;
+
     return Scaffold(
       bottomNavigationBar: GestureDetector(
-        onTap: () {
-          ApiServices()
-              .addBannerByCompany(PrefService().getRegId(), dropdownValues1,
-                  "${100 * selectedMonths}")
-              .then((value) {
+        onTap: () async {
+          var trID = "${DateTime.now().millisecondsSinceEpoch}_${AppConstant.regId}";
+          final prefs = await SharedPreferences.getInstance();
+
+
+
+          prefs.setString("trId", trID).then((value) async {
+            var value2 = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MyWebViewScreen(
+                    url: "https://xuseme.com/payment/?mobile=${profileProvider.profileData["mobile"]}"
+                        "&amount=${postCosting * selectedMonths}&order_id=$trID"
+                        "&name=${profileProvider.profileData["name"]}"
+                        "&address=${profileProvider.profileData["address"]}"
+                        "&city=${profileProvider.profileData["city"]}"
+                        "&pincode=${profileProvider.profileData["pincode"]}"
+                        "&email=${profileProvider.profileData["email"]}"
+                        "&state=${profileProvider.profileData["state"]}"
+                    ,
+                  )),
+
+            );
+            log("NEW TRY ON DASH BOARD $value2");
+            Fluttertoast.showToast(msg: "${value2["order_status"]}");
+            if (value2["order_status"].toString().toUpperCase() != "SUCCESS") {
+              Fluttertoast.showToast(msg: "Payment failed");
+            } else if (value2["order_status"].toString().toUpperCase() == "SUCCESS") {
+              Fluttertoast.showToast(msg: "Payment Successful");
+              ApiServices().addBannerByCompany(PrefService().getRegId(), dropdownValues1, "${postCosting * selectedMonths}").then((value) {
                 log("message1111$value");
-            Fluttertoast.showToast(
-                msg: "${value["message"]}", backgroundColor: primaryColor);
-            Navigator.pop(context);
+                Fluttertoast.showToast(msg: "${value["message"]}", backgroundColor: primaryColor);
+                Navigator.pop(context);
+              });
+            } else {
+              Fluttertoast.showToast(msg: "Something went wrong");
+            }
           });
         },
         child: Container(
@@ -39,12 +76,10 @@ class _ByCompanyState extends State<ByCompany> {
           alignment: Alignment.center,
           height: 45,
           width: double.infinity,
-          decoration: BoxDecoration(
-              color: textBlack, borderRadius: BorderRadius.circular(15)),
+          decoration: BoxDecoration(color: textBlack, borderRadius: BorderRadius.circular(15)),
           child: Text(
             "Pay",
-            style: GoogleFonts.alice(
-                color: textWhite, fontSize: 16, fontWeight: FontWeight.bold),
+            style: GoogleFonts.alice(color: textWhite, fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
       ),
@@ -55,16 +90,11 @@ class _ByCompanyState extends State<ByCompany> {
             child: DropdownButtonFormField<String>(
               key: UniqueKey(),
               decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1, color: textBlack),
-                    borderRadius: BorderRadius.circular(5)),
-                focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 1, color: textBlack),
-                    borderRadius: BorderRadius.circular(5)),
+                enabledBorder: OutlineInputBorder(borderSide: const BorderSide(width: 1, color: textBlack), borderRadius: BorderRadius.circular(5)),
+                focusedBorder: OutlineInputBorder(borderSide: const BorderSide(width: 1, color: textBlack), borderRadius: BorderRadius.circular(5)),
                 hintText: 'Select Month',
                 contentPadding: const EdgeInsets.only(left: 10, right: 10),
-                suffixStyle: const TextStyle(
-                    color: textBlack, fontWeight: FontWeight.bold),
+                suffixStyle: const TextStyle(color: textBlack, fontWeight: FontWeight.bold),
               ),
               value: dropdownValues1,
               items: const [
@@ -131,10 +161,7 @@ class _ByCompanyState extends State<ByCompany> {
               children: [
                 Text(
                   "Total Amount",
-                  style: GoogleFonts.alice(
-                      color: textBlack,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600),
+                  style: GoogleFonts.alice(color: textBlack, fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(
                   width: 15,
@@ -144,15 +171,10 @@ class _ByCompanyState extends State<ByCompany> {
                   padding: const EdgeInsets.symmetric(horizontal: 5),
                   height: 35,
                   width: 100,
-                  decoration: BoxDecoration(
-                      color: primary.withOpacity(.1),
-                      borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: primary.withOpacity(.1), borderRadius: BorderRadius.circular(10)),
                   child: Text(
-                    "₹ ${200 * selectedMonths}.00",
-                    style: GoogleFonts.alice(
-                        color: textBlack,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600),
+                    "₹ ${postCosting * selectedMonths}.00",
+                    style: GoogleFonts.alice(color: textBlack, fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 )
               ],

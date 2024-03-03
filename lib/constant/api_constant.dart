@@ -22,4 +22,5 @@ class ApiConstant {
   static const String grtCategoryEndpoint = "$baseUrl/api/category";
   static const String bannerEndPoint = "$baseUrl/api/ads/banner/";
   static const String helpEndPoint = "$baseUrl/api/enquiry/help/";
+  static const String postCostingEndPoint = "$baseUrl/api/category/postCosting";
 }

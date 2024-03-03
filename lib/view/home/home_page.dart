@@ -1,10 +1,13 @@
 import 'dart:developer';
 
+import 'package:cc_avenue/cc_avenue.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xuseme/constant/api_constant.dart';
 import 'package:xuseme/constant/app_constants.dart';
 import 'package:xuseme/constant/image.dart';
@@ -13,6 +16,7 @@ import 'package:xuseme/provider/location_provider.dart';
 import 'package:xuseme/utils/utility.dart';
 import 'package:xuseme/view/home/remote_search.dart';
 import 'package:xuseme/view/home/vendor_banner_datails.dart';
+import 'package:xuseme/view/widgets/custom_web_view.dart';
 
 import '../../constant/color.dart';
 import '../../provider/profile_provider.dart';
@@ -103,6 +107,63 @@ class _HomePageState extends State<HomePage> {
                 log("kkkkkkkkkkkkkkk : $fat");
               },
               icon: Icon(Icons.notifications_none)),*/
+ /*         IconButton(
+              onPressed: () async {
+                var trID =
+                    "${DateTime
+                    .now()
+                    .millisecondsSinceEpoch}_${AppConstant
+                    .regId}";
+                final prefs = await SharedPreferences
+                    .getInstance();
+                prefs.setString("trId", trID).then((
+                    value) async {
+                  var value2 = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const MyWebViewScreen(
+                              url:
+                              "https://xuseme.com/payment/?mobile=8743979965&amount=1500&order_id=123456789",
+                            )),
+                  );
+                  log("NEW TRY ON DASH BOARD $value2");
+                  Fluttertoast.showToast(
+                      msg: "${value2["code"]}");
+                  if (value2["code"] != "PAYMENT_SUCCESS") {
+                    Fluttertoast.showToast(
+                        msg: "Payment failed");
+                  } else
+                  if (value2["code"] == "PAYMENT_SUCCESS") {
+
+                    Fluttertoast.showToast(
+                        msg: "Payment Successful");
+
+
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: "Something went wrong");
+                  }
+                });
+                *//*CcAvenue.cCAvenueInit(
+                        transUrl:
+                            'https://secure.ccavenue.com/transaction/initTrans',
+                        accessCode: '4YRUXLSRO20O8NIH',
+                        amount: '1',
+                        cancelUrl:
+                            'http://122.182.6.216/merchant/ccavResponseHandler.jsp',
+                        currencyType: 'INR',
+                        merchantId: '2',
+                        orderId: '519',
+                        redirectUrl:
+                            'http://122.182.6.216/merchant/ccavResponseHandler.jsp',
+                        rsaKeyUrl:
+                            'https://secure.ccavenue.com/transaction/jsp/GetRSA.jsp')
+                    .catchError((err) {
+                  log("Error : $err");
+                });*//*
+              },
+              icon: const Icon(Icons.paypal)),*/
           GestureDetector(
             onTap: () {
               Get.to(() => const UserAccount());
@@ -246,9 +307,7 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     GestureDetector(
                         onTap: () {
-                          Get.to(() => CategoryList(
-                                type: "local",
-                              ));
+                          Get.to(() => const CategoryList(type: "local"));
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,

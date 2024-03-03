@@ -2,10 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../constant/image.dart';
-import '../../provider/location_provider.dart';
 import '../../provider/preference_provider.dart';
 import '../../services/preference_services.dart';
 import '../auth/login_screen.dart';
@@ -31,39 +31,53 @@ class _SplashScreenState extends State<SplashScreen> {
     log(regId.toString());
 
     if (token != "" && token != null && regId != null) {
-      _navigethome();
+      _navigateHome();
     } else {
-      _navigeteLogin();
+      _navigateLogin();
     }
   }
 
-  _navigethome() async {
+  _navigateHome() async {
     await Future.delayed(const Duration(seconds: 4), () {});
     // ignore: use_build_context_synchronously
     Get.to(() => const NavigationPage());
   }
 
-  _navigeteLogin() async {
+  _navigateLogin() async {
     await Future.delayed(const Duration(seconds: 4), () {});
     // ignore: use_build_context_synchronously
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
     Provider.of<PrefProvider>(context);
     return Scaffold(
-        body: Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(
-            splashImages,
-          ),
-        ),
-      ),
-    ));
+        body: Column(
+          children: [
+            const Spacer(),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.4,
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    splashImages,
+                  ),
+                ),
+              ),
+            ),
+            const Spacer(),
+            SizedBox(
+              height: 100,
+              child: Center(
+                child: Text(
+                  "Powered by SAPIX Technologies",
+                  style: GoogleFonts.alice(fontWeight: FontWeight.w500, fontSize: 14),
+                ),
+              ),
+            )
+          ],
+        ));
   }
 }

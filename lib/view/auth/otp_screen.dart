@@ -52,19 +52,38 @@ class _OtpScreenState extends State<OtpScreen> {
         });
       }
     });
+    newVerificationId = widget.verificationId;
   }
 
-  void _resendCode() {
+  String newVerificationId = "";
+
+  Future<void> _resendCode() async {
     setState(() {
+      isLoading = false;
+
       secondsRemaining = 30;
       enableResend = false;
     });
+
+    await FirebaseAuth.instance.verifyPhoneNumber(
+      phoneNumber: '+91${widget.mobile.trim()}',
+      verificationCompleted: (PhoneAuthCredential credential) {},
+      verificationFailed: (FirebaseAuthException e) {},
+      codeSent: (String verificationId, int? resendToken) {
+        setState(() {
+          newVerificationId = verificationId;
+          otpController.clear();
+        });
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
   }
 
   @override
   dispose() {
     timer?.cancel();
     super.dispose();
+    otpController.clear();
   }
 
   final ApiServices _apiService = ApiServices();
@@ -103,7 +122,7 @@ class _OtpScreenState extends State<OtpScreen> {
               height: 10,
             ),
             Container(
-              padding: const EdgeInsets.only(left: 15, top: 10,right: 15),
+              padding: const EdgeInsets.only(left: 15, top: 10, right: 15),
               child: Pinput(
                 length: 6,
                 controller: otpController,
@@ -116,107 +135,138 @@ class _OtpScreenState extends State<OtpScreen> {
               height: 35,
             ),
             isLoading
-                ? const CircularProgressIndicator(color: Colors.white,): InkWell(
-                onTap: () {
-                  if (widget.dropdownValue == "Customer") {
-                    isLoading = true;
-                    setState(() {});
-                    // Create a PhoneAuthCredential with the code
-                    PhoneAuthCredential credential =
+                ? const CircularProgressIndicator(
+                    color: Colors.white,
+                  )
+                : InkWell(
+                    onTap: () {
+                      if (widget.dropdownValue == "Customer") {
+                        isLoading = true;
+                        setState(() {});
+                        // Create a PhoneAuthCredential with the code
+                        PhoneAuthCredential credential =
                         PhoneAuthProvider.credential(
-                            verificationId: widget.verificationId,
+                            verificationId: newVerificationId,
                             smsCode: otpController.text.trim());
 
-                    // Sign the user in (or link) with the credential
-                    auth.signInWithCredential(credential).then((value) {
-                      if (value.user?.uid != null) {
-                        _apiService
-                            .verifyOtp(
-                          widget.mobile,
-                          widget.dropdownValue.toLowerCase(),
-                          widget.otp,
-                        )
-                            .then((value) {
-                          log("Otp : ${value}");
+                        // Sign the user in (or link) with the credential
+                        auth.signInWithCredential(credential).then((value) {
+                          log("User : ${value.user}");
 
-                          _prefService.setSelectToken(value["token"]);
-                          _prefService.setRegId(value["data"]["_id"]);
-                          _prefService.setSelectType(value["data"]["type"]);
+                          if (value.user?.phoneNumber ==
+                              "+91${widget.mobile}") {
+                            _apiService
+                                .verifyOtp(
+                              widget.mobile,
+                              widget.dropdownValue.toLowerCase(),
+                              widget.otp,
+                            )
+                                .then((value) {
+                              log("Otp : ${value}");
 
-                          if (value["message"].toString() ==
-                              "Login Successfully") {
-                            Get.to(() => const NavigationPage());
-                          } else if (value["message"].toString() ==
-                              "Registered Successfully") {
-                            Get.to(() => const LocationPage());
+                              _prefService.setSelectToken(value["token"]);
+                              _prefService.setRegId(value["data"]["_id"]);
+                              _prefService
+                                  .setSelectType(value["data"]["type"]);
+
+                              if (value["message"].toString() ==
+                                  "Login Successfully") {
+                                Get.to(() => const NavigationPage());
+                              } else if (value["message"].toString() ==
+                                  "Registered Successfully") {
+                                Get.to(() => const LocationPage());
+                              } else {
+                                log("11111 : $value");
+                                Fluttertoast.showToast(msg: value.toString());
+                              }
+                            });
                           } else {
-                            log("11111 : $value");
-                            Fluttertoast.showToast(msg: value.toString());
+                            setState(() {
+                              isLoading = false;
+                            });
+                            Fluttertoast.showToast(msg: "Incorrect Otp");
                           }
+                        }).catchError((err) {
+                          print("Error Is : $err");
+                          setState(() {
+                            isLoading = false;
+                          });
+                          Fluttertoast.showToast(msg: "Incorrect Otp");
                         });
-                      } else {
-                        Fluttertoast.showToast(msg: "Incorrect Otp");
-                      }
-                    });
-                  } else if (widget.dropdownValue == 'Partner') {
-                    isLoading = true;
-                    setState(() {});
-                    // Create a PhoneAuthCredential with the code
-                    PhoneAuthCredential credential =
+                      } else if (widget.dropdownValue == 'Partner') {
+                        isLoading = true;
+                        setState(() {});
+                        // Create a PhoneAuthCredential with the code
+                        PhoneAuthCredential credential =
                         PhoneAuthProvider.credential(
-                            verificationId: widget.verificationId,
+                            verificationId: newVerificationId,
                             smsCode: otpController.text.trim());
 
-                    // Sign the user in (or link) with the credential
-                    auth.signInWithCredential(credential).then((value) {
-                      if (value.user?.uid != null) {
-                        _apiService
-                            .verifyOtp(
-                          widget.mobile,
-                          widget.dropdownValue.toLowerCase(),
-                          widget.otp,
-                        )
-                            .then((value) {
-                          log("message$value");
+                        // Sign the user in (or link) with the credential
+                        auth.signInWithCredential(credential).then((value) {
+                          if (value.user?.phoneNumber ==
+                              "+91${widget.mobile}") {
+                            _apiService
+                                .verifyOtp(
+                              widget.mobile,
+                              widget.dropdownValue.toLowerCase(),
+                              widget.otp,
+                            )
+                                .then((value) {
+                              log("message$value");
 
-                          _prefService.setSelectToken(value["token"]);
-                          if (value["data"]["shopType"] != null &&
-                              value["data"]["shopType"] != "") {
-                            _prefService.setRegId(value["data"]["_id"]);
-                            _prefService.setSelectType(value["data"]["type"]);
-                            Get.to(() => const NavigationPage());
-                          } else {
-                            Get.to(() => VendorRegistration(
+                              _prefService.setSelectToken(value["token"]);
+                              if (value["data"]["shopType"] != null &&
+                                  value["data"]["shopType"] != "") {
+                                _prefService.setRegId(value["data"]["_id"]);
+                                _prefService
+                                    .setSelectType(value["data"]["type"]);
+                                Get.to(() => const NavigationPage());
+                              } else {
+                                Get.to(() => VendorRegistration(
                                   data: {"mobile": widget.mobile},
                                 ));
+                              }
+                            });
+                          } else {
+                            setState(() {
+                              isLoading = false;
+                            });
+                            Fluttertoast.showToast(msg: "Incorrect Otp");
                           }
+                        })
+                            .catchError((err){
+                          print("Error Is : $err");
+                          setState(() {
+                            isLoading = false;
+                          });
+                          Fluttertoast.showToast(msg: "Incorrect Otp");
                         });
                       } else {
-                        Fluttertoast.showToast(msg: "Incorrect Otp");
+                        setState(() {
+                          isLoading = false;
+                        });
+                        Fluttertoast.showToast(msg: "Something went wrong");
                       }
-                    });
-                  } else {
-                    Fluttertoast.showToast(msg: "Something went wrong");
-                  }
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 40,
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(left: 15, right: 15),
-                  decoration: BoxDecoration(
-                      color: textBlack,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: FittedBox(
-                    child: Text(
-                      'Continue',
-                      style: GoogleFonts.alice(
-                          color: textWhite,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                  ),
-                )),
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 40,
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(left: 15, right: 15),
+                      decoration: BoxDecoration(
+                          color: textBlack,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: FittedBox(
+                        child: Text(
+                          'Continue',
+                          style: GoogleFonts.alice(
+                              color: textWhite,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
+                        ),
+                      ),
+                    )),
             Container(
               padding: const EdgeInsets.only(left: 15, right: 5, top: 10),
               child: Row(
